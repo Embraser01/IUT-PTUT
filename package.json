@@ -1,0 +1,16 @@
+{
+  "name": "mindmap-ptut",
+  "version": "0.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "express": "~4.13.3",
+    "express-session": "~1.12.1",
+    "body-parser": "~1.14.1",
+    "socket.io": "~1.3.7",
+    "ent": "~2.2.0",
+    "ejs": "~2.3.4",
+    "mysql": "~2.10.0"
+  },
+  "author": "Marc-Antoine FERNANDES <marcantoinefernandes@gmail.com>",
+  "description": "Un petit test de nodejs pour mindmap."
+}
