@@ -38,6 +38,6 @@ module.exports.policies = {
 
         '*': 'isNotAuthenticated',
 
-        logout: 'isAuthenticated'
+        processLogout: 'isAuthenticated'
     }
 };

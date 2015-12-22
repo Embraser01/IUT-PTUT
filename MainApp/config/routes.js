@@ -33,7 +33,8 @@ module.exports.routes = {
      ***************************************************************************/
 
     '/': {
-        view: 'homepage'
+        controller: 'IndexController',
+        action: 'index'
     },
 
 

@@ -1,10 +1,10 @@
 module.exports = {
     login: function (req, res) {
-        return res.render('auth/login');
+        return res.view('auth/login');
     },
 
     signup: function (req, res) {
-        return res.render('auth/signup');
+        return res.view('auth/signup');
     },
 
 
@@ -17,7 +17,7 @@ module.exports = {
         }, function (err, user) {
             if (err) return res.ok(err);
 
-            req.session.me = user.id;
+            req.session.user = user;
 
             if (req.wantsJSON) {
                 return res.ok('Login successful !');
@@ -28,13 +28,13 @@ module.exports = {
     },
 
     processLogout: function (req, res) {
-        req.session.me = null;
+        req.session.user = null;
 
         if (req.wantsJSON) {
             return res.ok('Logged out successfully!');
         }
 
-        return res.redirect('/login');
+        return res.redirect('/auth/login');
     },
 
     processSignup: function (req, res) {
@@ -48,7 +48,7 @@ module.exports = {
         }, function (err, user) {
             if (err) return res.ok(err);
 
-            req.session.me = user.id;
+            req.session.user = user;
 
             if (req.wantsJSON) {
                 return res.ok('Signup successful !');
