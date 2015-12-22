@@ -1,16 +1,24 @@
 <h1>Signup</h1>
-<form action="/signup" method="post">
+<form action="/auth/process/signup" method="post">
 
     <label for="name">What's your name?</label>
     <input name="name" type="text"/>
     <br/>
 
-    <label for="email">What's your email?</label>
-    <input name="email" type="text"/>
+    <label for="firstname">What's your first name?</label>
+    <input name="firstname" type="text"/>
+    <br/>
+
+    <label for="mail">What's your email?</label>
+    <input name="mail" type="text"/>
     <br/>
 
     <label for="password">Choose a Password</label>
     <input name="password" type="password"/>
+    <br/>
+
+    <label for="passwordConfirmation">Password confirmation</label>
+    <input name="passwordConfirmation" type="password"/>
     <br/>
 
     <input type="submit"/>

@@ -47,11 +47,12 @@ module.exports.routes = {
      *                                                                          *
      ***************************************************************************/
 
-    'get /auth/signup': 'AuthController.signup',
-    'get /auth/login': 'AuthController.login',
-    'get /auth/logout': 'AuthController.processLogout',
+    '/auth': '/auth/login',
+    '/auth/signup': 'AuthController.signup',
+    '/auth/login': 'AuthController.login',
 
-    'post /auth/signup': 'AuthController.processSignup',
-    'post /auth/login': 'AuthController.processLogin',
+    '/auth/process/logout': 'AuthController.processLogout',
+    '/auth/process/signup': 'AuthController.processSignup',
+    '/auth/process/login': 'AuthController.processLogin',
 
 };

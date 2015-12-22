@@ -1,21 +1,12 @@
-var createHash = require('sha.js');
-var sha256 = createHash.sha256();
+var crypto = require('crypto');
 
 var pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-var mailRegex = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/;
 
 module.exports = {
 
     tableName: 'User',
-
-    types: {
-        password: function (password) {
-            return password === this.passwordConfirmation;
-        },
-        secure: function (password) {
-            return pwdRegex.test(password);
-        }
-    },
+    autoCreatedAt: false,
+    autoUpdatedAt: false,
 
     attributes: {
         id: {
@@ -33,8 +24,7 @@ module.exports = {
             size: 30
         },
         mail: {
-            type: 'string',
-            email: true,
+            type: 'email',
             required: true,
             unique: true,
             size: 254
@@ -42,46 +32,32 @@ module.exports = {
         password: {
             type: 'string',
             required: true,
-            size: 64,
-            secure: true
-        },
-        passwordConfirmation: {
-            type: 'string',
-            size: 64,
-            password: true
+            size: 64
         }
     },
 
 
     signup: function (inputs, cb) {
         // Create a user
+        if (inputs.password !== inputs.passwordConfirmation) return cb(new Error("Password and Password confirmation are different !"));
+        if (!pwdRegex.test(inputs.password)) return cb(new Error("Password is not secure !"));
+
         User.create({
                 name: inputs.name,
-                email: inputs.email,
-                // TODO: But encrypt the password first
-                password: inputs.password
-            })
-            .exec(cb);
+                firstname: inputs.firstname,
+                mail: inputs.mail,
+                password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')
+        })
+        .exec(cb);
+
     },
 
-
-    /**
-     * Check validness of a login using the provided inputs.
-     * But encrypt the password first.
-     *
-     * @param  {Object}   inputs
-     *                     • email    {String}
-     *                     • password {String}
-     * @param  {Function} cb
-     */
-
-    attemptLogin: function (inputs, cb) {
+    login: function (inputs, cb) {
         // Create a user
         User.findOne({
-                email: inputs.email,
-                // TODO: But encrypt the password first
-                password: inputs.password
-            })
-            .exec(cb);
+                mail: inputs.mail,
+                password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')
+        })
+        .exec(cb);
     }
 }
