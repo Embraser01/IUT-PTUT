@@ -16,20 +16,29 @@ var ent = require('ent');
 
 var params = require('./params/param.js');
 
-var mysql      = require('mysql');
+var mysql = require('mysql');
 var connection = mysql.createConnection({
-    host     : hostname,
-    user     : username,
-    password : password,
-    database: database
+    host: params.hostname,
+    user: params.username,
+    password: params.password,
+    database: params.database
 });
 
 
-connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
+connection.query('SELECT 1 + 1 AS solution', function (err, rows, fields) {
     if (err) throw err;
     console.log('The solution is: ', rows[0].solution);
 });
 
+
+/*===== FUNCTIONS =====*/
+
+
+function requireLogin(req, res, next){
+    if(!req.session.mail) return next(new Error("You have to be log"));
+
+    next();
+}
 
 
 /*===== APP INIT =====*/
@@ -39,7 +48,6 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-connection.connect();
 
 /*===== SESSION INIT ======*/
 
@@ -47,7 +55,7 @@ var sessionMiddleware = session({
     secret: "cestpasmoimaisenvraisimaisbon"
 });
 
-io.use(function(socket, next) {
+io.use(function (socket, next) {
     sessionMiddleware(socket.request, socket.request.res, next);
 });
 
@@ -60,19 +68,14 @@ var sess;
 
 // Accueil
 
-app.get('/', function (req, res) {
+app.get('/', requireLogin, function (req, res) {
     sess = req.session;
     if (!sess.mail) res.redirect('/login');
     else res.render('index.ejs', {mail: sess.mail.split('@')[0]});
+
+    next();
 });
 
-// Login
-
-app.get('/login', function (req, res) {
-    sess = req.session;
-    if (sess.mail) res.redirect('/');
-    else res.render('login.ejs');
-});
 
 
 app.post('/login/auth', function (req, res) {
@@ -82,24 +85,40 @@ app.post('/login/auth', function (req, res) {
     sess.password = req.body.password;
 
     res.redirect('/');
+
+    next();
 });
 
 
 // Logout
 
-app.get('/logout', function (req, res) {
+app.get('/logout', requireLogin, function (req, res) {
     req.session.destroy(function (err) {
         if (err) console.log(err);
         else res.redirect('/');
     });
+
+    next();
 });
+
+
+// Login
+
+app.get('/login', function (req, res) {
+    sess = req.session;
+    if (sess.mail) res.redirect('/');
+    else res.render('login.ejs');
+
+    next();
+});
+
 
 
 // Default Error 404
 
-app.use(function (req, res, next) {
-    res.setHeader('Content-Type', 'text/html');
-    res.render(404, 'errors/404.ejs');
+app.use(function (err, req, res, next) {
+    res.status(404);
+    res.render('errors/404.ejs');
 });
 
 
