@@ -1,36 +1,23 @@
-var crypto = require('crypto');
-
-var pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-
 module.exports = {
 
-    tableName: 'User',
+    tableName: 'MindMap',
+    autoCreatedAt: false,
+    autoUpdatedAt: false,
 
     attributes: {
         id: {
             type: 'integer',
             autoIncrement: true
         },
-        name: {
+        owner_id: {
             type: 'string',
             required: true,
             size: 40
         },
-        firstname: {
+        name: {
             type: 'string',
             required: true,
             size: 30
-        },
-        mail: {
-            type: 'email',
-            required: true,
-            unique: true,
-            size: 254
-        },
-        password: {
-            type: 'string',
-            required: true,
-            size: 64
         }
     },
 
@@ -45,8 +32,8 @@ module.exports = {
                 firstname: inputs.firstname,
                 mail: inputs.mail,
                 password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')
-        })
-        .exec(cb);
+            })
+            .exec(cb);
 
     },
 
@@ -55,7 +42,7 @@ module.exports = {
         User.findOne({
                 mail: inputs.mail,
                 password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')
-        })
-        .exec(cb);
+            })
+            .exec(cb);
     }
 }
