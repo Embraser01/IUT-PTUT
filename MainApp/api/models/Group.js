@@ -12,6 +12,17 @@ module.exports = {
             type: 'string',
             required: true,
             size: 1024
+        },
+
+
+        permissions: {
+            collection: 'permission',
+            via: 'group'
+        },
+
+        members: {
+            collection: 'member',
+            via: 'group'
         }
     }
 }

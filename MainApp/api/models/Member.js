@@ -6,6 +6,14 @@ module.exports = {
         p_manage: {
             type: 'boolean',
             defaultTo: false
+        },
+
+        user: {
+            model: 'user'
+        },
+
+        group: {
+            model: 'group'
         }
     }
 }

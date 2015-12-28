@@ -22,6 +22,19 @@ module.exports = {
         p_assign: {
             type: 'boolean',
             defaultTo: false
+        },
+
+
+        node: {
+            model: 'node'
+        },
+
+        user: {
+            model: 'user'
+        },
+
+        group: {
+            model: 'group'
         }
     }
 }

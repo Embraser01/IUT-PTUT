@@ -17,6 +17,14 @@ module.exports = {
         fold: {
             type: 'boolean',
             required: true
+        },
+
+
+        node: {
+            model: 'node'
+        },
+        owner: {
+            model: 'user'
         }
     }
 }

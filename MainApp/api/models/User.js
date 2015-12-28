@@ -27,6 +27,37 @@ module.exports = {
             type: 'string',
             required: true,
             size: 64
+        },
+
+
+        messages: {
+            collection: 'message',
+            via: 'owner'
+        },
+
+        mindmaps: {
+            collection: 'mindmap',
+            via: 'owner'
+        },
+
+        nodes: {
+            collection: 'node',
+            via: 'owner'
+        },
+
+        styles: {
+            collection: 'style',
+            via: 'owner'
+        },
+
+        permissions: {
+            collection: 'permission',
+            via: 'user'
+        },
+
+        members: {
+            collection: 'member',
+            via: 'user'
         }
     },
 

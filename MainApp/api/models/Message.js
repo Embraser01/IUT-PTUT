@@ -8,6 +8,14 @@ module.exports = {
             type: 'string',
             required: true,
             size: 1024
+        },
+
+        owner: {
+            model: 'user'
+        },
+
+        mindmap: {
+            model: 'mindmap'
         }
     }
 }
