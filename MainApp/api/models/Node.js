@@ -3,12 +3,18 @@ module.exports = {
     tableName: 'Node',
 
     attributes: {
+
+
+        //===== ATTRIBUTES =====//
+
         label: {
             type: 'string',
             required: true,
             size: 30
         },
 
+
+        //===== FOREIGN KEYS =====//
 
         mindmap: {
             model: 'mindmap'

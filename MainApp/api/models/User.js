@@ -7,28 +7,37 @@ module.exports = {
     tableName: 'User',
 
     attributes: {
+
+
+        //===== ATTRIBUTES =====//
+
         name: {
             type: 'string',
             required: true,
             size: 40
         },
+
         firstname: {
             type: 'string',
             required: true,
             size: 30
         },
+
         mail: {
             type: 'email',
             required: true,
             unique: true,
             size: 254
         },
+
         password: {
             type: 'string',
             required: true,
             size: 64
         },
 
+
+        //===== FOREIGN KEYS =====//
 
         messages: {
             collection: 'message',

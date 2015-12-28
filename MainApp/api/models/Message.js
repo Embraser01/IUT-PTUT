@@ -4,11 +4,18 @@ module.exports = {
     autoUpdatedAt: false,
 
     attributes: {
+
+
+        //===== ATTRIBUTES =====//
+
         data: {
             type: 'string',
             required: true,
             size: 1024
         },
+
+
+        //===== FOREIGN KEYS =====//
 
         owner: {
             model: 'user'
