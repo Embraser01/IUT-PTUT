@@ -1,13 +1,12 @@
 module.exports = {
 
-    tableName: 'Message',
-    autoUpdatedAt: false,
+    tableName: 'Node',
 
     attributes: {
-        data: {
+        label: {
             type: 'string',
             required: true,
-            size: 1024
+            size: 30
         }
     }
 }

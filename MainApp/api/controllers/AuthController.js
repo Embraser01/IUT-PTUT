@@ -34,6 +34,17 @@ module.exports = {
             return res.ok('Logged out successfully!');
         }
 
+        User.subscribe(req, user, 'message');
+
+        // Get updates about users being created
+        User.watch(req);
+
+        // Get updates about rooms being created
+        MindMap.watch(req);
+
+        // Publish this user creation event to every socket watching the User model via User.watch()
+        User.publishCreate(user, req);
+
         return res.redirect('/auth/login');
     },
 
@@ -53,6 +64,17 @@ module.exports = {
             if (req.wantsJSON) {
                 return res.ok('Signup successful !');
             }
+
+            User.subscribe(req, user, 'message');
+
+            // Get updates about users being created
+            User.watch(req);
+
+            // Get updates about rooms being created
+            Room.watch(req);
+
+            // Publish this user creation event to every socket watching the User model via User.watch()
+            User.publishCreate(user, req);
 
             return res.redirect('/');
         });

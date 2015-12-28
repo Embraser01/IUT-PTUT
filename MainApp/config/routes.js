@@ -56,4 +56,7 @@ module.exports.routes = {
     '/auth/process/signup': 'AuthController.processSignup',
     '/auth/process/login': 'AuthController.processLogin',
 
+
+    '/mm/:id': 'MindMapController.index',
+    '/mm/:id/leave': 'MindMapController.leave',
 };

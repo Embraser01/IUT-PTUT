@@ -1,23 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>New Sails App</title>
+    <title>MindMap | PTUT </title>
 
     <!-- Viewport mobile tag for sensible mobile support -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="UTF-8"/>
+
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en"
+            rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <!--STYLES-->
     <!--STYLES END-->
 </head>
 
 <body>
-<%- body %>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header">
+        <div id="header-row" class="mdl-layout__header-row">
+            <!-- Title -->
+                <span class="mdl-layout-title"><a class="link-no-style text-color-white" href="/">MindMap Home</a></span>
 
-<!--TEMPLATES-->
-<!--TEMPLATES END-->
+            <!-- Add spacer, to align navigation to the right -->
+            <div class="mdl-layout-spacer"></div>
+
+            <!-- Navigation. We hide it in small screens. -->
+            <nav class="mdl-navigation mdl-layout--large-screen-only">
+
+                <a class="mdl-navigation__link" href="/auth/process/logout">Logout</a>
+
+            </nav>
+        </div>
+
+    </header>
+    <main class="mdl-layout__content">
+        
+    <%- body %>
+
+    <!--TEMPLATES-->
+    <!--TEMPLATES END-->
 
 
-<!--SCRIPTS-->
-<!--SCRIPTS END-->
+    <!--SCRIPTS-->
+    <!--SCRIPTS END-->
 </body>
 </html>

@@ -1,0 +1,47 @@
+/*
+ * Default ressources
+ * @Embraser01
+ * Under Creative Commons - 2015
+ */
+
+/*===== MISC =====*/
+
+body {
+    background-color: #E9E9E9;
+    font-family: 'Roboto', sans-serif;
+}
+
+.tabulation {
+    padding-left: 20px;
+}
+
+/*===== MENU =====*/
+
+#header-row {
+    padding-left: 30px !important;
+}
+
+/*===== FONT STYLE =====*/
+
+.link-no-style {
+    text-decoration: none;
+}
+
+.text-color-white {
+    color: white;
+}
+
+.text-color-default {
+    color: #757575 !important;
+}
+
+.title-bgrnd {
+    position: absolute;
+    height: 110px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: -5;
+    background-color: #ff4182;
+}
+

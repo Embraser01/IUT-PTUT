@@ -1,13 +1,24 @@
-<h1>Login</h1>
-<form action="/auth/process/login" method="post">
+<!----------- LOGIN FORM ----------->
 
-    <label for="mail">Your email address?</label>
-    <input name="mail" type="text"/>
-    <br/>
+<div id="connection">
+    <form action="/auth/process/login" method="post">
 
-    <label for="password">Your safe word?</label>
-    <input name="password" type="password"/>
-    <br/>
+        <h3 id="form-title" class="mdl-color-text--accent">LOGIN</h3>
 
-    <input type="submit"/>
-</form>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" id="mail" name="mail"/>
+            <label class="mdl-textfield__label" for="mail">Mail address</label>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="password" id="password" name="password"/>
+            <label class="mdl-textfield__label" for="password">Password</label>
+        </div>
+
+        <button id="valider" type="submit"
+                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            GO
+        </button>
+
+    </form>
+</div>
