@@ -12,6 +12,7 @@ module.exports = {
                     break;
             }
             req.session['login_error'] = null;
+            // TODO Send error to the user (also une signup action
             return res.view('auth/login', {error: error});
         }
 
