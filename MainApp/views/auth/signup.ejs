@@ -1,25 +1,43 @@
-<h1>Signup</h1>
-<form action="/auth/process/signup" method="post">
+<!----------- SIGNUP FORM ----------->
 
-    <label for="name">What's your name?</label>
-    <input name="name" type="text"/>
-    <br/>
+<div id="signup">
+    <form action="/auth/process/signup" method="post">
 
-    <label for="firstname">What's your first name?</label>
-    <input name="firstname" type="text"/>
-    <br/>
+        <h3 id="form-title" class="mdl-color-text--accent">SIGN UP</h3>
 
-    <label for="mail">What's your email?</label>
-    <input name="mail" type="text"/>
-    <br/>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" id="firstname" name="firstname"/>
+            <label class="mdl-textfield__label" for="firstname">First name</label>
+        </div>
 
-    <label for="password">Choose a Password</label>
-    <input name="password" type="password"/>
-    <br/>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" id="name" name="name"/>
+            <label class="mdl-textfield__label" for="name">Name</label>
+        </div>
 
-    <label for="passwordConfirmation">Password confirmation</label>
-    <input name="passwordConfirmation" type="password"/>
-    <br/>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" id="mail" name="mail"/>
+            <label class="mdl-textfield__label" for="mail">Mail address</label>
+        </div>
 
-    <input type="submit"/>
-</form>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="password" id="password" name="password"/>
+            <label class="mdl-textfield__label" for="password">Password</label>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="password" id="passwordConfirmation" name="passwordConfirmation"/>
+            <label class="mdl-textfield__label" for="passwordConfirmation">Password confirmation</label>
+        </div>
+
+        <% if(typeof locals.error != 'undefined') { %>
+        <span class="mdl-textfield__error"><%= error %></span>
+        <% } %>
+
+        <button id="valider" type="submit"
+                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            GO
+        </button>
+
+    </form>
+</div>

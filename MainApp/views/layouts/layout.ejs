@@ -21,7 +21,7 @@
     <header class="mdl-layout__header">
         <div id="header-row" class="mdl-layout__header-row">
             <!-- Title -->
-                <span class="mdl-layout-title"><a class="link-no-style text-color-white" href="/">MindMap Home</a></span>
+            <span class="mdl-layout-title"><a class="link-no-style text-color-white" href="/">MindMap Home</a></span>
 
             <!-- Add spacer, to align navigation to the right -->
             <div class="mdl-layout-spacer"></div>
@@ -29,21 +29,23 @@
             <!-- Navigation. We hide it in small screens. -->
             <nav class="mdl-navigation mdl-layout--large-screen-only">
 
+                <% if(req.session.user != null) { %>
                 <a class="mdl-navigation__link" href="/auth/process/logout">Logout</a>
+                <% } %>
 
             </nav>
         </div>
 
     </header>
     <main class="mdl-layout__content">
-        
-    <%- body %>
 
-    <!--TEMPLATES-->
-    <!--TEMPLATES END-->
+        <%- body %>
+
+        <!--TEMPLATES-->
+        <!--TEMPLATES END-->
 
 
-    <!--SCRIPTS-->
-    <!--SCRIPTS END-->
+        <!--SCRIPTS-->
+        <!--SCRIPTS END-->
 </body>
 </html>
