@@ -45,3 +45,35 @@ body {
     background-color: #ff4182;
 }
 
+/*===== NOTIFICATIONS =====*/
+
+.error {
+    color: #F44336;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.error > i {
+    padding: 10px;
+    margin: 15px 0;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
+}
+
+.success {
+    color: #2ecc71;
+    text-align: center;
+}
+
+.success > i {
+    background: #2ecc71;
+    color: #fff;
+    padding: 10px;
+    margin: 15px 0;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
+    font-size: 2em;
+}

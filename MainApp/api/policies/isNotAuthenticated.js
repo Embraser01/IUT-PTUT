@@ -9,8 +9,6 @@ module.exports = function (req, res, next) {
     if (req.wantsJSON) {
         return res.send(401);
     }
-
-    console.log('Connecté !' + req.session.user);
     // Otherwise if this is an HTML-wanting browser, do a redirect.
     return res.redirect('/');
 };

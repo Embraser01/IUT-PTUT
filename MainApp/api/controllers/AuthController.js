@@ -2,36 +2,27 @@ module.exports = {
 
     //===== VIEWS =====//
 
-    login: function (req, res) {
-        if (req.session['login_error']) {
-            var error = "Une erreur est survenu";
-
-            switch (error) {
-                case 1:
-                    error = "Mauvaise combinaison email/ mot de passe";
-                    break;
-            }
-            req.session['login_error'] = null;
-            // TODO Send error to the user (also une signup action
-            return res.view('auth/login', {error: error});
-        }
-
-        return res.view('auth/login');
-    },
-
     signup: function (req, res) {
 
-        if (req.session['signup_error']) {
-            var error = "Une erreur est survenu";
+        if (req.session.signup_error) {
+            var error = req.session.signup_error;
 
-            switch (error) {
-            }
-
-            req.session['signup_error'] = null;
-            return res.view('auth/signup', {error: error});
+            req.session.signup_error = null;
+            return res.view('auth/signup', {error_msg: error.message});
         }
 
         return res.view('auth/signup');
+    },
+
+    login: function (req, res) {
+        if (req.session['login_error']) {
+            var error = req.session.login_error;
+
+            req.session.login_error = null;
+            return res.view('auth/login', {error_msg: error.message});
+        }
+
+        return res.view('auth/login');
     },
 
 
@@ -46,8 +37,8 @@ module.exports = {
             password: req.param('password'),
             passwordConfirmation: req.param('passwordConfirmation')
         }, function (err, user) {
-            if (err){
-                req.session['signup_error'] = 1;
+            if (err) {
+                req.session.signup_error = { message: err.message };
                 return res.redirect('/auth/signup');
             }
 
@@ -64,8 +55,12 @@ module.exports = {
             mail: req.param('mail'),
             password: req.param('password')
         }, function (err, user) {
-            if (err){
-                req.session['login_error'] = 1;
+            if (err) {
+                req.session.login_error = { message: err.message };
+                return res.redirect('/auth/login');
+            }
+            if(!user){ // Not found in database
+                req.session.login_error = { message: 'User not found' };
                 return res.redirect('/auth/login');
             }
 

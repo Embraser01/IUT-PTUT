@@ -30,8 +30,8 @@
             <label class="mdl-textfield__label" for="passwordConfirmation">Password confirmation</label>
         </div>
 
-        <% if(typeof locals.error != 'undefined') { %>
-        <span class="mdl-textfield__error"><%= error %></span>
+        <% if(typeof error_msg != 'undefined') { %>
+        <span class="mdl-textfield__error"><%- error_msg %></span>
         <% } %>
 
         <button id="valider" type="submit"

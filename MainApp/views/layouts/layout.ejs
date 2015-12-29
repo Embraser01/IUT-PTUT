@@ -37,6 +37,20 @@
         </div>
 
     </header>
+
+    <!-- NOTIFICATIONS -->
+
+    <% if(typeof error_msg != 'undefined') { %>
+    <p class="error"><i class="material-icons md-48">error</i><br/>
+        <%= error_msg %>
+    </p><hr>
+
+    <% } else if(typeof success_msg != 'undefined') { %>
+    <p class="success"><i class="material-icons">done</i><br/>
+        <%= success_msg %>
+    </p><hr>
+    <% } %>
+
     <main class="mdl-layout__content">
 
         <%- body %>

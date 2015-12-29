@@ -87,7 +87,10 @@ module.exports = {
     },
 
     login: function (inputs, cb) {
-        // Create a user
+
+        if(!inputs.password) return cb(new Error("You have to give a password !"));
+        if(!inputs.mail) return cb(new Error("You have to give a mail address !"));
+
         User.findOne({
                 mail: inputs.mail,
                 password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')
