@@ -41,9 +41,13 @@ module.exports.policies = {
     },
 
     ChatController: {
-
         '*': ['isAuthenticated','isAllowed', 'isSocket']
     },
+
+    NodeController: {
+        '*': ['isAuthenticated','isAllowed', 'isSocket']
+    },
+
 
     MindMapController: {
         '*': ['isAuthenticated','isAllowed']
