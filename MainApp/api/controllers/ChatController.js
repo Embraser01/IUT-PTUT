@@ -8,6 +8,13 @@ module.exports = {
                 name: req.session.user.name
             },
             msg: req.param('msg')
-        }, req)
+        }, req);
+
+        Message.create({
+            data: req.param('msg'),
+
+            owner: req.session.user.id,
+            mindmap: req.param('id')
+        }).exec(function(err, message){});
     },
 };
