@@ -51,22 +51,29 @@ module.exports.routes = {
 
     /*===== Auth Controller =====*/
 
-    '/auth': '/auth/login',
-    '/auth/signup': 'AuthController.signup',
-    '/auth/login': 'AuthController.login',
-    '/auth/process/logout': 'AuthController.processLogout',
-    '/auth/process/signup': 'AuthController.processSignup',
-    '/auth/process/login': 'AuthController.processLogin',
+    'get /auth': '/auth/login',
+    'get /auth/signup': 'AuthController.signup',
+    'get /auth/login': 'AuthController.login',
+    'post /auth/process/logout': 'AuthController.processLogout',
+    'post /auth/process/signup': 'AuthController.processSignup',
+    'post /auth/process/login': 'AuthController.processLogin',
 
 
     /*===== MindMap Controller =====*/
 
-    '/mm/:id': 'MindMapController.index',
-    '/mm/:id/join': 'MindMapController.join',
+    'get /mm/:id': 'MindMapController.index',
+    'post /mm/:id/join': 'MindMapController.join',
+    'post /mm/:id/leave': 'MindMapController.leave',
 
 
     /*===== Chat Controller =====*/
 
-    'post /mm/:id/chat/public': 'ChatController.public'
+    'post /mm/:id/chat/public': 'ChatController.public',
 
+
+    /*===== Node Controller =====*/
+
+    'post /mm/:id/node/new': 'NodeController.new',
+    'post /mm/:id/node/update': 'NodeController.update',
+    'post /mm/:id/node/getAll': 'NodeController.getAll'
 };

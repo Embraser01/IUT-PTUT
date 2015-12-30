@@ -44,7 +44,7 @@ module.exports = {
     getAll: function (req, res) {
 
         Node.find({where: {mindmap: req.param('id')}}).populate('style', {owner: req.session.user.id}).exec(function (err, nodes){
-            if(err) return res.ok('There is a problem !');
+            if(err) return res.serverError();
 
 
             MindMap.message(req.param('id'), {
