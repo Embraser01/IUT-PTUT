@@ -1,1 +1,32 @@
 <h1> This is the mindmap number <%= mindmap.id %></h1>
+
+<input type="text" name="message" id="message" placeholder="Votre message..." size="50" autofocus/>
+<button onclick="sendMessage()" >Envoyer</button>
+
+
+<script>
+    io.socket.on('connect', function socketConnected() {
+
+
+        // Subscribe to the mindmap room
+        io.socket.get("/mm/<%= mindmap.id %>/join");
+
+        io.socket.on('mindmap', function messageReceived(message) {
+
+            switch (message.verb) {
+
+                // Handle a public message in a room.  Only sockets subscribed to the "message" context of a
+                // Room instance will get this message--see the "join" and "leave" methods of RoomController.js
+                // to see where a socket gets subscribed to a Room instance's "message" context.
+                case 'messaged':
+                    alert(message.data.msg);
+                    break;
+            }
+
+        });
+    });
+
+    function sendMessage() {
+        io.socket.post("/mm/<%= mindmap.id %>/chat/public", {msg: document.getElementById('message').value});
+    }
+</script>

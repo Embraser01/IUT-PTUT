@@ -48,15 +48,25 @@ module.exports.routes = {
      *                                                                          *
      ***************************************************************************/
 
+
+    /*===== Auth Controller =====*/
+
     '/auth': '/auth/login',
     '/auth/signup': 'AuthController.signup',
     '/auth/login': 'AuthController.login',
-
     '/auth/process/logout': 'AuthController.processLogout',
     '/auth/process/signup': 'AuthController.processSignup',
     '/auth/process/login': 'AuthController.processLogin',
 
 
+    /*===== MindMap Controller =====*/
+
     '/mm/:id': 'MindMapController.index',
-    '/mm/:id/leave': 'MindMapController.leave',
+    '/mm/:id/join': 'MindMapController.join',
+
+
+    /*===== Chat Controller =====*/
+
+    'post /mm/:id/chat/public': 'ChatController.public'
+
 };

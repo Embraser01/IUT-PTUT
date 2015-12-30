@@ -1,11 +1,13 @@
 module.exports = {
-    index: function (req, res) {
 
-        io.socket.on('user', function(event){
-           console.log(event);
-        });
-        return res.view('auth/login');
+    public: function (req, res) {
+        MindMap.message(req.param('id'), {
+            from: {
+                id: req.session.user.id,
+                firstname: req.session.user.firstname,
+                name: req.session.user.name
+            },
+            msg: req.param('msg')
+        }, req)
     },
-
-
 };

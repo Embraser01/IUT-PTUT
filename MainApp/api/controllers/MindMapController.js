@@ -1,19 +1,31 @@
 module.exports = {
     index: function (req, res) {
 
-        MindMap.findByMindMapId(req.param('id')).exec(function (err, mindmap){
-
+        MindMap.findOne(req.param('id')).exec(function (err, mindmap){
+            return res.view('mindmap/index', {mindmap: mindmap});
         });
+    },
 
-        return res.view('mindmap/index', mindmap);
+
+    join: function (req, res) {
+        MindMap.findOne(req.param('id')).exec(function (err, mindmap){
+            if(err) return res.ok('This id doesn\'t exist! ');
+
+            MindMap.subscribe(req.socket, mindmap.id);
+
+            return res.ok();
+        });
     },
 
 
     leave: function (req, res) {
 
-        MindMap.findByMindMapId(req.param('id')).exec(function (err, mindmap){
-        });
+        MindMap.findOne(req.param('id')).exec(function (err, mindmap){
+            if(err) return res.ok('This id doesn\'t exist! ');
 
-        return res.redirect('/');
+            MindMap.unsubscribe(req.socket, mindmap.id);
+
+            return res.ok();
+        });
     }
 };
