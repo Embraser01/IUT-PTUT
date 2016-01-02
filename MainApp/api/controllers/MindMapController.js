@@ -15,10 +15,10 @@ module.exports = {
 
     join: function (req, res) {
         MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
-            if (err) return res.ok('This id doesn\'t exist! ');
 
             MindMap.subscribe(req.socket, mindmap.id);
 
+            // TODO Renvoyer les noeuds en une fois
             return res.ok();
         });
     },
@@ -27,7 +27,6 @@ module.exports = {
     leave: function (req, res) {
 
         MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
-            if (err) return res.ok('This id doesn\'t exist! ');
 
             MindMap.unsubscribe(req.socket, mindmap.id);
 

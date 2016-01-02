@@ -10,28 +10,94 @@
 </ul>
 
 <script>
-    function sendMessage() {
-        io.socket.post("/mm/<%= mindmap.id %>/chat/public", {msg: document.getElementById('message').value});
+    window.onload = function () {
+
+        var Mindmap = new MindmapFrame(document.getElementById('container'));
+
+
+        Mindmap = new MindmapFrame(document.getElementById('container'));
+        Mindmap.open();
+
+        window.onmousedown = Mindmap.eventManager.on;
+        window.onmouseup = Mindmap.eventManager.on;
+        window.onmousemove = Mindmap.eventManager.on;
+        window.onwheel = Mindmap.eventManager.on;
+        window.onmousewheel = Mindmap.eventManager.on;
+        window.ondblclick = Mindmap.eventManager.on;
+
+
+        document.getElementById('out_modify').onclick = function () {
+            if (Mindmap.getSelectedNode() != null)
+                Mindmap.getSelectedNode().editNode(mindmap.worker, 'Edited node', {
+                    "font": {
+                        "weight": "bold",
+                        "style": "italic",
+                        "decoration": "strike"
+                    }
+                });
+        }
+
+        document.getElementById('out_delete').onclick = function () {
+            if (Mindmap.getSelectedNode() != null)
+                Mindmap.deleteSelectedNode();
+        }
+
+
+        document.getElementById('in_new').onclick = function () {
+
+            var nodeId = 4;
+            var parentNode = mindmap.nodes[nodeId].parentNode;
+
+            var style = {};
+            style.order = 1;
+            style.dx = 1;
+            style.container = JSON.parse(JSON.stringify(parentNode.style.container));
+            style.font = JSON.parse(JSON.stringify(parentNode.style.font));
+            style.font.size = 16;
+            style.parentBranch = JSON.parse(JSON.stringify(parentNode.style.parentBranch));
+
+
+            var node = {};
+            node.id = new Date().getTime();
+            node.parentNode = parentNode;
+            node.worker = 2;
+            node.permission = null;
+            node.style = style;
+            node.textContent = "#" + node.id;
+
+            mindmap.ioManager.in.createdNode(node);
+
+
+        }
+
+        document.getElementById('in_select').onclick = function () {
+
+
+            if (mindmap.workers[2] == null || mindmap.workers[2] == 4)
+                mindmap.ioManager.in.selectNode(2, 1);
+            else
+                mindmap.ioManager.in.selectNode(2, 4);
+
+            mindmap.ioManager.in.selectNode(2, mindmap.workers[2]);
+        }
+
+        document.getElementById('in_unselect').onclick = function () {
+            mindmap.ioManager.in.unselectNode(2, mindmap.workers[2]);
+        }
+
+        document.getElementById('in_modify').onclick = function () {
+            mindmap.ioManager.in.editNode(2, {
+                id: mindmap.workers[2],
+                textContent: "Edited by other",
+                style: {font: {color: "pink"}}
+            });
+
+        }
+
+        document.getElementById('in_delete').onclick = function () {
+            mindmap.ioManager.in.deleteNode(2, 1);
+        }
+
+
     }
-
-    function addMessage(){
-        // TODO Add Message function
-    }
-    io.socket.on('connect', function socketConnected() {
-
-
-        // Subscribe to the mindmap room
-        io.socket.get("/mm/<%= mindmap.id %>/join");
-
-        io.socket.on('mindmap', function messageReceived(message) {
-
-            switch (message.verb) {
-
-                case 'messaged':
-                    alert(message.data.msg);
-                    break;
-            }
-
-        });
-    });
 </script>

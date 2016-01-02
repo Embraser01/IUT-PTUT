@@ -48,6 +48,7 @@ module.exports = {
 
 
             MindMap.message(req.param('id'), {
+                dataType: 'GetAll',
                 nodes: nodes
             }, req);
         });
