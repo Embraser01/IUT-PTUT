@@ -16,38 +16,110 @@ MindmapFrame = function (c) {
      */
     MindmapNode = function (id, parentNode, worker, permission, style, text) {
 
-        //Add child to parent node
-        if (parentNode != null)
-            parentNode.childNodes.push(this);
-        else
-            mindmap.rootNode = this;
 
+        /*====== VARIABLES =====*/
+
+        /**
+         * Node Id
+         * @type {Integer}
+         */
         this.id = id;
+
+        /**
+         * Label of the node
+         * @type {String}
+         */
         this.textContent = text;
+
+        /**
+         * Node Parent
+         * @null
+         * @type {MindmapNode}
+         */
         this.parentNode = parentNode;
 
+        /**
+         * Array of the child of the node
+         * @type {Array}
+         */
         this.childNodes = [];
 
+        /**
+         * TODO Javadoc
+         */
         this.worker = worker; //worker reference
+
+        /**
+         * TODO Javadoc
+         */
         this.permission = permission; //read, write
 
+        /**
+         * Position of the node
+         * @type {{x: number, y: number}}
+         */
         this.position = {x: 0, y: 0};
 
+        /**
+         * Style of the node
+         * @type {Object}
+         */
         this.style = style;
 
+        /**
+         * TODO Javadoc
+         * @type {null}
+         */
         this.nodeElement = null;
+
+        /**
+         * TODO Javadoc
+         * @type {null}
+         */
         this.rectElement = null;
+
+        /**
+         * TODO Javadoc
+         * @type {null}
+         */
         this.lineElement = null;
+
+        /**
+         * TODO Javadoc
+         * @type {null}
+         */
         this.textElement = null;
+
+        /**
+         * TODO Javadoc
+         * @type {null}
+         */
         this.textNode = null;
 
+        /**
+         * TODO Javadoc
+         * @type {null}
+         */
         this.nodeConnecter = null;
 
+        /**
+         * TODO Javadoc
+         * @type {null}
+         */
         this.branchElement = null;
 
+        /**
+         * TODO Javadoc
+         * @type {null}
+         */
         this.orientation = null; //left, right, none
 
 
+        /*===== FUNCTIONS =====*/
+
+        /**
+         * Initialisation function
+         */
         this.init = function () {
 
             //Create DOM Elements and Nodes
@@ -114,6 +186,9 @@ MindmapFrame = function (c) {
 
         };
 
+        /**
+         * Hide the node
+         */
         this.hideNode = function () {
 
             this.nodeElement.style.display = 'none';
@@ -123,6 +198,9 @@ MindmapFrame = function (c) {
 
         };
 
+        /**
+         * Show the node
+         */
         this.showNode = function () {
 
             this.nodeElement.style.display = '';
@@ -132,6 +210,9 @@ MindmapFrame = function (c) {
 
         };
 
+        /**
+         * Recursive function to hide all childs
+         */
         this.hideNodeChildren = function () {
 
             var traverse = function (node) {
@@ -147,6 +228,9 @@ MindmapFrame = function (c) {
 
         };
 
+        /**
+         * Destroy the node (and all child)
+         */
         this.destroyNode = function () {
 
             mindmap.layers.nodes.removeChild(this.nodeElement);
@@ -162,6 +246,9 @@ MindmapFrame = function (c) {
 
         };
 
+        /**
+         * Draw the node with the style attribute
+         */
         this.drawNode = function () {
 
             var nodePosition = {
@@ -395,6 +482,12 @@ MindmapFrame = function (c) {
 
         };
 
+        /**
+         * Edit this node
+         * @param worker
+         * @param text
+         * @param style
+         */
         this.editNode = function (worker, text, style) {
 
 
@@ -436,9 +529,13 @@ MindmapFrame = function (c) {
                 mindmap.drawMap(this);
 
             mindmap.ioManager.out.editNode(this);
-
-
         };
+
+
+        /*===== INITIALISATION =====*/
+
+        if (parentNode != null) parentNode.childNodes.push(this);
+        else mindmap.rootNode = this;
 
         this.init();
 

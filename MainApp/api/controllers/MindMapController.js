@@ -18,6 +18,7 @@ module.exports = {
 
             MindMap.subscribe(req.socket, mindmap.id);
 
+            // TODO Order by parent (something compicated)
             Node.find({where: {mindmap: req.param('id')}}).populate('styles', {owner: req.session.user.id}).exec(function (err, nodes) {
                 if (err) return res.serverError();
 
