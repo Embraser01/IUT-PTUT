@@ -3,7 +3,6 @@ module.exports = {
     new: function (req, res) {
         var nodes = req.param('nodes');
 
-        console.log(nodes);
         // TODO Creation multiple (lodash)
 
         Node.create({
@@ -13,7 +12,7 @@ module.exports = {
                 parent_node: nodes[0].parent_node
             })
             .exec(function (err, node) {
-                if(err) console.log(err);
+                if (err) console.log(err);
 
                 node.styles.add({
                     style: nodes[0].style,
@@ -22,9 +21,21 @@ module.exports = {
                 });
 
                 node.save(function (err, node) {
-                    if(err) return;
-                    console.log(node);
-                    res.json(node);
+                    if (err) return;
+
+                    if (node) {
+                        // On laisse un seul style
+                        node.style = SerializeService.unserialize(node.styles[0].style);
+                        node.styles = null;
+
+                        // Unpopulate parent node
+                        node.parent_node = node.parent_node.id;
+
+                        // Remplace 0 par null pour le parent
+                        if (node.parent_node === 0) node.parent_node = null;
+                    }
+
+                    return res.json([node]);
                 });
             });
     },

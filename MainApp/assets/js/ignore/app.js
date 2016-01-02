@@ -685,7 +685,6 @@ MindmapFrame = function (c) {
             mindmap.getSelectedNode().drawNode();
 
             mindmap.ioManager.out.selectNode(node);
-
         }
 
     };
@@ -1381,39 +1380,30 @@ MindmapFrame = function (c) {
 
         this.controller = function () {
 
-            //TODO: Le contrôleur des requêtes entrantes
-
-            /*
-             Là je te laisse faire, je sais pas comment tu récpères les données ni sous quel format, ça peut se faire ailleurs que dans cette fonction hein, je sais pas comment marche socket.io
-
-             L'idée c'est que tu as juste à appeler les fonctions suivantes selon les messages que tu reçois
-
-
-             mindmap.ioManager.in.createdNode  (node)
-
-             mindmap.ioManager.in.selectNode  (workerId, nodeId)
-
-             mindmap.ioManager.in.unselectNode  (workerId, nodeId)
-
-             mindmap.ioManager.in.editNode  (workerId, node)
-
-             mindmap.ioManager.in.deleteNode  (workerId, nodeId)
-
-             Tu as des exemples d'utilisation en bas qui sont bindés au boutton de test
-             */
-
             /* On se connecte au serveur */
 
-            io.socket.on('connect', function socketConnected() {
+            if (io.socket.isConnected()) {
+                /* Handle the time to create MindMap Object */
+                setTimeout(function () {
+                    // On s'annonce au serveur
+                    mindmap.ioManager.out.join();
 
-                console.log("Socket : connexion reussie !");
+                    // On traite les messages reçu !
+                    io.socket.on('mindmap', mindmap.ioManager.in.negotiate);
+                }, 200);
+            } else {
 
-                // On s'annonce au serveur
-                mindmap.ioManager.out.join();
+                io.socket.on('connect', function socketConnected() {
 
-                // On traite les messages reçu !
-                io.socket.on('mindmap', mindmap.ioManager.in.negotiate);
-            });
+                    console.log("Socket : connexion reussie !");
+
+                    // On s'annonce au serveur
+                    mindmap.ioManager.out.join();
+
+                    // On traite les messages reçu !
+                    io.socket.on('mindmap', mindmap.ioManager.in.negotiate);
+                });
+            }
         };
 
         this.out = new function () {
@@ -1423,7 +1413,7 @@ MindmapFrame = function (c) {
             this.join = function () {
 
                 io.socket.post(basePath + "join", function (data) {
-                    // Subscribe to mindmap event
+                    // Subscribe to mindmap event and receive all the mindmap once
 
                     console.log("Parsing data ...");
                     console.log(data);
@@ -1458,10 +1448,9 @@ MindmapFrame = function (c) {
                 }, function (nodes) {
                     // Request creation of a new node (receive nodes newly created)
 
-                    for (var node in nodes) {
-                        mindmap.ioManager.in.createdNode(node);
-                    }
-
+                    _.forEach(nodes, function (n) {
+                        mindmap.ioManager.in.createdNode(n);
+                    });
                 });
             };
 
@@ -1539,11 +1528,10 @@ MindmapFrame = function (c) {
                     }
                     mindmap.workers[node.worker] = node.id; //On séléctionne le nouveau noeud
                 }
-                // var parentNode = mindmap.nodes[parentNodeId];
-
-                mindmap.nodes[node.id] = new MindmapNode(node.id, node.parent_node, node.worker, node.permission, node.style, node.label);
-
+                console.log(node);
+                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
                 node = mindmap.nodes[node.id];
+
 
                 if (node.parentNode) {
                     node.parentNode.childNodes.sort(function (a, b) {
@@ -1560,11 +1548,10 @@ MindmapFrame = function (c) {
                 mindmap.drawMap();
 
                 console.log("In : Node created");
-
             };
 
 
-            //When a colaborator select a node
+            //When a collaborator select a node
             this.selectNode = function (workerId, nodeId) {
 
                 if (!(nodeId in mindmap.nodes)) return;
@@ -1596,7 +1583,7 @@ MindmapFrame = function (c) {
 
             };
 
-            //When a colaborator unselect a node
+            //When a collaborator unselect a node
             this.unselectNode = function (workerId, nodeId) {
 
                 mindmap.workers[workerId] = null;
@@ -1608,14 +1595,14 @@ MindmapFrame = function (c) {
             };
 
             /*
-             //When a colaborator force me to unselect a node
+             //When a collaborator force me to unselect a node
              this.looseNode = function (workerId, nodeId) {
 
              console.log("In : loose Node selection");
 
              };*/
 
-            //When a colaborator edit a node
+            //When a collaborator edit a node
             this.editNode = function (workerId, node) {
 
                 mindmap.nodes[node.id].editNode(workerId, node.textContent, node.style);
@@ -1678,10 +1665,10 @@ MindmapFrame = function (c) {
         };
 
         this.controller();
-
     };
 
 
     /*===== LAUNCH =====*/
+
     this.initialize();
 }

@@ -33,8 +33,6 @@ module.exports = {
                         if (n.parent_node === 0) n.parent_node = null;
                     });
                 }
-
-                console.log(nodes);
                 return res.json(nodes);
             });
         });
