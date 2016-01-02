@@ -9,14 +9,73 @@
     <% } %>
 </ul>
 
+
+<div style="position:fixed;z-index:10;top:10px;left:5px;">
+    <button disabled id="">Out: New node</button>
+    <button disabled id="">Out: Select node</button>
+    <button disabled id="">Out: Unselect node</button>
+    <!--<button disabled id="">Out: Force unselect</button>-->
+    <button id="out_modify">Out: Modify node</button>
+    <button disabled id="">Out: Modify nodes</button>
+    <button id="out_delete">Out: Delete node</button>
+</div>
+
+<div style="position:fixed;z-index:10;bottom:10px;right:5px;">
+    <button id="in_new">In: New node</button>
+    <button id="in_select">In: Select node</button>
+    <button id="in_unselect">In: Unselect node</button>
+    <!--<button id="">In: Force loose node selection</button>-->
+    <button id="in_modify">In: Modify node</button>
+    <button id="in_delete">In: Delete node</button>
+</div>
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="container" width="100%"
+     height="100%" style="background-color: #eceff1;">
+
+
+    <filter id="drop-shadow" color-interpolation-filters="sRGB" x="-50%" y="-50%" height="200%" width="200%">
+        <!-- Take source alpha, offset it by angle/distance and blur it by size -->
+
+        <feOffset id="offset" in="SourceAlpha" dx="6.02" dy="6.69" result="SA-offset"/>
+        <feGaussianBlur id="blur" in="SA-offset" stdDeviation="9.25" result="SA-o-blur"/>
+
+        <!-- Apply a contour by using a color curve transform on the alpha and clipping the result to the input -->
+
+        <feComponentTransfer in="SA-o-blur" result="SA-o-b-contIN">
+            <feFuncA id="contour" type="table" tableValues="0 1"/>
+        </feComponentTransfer>
+
+        <feComposite operator="in" in="SA-o-blur" in2="SA-o-b-contIN" result="SA-o-b-cont"/>
+
+        <!-- Adjust the spread by multiplying alpha by a constant factor -->
+        <feComponentTransfer in="SA-o-b-cont" result="SA-o-b-c-sprd">
+            <feFuncA id="spread-ctrl" type="linear" slope="3"/>
+        </feComponentTransfer>
+
+        <!-- Adjust color and opacity by adding fixed offsets and an opacity multiplier -->
+        <feColorMatrix id="recolor" in="SA-o-b-c-sprd" type="matrix"
+                       values="0 0 0 0 0.439 0 0 0 0 0.439 0 0 0 0 0.439 0 0 0 0.75 0" result="SA-o-b-c-s-recolor"/>
+
+        <!-- Generate a reasonably grainy noise input with baseFrequency between approx .5 to 2.0. And add the noise with k1 and k2 multipliers that sum to 1 -->
+        <feTurbulence result="fNoise" type="fractalNoise" numOctaves="6" baseFrequency="1.98"/>
+        <feColorMatrix in="fNoise" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 7 -3" result="clipNoise"/>
+        <feComposite id="noisemix" operator="arithmetic" in="SA-o-b-c-s-recolor" in2="clipNoise" k1="0" k2="1"
+                     result="SA-o-b-c-s-r-mix"/>
+
+        <!-- Merge the shadow with the original -->
+        <feMerge>
+            <feMergeNode in="SA-o-b-c-s-r-mix"/>
+            <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+    </filter>
+</svg>
+
+
+<script src="/js/ignore/app.js"></script>
 <script>
     window.onload = function () {
 
         var Mindmap = new MindmapFrame(document.getElementById('container'));
-
-
-        Mindmap = new MindmapFrame(document.getElementById('container'));
-        Mindmap.open();
 
         window.onmousedown = Mindmap.eventManager.on;
         window.onmouseup = Mindmap.eventManager.on;
@@ -45,29 +104,38 @@
 
         document.getElementById('in_new').onclick = function () {
 
-            var nodeId = 4;
-            var parentNode = mindmap.nodes[nodeId].parentNode;
 
-            var style = {};
-            style.order = 1;
-            style.dx = 1;
-            style.container = JSON.parse(JSON.stringify(parentNode.style.container));
-            style.font = JSON.parse(JSON.stringify(parentNode.style.font));
-            style.font.size = 16;
-            style.parentBranch = JSON.parse(JSON.stringify(parentNode.style.parentBranch));
+            var style = {
+                order: 1,
+                dx: 1,
+                container: {
+                    kind: "rectangle",
+                    borderThickness: "0",
+                    borderColor: "#263238",
+                    background: "white",
+                    radius: "7"
+                },
+                font: {
+                    family: "sans-serif",
+                    size: "24",
+                    color: "#006064",
+                    weight: "bold ",
+                    style: "italic ",
+                    decoration: "none",
+                    align: "right"
+                },
+                parentBranch: {
+                    color: "#42a5f5"
+                },
+                unifiedChildren: {
+                    dx: false,
+                    container: false,
+                    font: false,
+                    parentBranch: false
+                }
+            };
 
-
-            var node = {};
-            node.id = new Date().getTime();
-            node.parentNode = parentNode;
-            node.worker = 2;
-            node.permission = null;
-            node.style = style;
-            node.textContent = "#" + node.id;
-
-            mindmap.ioManager.in.createdNode(node);
-
-
+            mindmap.ioManager.out.newNode(0, null, null, style)
         }
 
         document.getElementById('in_select').onclick = function () {

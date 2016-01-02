@@ -8,6 +8,8 @@
  * for matching multiple files, and the ! prefix for excluding files.)
  */
 
+// TODO AJOUTER COMPILATEUR SASS
+
 // Path to public folder
 var tmpPath = '.tmp/public/';
 

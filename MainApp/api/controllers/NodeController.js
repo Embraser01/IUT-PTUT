@@ -1,24 +1,31 @@
 module.exports = {
 
     new: function (req, res) {
-        var node = req.param('node');
+        var nodes = req.param('nodes');
+
+        console.log(nodes);
+        // TODO Creation multiple (lodash)
 
         Node.create({
-                label: node.label,
+                label: nodes[0].label,
                 mindmap: req.param('id'),
                 owner: req.session.user.id,
-                parent_node: node.parent_node
+                parent_node: nodes[0].parent_node
             })
             .exec(function (err, node) {
+                if(err) console.log(err);
 
-                Style.create({
-                    style: node.style,
-                    fold: node.folded,
-                    node: node.id,
+                node.styles.add({
+                    style: nodes[0].style,
+                    fold: nodes[0].fold,
                     owner: req.session.user.id
-                }).exec();
+                });
 
-                // TODO Success notification
+                node.save(function (err, node) {
+                    if(err) return;
+                    console.log(node);
+                    res.json(node);
+                });
             });
     },
 
@@ -37,20 +44,19 @@ module.exports = {
                 }, {
                     style: node.style,
                     fold: node.folded
-                }).exec();
+                }).exec(function (err, node) {
+                    res.json(node);
+                });
             });
     },
 
     getAll: function (req, res) {
 
-        Node.find({where: {mindmap: req.param('id')}}).populate('style', {owner: req.session.user.id}).exec(function (err, nodes){
-            if(err) return res.serverError();
+        Node.find({where: {mindmap: req.param('id')}}).populate('style', {owner: req.session.user.id}).exec(function (err, nodes) {
+            if (err) return res.serverError();
 
-
-            MindMap.message(req.param('id'), {
-                dataType: 'GetAll',
-                nodes: nodes
-            }, req);
+            console.log(nodes);
+            res.jsonx(nodes);
         });
 
 

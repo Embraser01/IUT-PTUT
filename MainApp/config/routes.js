@@ -75,5 +75,6 @@ module.exports.routes = {
 
     'post /mm/:id/node/new': 'NodeController.new',
     'post /mm/:id/node/update': 'NodeController.update',
+    'post /mm/:id/node/delete': 'NodeController.delete',
     'post /mm/:id/node/getAll': 'NodeController.getAll'
 };

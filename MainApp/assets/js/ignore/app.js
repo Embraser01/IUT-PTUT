@@ -1,29 +1,28 @@
 MindmapFrame = function (c) {
 
-    mindmap = this;
 
-    this.workers = {};
+    /*===== OBJECT DECLARATION =====*/
 
-    this.worker = 1;
-
-    this.workers[this.worker] = null;
-
-    this.syncDraw = true;
-
-    this.getSelectedNode = function () {
-        return this.nodes[this.workers[this.worker]];
-    }
-    this.setSelectedNode = function (v) {
-        this.workers[this.worker] = v;
-    }
-
-    MindmapNode = function (i, parentNode, worker, permission, style, text) {
+    /**
+     * MindMap Node Object
+     *
+     * @param id {Integer} Node unique identifiant
+     * @param parentNode {MindmapNode}Parent node
+     * @param worker ??
+     * @param permission ?? Permission of the user for this node
+     * @param style {Object} Style of the node
+     * @param text {String} Label of the node
+     * @constructor
+     */
+    MindmapNode = function (id, parentNode, worker, permission, style, text) {
 
         //Add child to parent node
         if (parentNode != null)
             parentNode.childNodes.push(this);
+        else
+            mindmap.rootNode = this;
 
-        this.id = i;
+        this.id = id;
         this.textContent = text;
         this.parentNode = parentNode;
 
@@ -445,6 +444,156 @@ MindmapFrame = function (c) {
 
     };
 
+
+    /*===== VARIABLES =====*/
+
+    /**
+     * MindMap variable
+     * @type {MindmapFrame}
+     */
+    mindmap = this;
+
+    /**
+     * TODO Javadoc
+     * @type {{}}
+     */
+    this.workers = {};
+
+    /**
+     * TODO Javadoc
+     * @type {number}
+     */
+    this.worker = 1;
+
+    /**
+     * TODO Javadoc
+     * @type {null}
+     */
+    this.workers[this.worker] = null;
+
+    /**
+     * TODO Javadoc
+     * @type {boolean}
+     */
+    this.syncDraw = true;
+
+    /**
+     * SVG Container that contain the MindMap
+     * @type {HTMLElement}
+     */
+    this.container = c;
+
+    /**
+     * TODO Javadoc
+     * @type {{offset: {x: number, y: number}, zoom: number}}
+     */
+    this.view = {
+        offset: {x: 0, y: 0},
+        zoom: 1
+    };
+
+    /**
+     * Root Node of the mindmap
+     * @type {MindmapNode}
+     */
+    this.rootNode = undefined;
+
+    /**
+     * List of all the nodes of the mindmap
+     * @type {{MindmapNode}}
+     */
+    this.nodes = {};
+
+    /**
+     * TODO Javadoc
+     * @type {{}}
+     */
+    this.layers = {};
+
+    /**
+     * TODO Javadoc
+     * @type {null}
+     */
+    this.newBranchElement = null;
+
+
+    /*===== FUNCTIONS =====*/
+
+    // Initialisation
+
+    this.initialize = function () {
+
+        //Create layers
+        this.layers.view = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        this.container.appendChild(this.layers.view);
+
+        this.layers.branchs = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        this.layers.view.appendChild(this.layers.branchs);
+
+        this.newBranchElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        this.layers.branchs.appendChild(this.newBranchElement);
+
+        this.newBranchElement.setAttribute('fill', 'none');
+        this.newBranchElement.setAttribute('stroke', '#64b5f6'); //#29b6f6
+        this.newBranchElement.setAttribute('stroke-width', '4');
+
+        this.layers.nodes = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        this.layers.view.appendChild(this.layers.nodes);
+
+        //Set view offset
+        this.view.offset.x = parseInt(document.body.offsetWidth / 2);
+        this.view.offset.y = parseInt(document.body.offsetHeight / 2);
+
+        this.setView(parseInt(document.body.offsetWidth / 2), parseInt(document.body.offsetHeight / 2), 1);
+
+    };
+
+
+    // SELECTION
+
+    this.getSelectedNode = function () {
+        return this.nodes[this.workers[this.worker]];
+    };
+    this.setSelectedNode = function (v) {
+        this.workers[this.worker] = v;
+    };
+
+    this.unselectNode = function (forced) {
+
+        var ex = mindmap.getSelectedNode();
+
+        if (ex == null)
+            return;
+
+        mindmap.getSelectedNode().worker = null;
+        mindmap.setSelectedNode(null);
+
+        ex.drawNode();
+
+        if (!forced) {
+            mindmap.ioManager.out.unselectNode(ex);
+        }
+
+    };
+    this.selectNode = function (node) {
+
+        if (node.worker == null) { //If the node isn't currently selected by the user or a contributor
+
+            if (this.getSelectedNode() != null) //If user has already selected a node
+                this.unselectNode(false);
+
+            node.worker = this.worker;
+            mindmap.setSelectedNode(eventManager.eventData.node.id);
+
+            mindmap.getSelectedNode().drawNode();
+
+            mindmap.ioManager.out.selectNode(node);
+
+        }
+
+    };
+
+
     this.nearBrothersVerticalPosition = function (childNodes, clientY, parentNode, orientation) {
 
         childNodes.sort(function (a, b) {
@@ -499,41 +648,6 @@ MindmapFrame = function (c) {
         secondNode.style.order = pos;
     };
 
-    this.unselectNode = function (forced) {
-
-        var ex = mindmap.getSelectedNode();
-
-        if (ex == null)
-            return;
-
-        mindmap.getSelectedNode().worker = null;
-        mindmap.setSelectedNode(null);
-
-        ex.drawNode();
-
-        if (!forced) {
-            mindmap.ioManager.out.unselectNode(ex);
-        }
-
-    };
-
-    this.selectNode = function (node) {
-
-        if (node.worker == null) { //If the node isn't currently selected by the user or a contributor
-
-            if (this.getSelectedNode() != null) //If user has already selected a node
-                this.unselectNode(false);
-
-            node.worker = this.worker;
-            mindmap.setSelectedNode(eventManager.eventData.node.id);
-
-            mindmap.getSelectedNode().drawNode();
-
-            mindmap.ioManager.out.selectNode(node);
-
-        }
-
-    };
 
     this.deleteSelectedNode = function () {
 
@@ -585,11 +699,214 @@ MindmapFrame = function (c) {
             this.drawMap();
 
         }
-        //
-        /*
-         */
+    };
+
+
+    this.setView = function (x, y, z) {
+
+        if (z == undefined)
+            z = this.view.zoom;
+
+        if (x == undefined || y == undefined) {
+            x = this.view.offset.x;
+            y = this.view.offset.y;
+        }
+
+        this.view.offset.x = x;
+        this.view.offset.y = y;
+
+        this.layers.view.setAttribute('transform', 'scale(' + this.view.zoom + '),translate(' + this.view.offset.x + ',' + this.view.offset.y + ')');
+
+    };
+
+
+    this.parse = function (data) {
+
+        //Load each node
+        for (var i in data) {
+
+            //Create node
+            this.nodes[i] = new MindmapNode(i, this.nodes[data[i].parentNode], data[i].worker, data[i].permission, data[i].style, data[i].text);
+            // this.nodes[i].showNode();
+
+            if (data[i].worker != null)
+                this.workers[data[i].worker] = i;
+
+            //Define rootNode
+            if (data[i].parentNode == undefined)
+                this.rootNode = this.nodes[i];
+
+
+        }
+
+        this.drawMap();
     }
 
+
+    this.countLeafs = function (node, leafs) { //Count the number of leaf each side of the map
+
+        node.showNode();
+
+        if (node.style.folded || node.childNodes.length == 0) { //If node is folded node or leaf node, increase leaf counters
+
+            if (node.orientation == 'left')
+                leafs.left++;
+            else
+                leafs.right++;
+
+        }
+        else { //Else, explore node's children
+
+            node.childNodes.sort(function (a, b) {
+                return a.style.order - b.style.order;
+            });
+
+
+            for (var i in node.childNodes) {
+
+
+                this.countLeafs(node.childNodes[i], leafs);
+            }
+
+
+        }
+
+        if (node == this.rootNode)
+            return leafs;
+
+    };
+
+    this.computeNodesYPosition = function (node, leafIterator, leafs) { //Compute vertical position of node
+
+        if (node.style.folded || node.childNodes.length == 0) { //If node is folded node or leaf node, set the Y position
+
+            var lineHeight = 80;
+
+            if (node.orientation == 'left') {
+
+                var BlockHeight = leafs.left * lineHeight;
+
+                node.position.y = BlockHeight / (-2) + leafIterator.left * lineHeight;
+                node.position.y = leafIterator.left * lineHeight - ((leafs.left - 1) * lineHeight ) / 2;
+
+                leafIterator.left++;
+            }
+            else {
+
+                var BlockHeight = leafs.right * lineHeight;
+
+                node.position.y = BlockHeight / (-2) + leafIterator.right * lineHeight;
+                node.position.y = leafIterator.right * lineHeight - ((leafs.right - 1) * lineHeight ) / 2;
+
+                leafIterator.right++;
+            }
+
+            leafIterator++;
+        }
+        else { // Else, explore node's children and set the Y position
+
+            for (var i in node.childNodes)
+                this.computeNodesYPosition(node.childNodes[i], leafIterator, leafs);
+
+            if (node != this.rootNode)
+                node.position.y = (node.childNodes[0].position.y + node.childNodes[node.childNodes.length - 1].position.y) / 2;
+
+        }
+
+    };
+
+    this.computeNodeXPosition = function (node) { //Correct position accroding to orientation
+
+
+        if (node != this.rootNode && node.parentNode != this.rootNode)
+            node.orientation = node.parentNode.orientation;
+
+        if (node.orientation == 'left')
+            node.style.dx = -Math.abs(node.style.dx);
+        else if (node.orientation == 'right')
+            node.style.dx = Math.abs(node.style.dx);
+
+        if (node == this.rootNode)
+            node.position.x = node.position.y = 0;
+        else if (node.orientation == 'left') {
+
+            if (node.parentNode == this.rootNode)
+                node.position.x = node.parentNode.position.x - Math.abs(node.style.dx) - parseInt(node.parentNode.rectElement.getAttribute('width')) / 2;
+            else
+                node.position.x = node.parentNode.position.x - Math.abs(node.style.dx) - parseInt(node.parentNode.rectElement.getAttribute('width'));
+
+        }
+        else if (node.orientation == 'right') {
+
+            if (node.parentNode == this.rootNode)
+                node.position.x = node.parentNode.position.x + Math.abs(node.style.dx) + parseInt(node.parentNode.rectElement.getAttribute('width')) / 2;
+            else
+                node.position.x = node.parentNode.position.x + Math.abs(node.style.dx) + parseInt(node.parentNode.rectElement.getAttribute('width'));
+        }
+
+    };
+
+    this.getDescendants = function (node) {
+
+        var descendants = [];
+
+        for (var i in node.childNodes) {
+
+            descendants.push(node.childNodes[i].id);
+
+            descendants = descendants.concat(this.getDescendants(node.childNodes[i]));
+
+        }
+
+        return descendants;
+
+    };
+
+
+    /**
+     * Draw the mindmap
+     * @param fromNode
+     * @returns {boolean}
+     */
+    this.drawMap = function (fromNode) {
+
+        if (this.syncDraw)
+            this.syncDraw = false;
+        else {
+            console.log("abort");
+            return false;
+        }
+
+        var leafs = this.countLeafs(this.rootNode, {left: 0, right: 0});
+
+        this.computeNodesYPosition(this.rootNode, {left: 0, right: 0}, leafs);
+
+        that = this;
+
+        var traverse = function (node) {
+
+            that.computeNodeXPosition(node);
+
+            node.drawNode();
+
+            for (var i in node.childNodes)
+                traverse(node.childNodes[i]);
+
+
+        };
+
+        if (fromNode != undefined)
+            traverse(fromNode);
+        else
+            traverse(this.rootNode);
+
+        this.syncDraw = true;
+
+
+    };
+
+
+    /*===== MANAGERS =====*/
 
     this.eventManager = new function () {
 
@@ -995,7 +1312,10 @@ MindmapFrame = function (c) {
                 console.log("Socket : connexion reussie !");
 
                 // On s'annonce au serveur
-                this.out.join();
+                mindmap.ioManager.out.join();
+
+                // On traite les messages reçu !
+                io.socket.on('mindmap', mindmap.ioManager.in.negotiate);
             });
         };
 
@@ -1007,10 +1327,15 @@ MindmapFrame = function (c) {
 
                 io.socket.post(basePath + "join", function (data) {
                     // Subscribe to mindmap event
-                });
 
-                // On traite les messages reçu !
-                io.socket.on('mindmap', out.negotiate);
+                    console.log("Parsing data ...");
+                    console.log(data);
+
+                    _.forEach(data, function (n) {
+                        mindmap.ioManager.in.createdNode(n);
+                    });
+
+                });
             };
 
             this.leave = function () {
@@ -1023,22 +1348,24 @@ MindmapFrame = function (c) {
             ////When user query server to get the id of a new node
             this.newNode = function (parentNodeId, worker, permission, style) {
 
-                //TODO: Là on demande au serveur de créer un noeud sur la map
+                console.log("Out : demande création noeud");
 
-                //Ce qui est dessous va sauter, ça sera à toi de faire ça sur le serveur
-                var node = {};
-                node.id = new Date().getTime();
-                node.parentNode = mindmap.nodes[parentNodeId];
-                node.worker = worker;
-                node.permission = permission;
-                node.style = style;
-                node.textContent = "#" + node.id;
+                io.socket.post(basePath + "node/new", {
+                    nodes: [{
+                        parent_node: parentNodeId,
+                        style: style,
+                        label: 'New node',
+                        permission: permission,
+                        fold: false
+                    }]
+                }, function (nodes) {
+                    // Request creation of a new node (receive nodes newly created)
 
-                console.log("Out : demande création noeud", nodes);
+                    for (var node in nodes) {
+                        mindmap.ioManager.in.createdNode(node);
+                    }
 
-                mindmap.ioManager.in.createdNode(node);
-
-
+                });
             };
 
             //When user edit node
@@ -1048,6 +1375,20 @@ MindmapFrame = function (c) {
 
                 //TODO: Notification d'édition de noeud - Émission
                 //Données utiles : node.textContent, node.style,
+
+                io.socket.post(basePath + "node/update", {
+                    nodes: [{
+                        parent_node: node.parent_node,
+                        style: style,
+                        label: '',
+                        permission: permission
+                    }]
+                }, function (nodes) {
+                    // Request creation of a new node (receive nodes newly created)
+
+                    for (var node in nodes) mindmap.ioManager.in.createdNode(node);
+
+                });
             };
 
             //When user edit several nodes
@@ -1089,34 +1430,9 @@ MindmapFrame = function (c) {
 
             }
 
-            // When user get all the nodes
-            this.load = function(nodes){
-
-                console.log("Parsing data ...");
-                mindmap.parse(nodes);
-            }
-
-            this.negotiate = function(message){
-                switch (message.verb) {
-
-
-
-                    case 'messaged':
-                        if(message.data.dataType == 'ChatAdd') {
-                            // TODO Ajouter le message à la liste ^^
-                        } else if (message.data.dataType == 'GetAll') {
-                            load(message.data.nodes);
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-            }
         };
 
         this.in = new function () {
-
 
             this.createdNode = function (node) {
 
@@ -1128,17 +1444,20 @@ MindmapFrame = function (c) {
                 }
                 // var parentNode = mindmap.nodes[parentNodeId];
 
-                mindmap.nodes[node.id] = new MindmapNode(node.id, node.parentNode, node.worker, node.permission, node.style, node.textContent);
+                mindmap.nodes[node.id] = new MindmapNode(node.id, node.parent_node, node.worker, node.permission, node.style, node.label);
 
-                node.parentNode.childNodes.sort(function (a, b) {
-                    return a.style.order - b.style.order;
-                });
+                node = mindmap.nodes[node.id];
 
-                for (var i in node.parentNode.childNodes) {
+                if (node.parentNode) {
+                    node.parentNode.childNodes.sort(function (a, b) {
+                        return a.style.order - b.style.order;
+                    });
 
-                    node.parentNode.childNodes[i].style.order = i;
+                    for (var i in node.parentNode.childNodes) {
+
+                        node.parentNode.childNodes[i].style.order = i;
+                    }
                 }
-
                 mindmap.newBranchElement.style.display = "none"; //bug risk
 
                 mindmap.drawMap();
@@ -1242,260 +1561,30 @@ MindmapFrame = function (c) {
             };
 
 
+            this.negotiate = function (message) {
+                switch (message.verb) {
+
+                    case 'messaged':
+                        if (message.data.header == 'Chat_public') {
+                            // TODO Ajouter le message à la liste ^^
+                        } else if (message.data.header == 'GetAll') {
+                            load(message.data.msg);
+                        }
+                        // TODO Ajouter toutes les possibilités (select/ edit/ delete)
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
         };
 
         this.controller();
 
     };
 
-    this.container = c;
 
-    this.view = {
-        offset: {x: 0, y: 0},
-        zoom: 1
-    }
-
-    this.setView = function (x, y, z) {
-
-        if (z == undefined)
-            z = this.view.zoom;
-
-        if (x == undefined || y == undefined) {
-            x = this.view.offset.x;
-            y = this.view.offset.y;
-        }
-
-        this.view.offset.x = x;
-        this.view.offset.y = y;
-
-        this.layers.view.setAttribute('transform', 'scale(' + this.view.zoom + '),translate(' + this.view.offset.x + ',' + this.view.offset.y + ')');
-
-    };
-
-    this.rootNode = undefined;
-
-    this.nodes = {};
-
-    this.layers = {};
-
-    this.newBranchElement = null;
-
-
-    this.initalize = function () {
-
-        //Create layers
-        this.layers.view = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        this.container.appendChild(this.layers.view);
-
-        this.layers.branchs = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        this.layers.view.appendChild(this.layers.branchs);
-
-        this.newBranchElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        this.layers.branchs.appendChild(this.newBranchElement);
-
-        this.newBranchElement.setAttribute('fill', 'none');
-        this.newBranchElement.setAttribute('stroke', '#64b5f6'); //#29b6f6
-        this.newBranchElement.setAttribute('stroke-width', '4');
-
-        this.layers.nodes = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        this.layers.view.appendChild(this.layers.nodes);
-
-        //Set view offset
-        this.view.offset.x = parseInt(document.body.offsetWidth / 2);
-        this.view.offset.y = parseInt(document.body.offsetHeight / 2);
-
-        this.setView(parseInt(document.body.offsetWidth / 2), parseInt(document.body.offsetHeight / 2), 1);
-
-    };
-
-
-    this.parse = function (data) {
-
-        //Load each node
-        for (var i in data) {
-
-            //Create node
-            this.nodes[i] = new MindmapNode(i, this.nodes[data[i].parentNode], data[i].worker, data[i].permission, data[i].style, data[i].text);
-            // this.nodes[i].showNode();
-
-            if (data[i].worker != null)
-                this.workers[data[i].worker] = i;
-
-            //Define rootNode
-            if (data[i].parentNode == undefined)
-                this.rootNode = this.nodes[i];
-
-
-        }
-
-        this.drawMap();
-    }
-
-    // Obselete (je crois :D)
-    this.open = function (data) {
-
-        mindmap.ioManager.out.join();
-
-    };
-
-    this.countLeafs = function (node, leafs) { //Count the number of leaf each side of the map
-
-        node.showNode();
-
-        if (node.style.folded || node.childNodes.length == 0) { //If node is folded node or leaf node, increase leaf counters
-
-            if (node.orientation == 'left')
-                leafs.left++;
-            else
-                leafs.right++;
-
-        }
-        else { //Else, explore node's children
-
-            node.childNodes.sort(function (a, b) {
-                return a.style.order - b.style.order;
-            });
-
-
-            for (var i in node.childNodes) {
-
-
-                this.countLeafs(node.childNodes[i], leafs);
-            }
-
-
-        }
-
-        if (node == this.rootNode)
-            return leafs;
-
-    };
-
-    this.computeNodesYPosition = function (node, leafIterator, leafs) { //Compute vertical position of node
-
-        if (node.style.folded || node.childNodes.length == 0) { //If node is folded node or leaf node, set the Y position
-
-            var lineHeight = 80;
-
-            if (node.orientation == 'left') {
-
-                var BlockHeight = leafs.left * lineHeight;
-
-                node.position.y = BlockHeight / (-2) + leafIterator.left * lineHeight;
-                node.position.y = leafIterator.left * lineHeight - ((leafs.left - 1) * lineHeight ) / 2;
-
-                leafIterator.left++;
-            }
-            else {
-
-                var BlockHeight = leafs.right * lineHeight;
-
-                node.position.y = BlockHeight / (-2) + leafIterator.right * lineHeight;
-                node.position.y = leafIterator.right * lineHeight - ((leafs.right - 1) * lineHeight ) / 2;
-
-                leafIterator.right++;
-            }
-
-            leafIterator++;
-        }
-        else { // Else, explore node's children and set the Y position
-
-            for (var i in node.childNodes)
-                this.computeNodesYPosition(node.childNodes[i], leafIterator, leafs);
-
-            if (node != this.rootNode)
-                node.position.y = (node.childNodes[0].position.y + node.childNodes[node.childNodes.length - 1].position.y) / 2;
-
-        }
-
-    };
-
-    this.computeNodeXPosition = function (node) { //Correct position accroding to orientation
-
-
-        if (node != this.rootNode && node.parentNode != this.rootNode)
-            node.orientation = node.parentNode.orientation;
-
-        if (node.orientation == 'left')
-            node.style.dx = -Math.abs(node.style.dx);
-        else if (node.orientation == 'right')
-            node.style.dx = Math.abs(node.style.dx);
-
-        if (node == this.rootNode)
-            node.position.x = node.position.y = 0;
-        else if (node.orientation == 'left') {
-
-            if (node.parentNode == this.rootNode)
-                node.position.x = node.parentNode.position.x - Math.abs(node.style.dx) - parseInt(node.parentNode.rectElement.getAttribute('width')) / 2;
-            else
-                node.position.x = node.parentNode.position.x - Math.abs(node.style.dx) - parseInt(node.parentNode.rectElement.getAttribute('width'));
-
-        }
-        else if (node.orientation == 'right') {
-
-            if (node.parentNode == this.rootNode)
-                node.position.x = node.parentNode.position.x + Math.abs(node.style.dx) + parseInt(node.parentNode.rectElement.getAttribute('width')) / 2;
-            else
-                node.position.x = node.parentNode.position.x + Math.abs(node.style.dx) + parseInt(node.parentNode.rectElement.getAttribute('width'));
-        }
-
-    };
-
-    this.drawMap = function (fromNode) {
-
-        if (this.syncDraw)
-            this.syncDraw = false;
-        else {
-            console.log("abort")
-            return false;
-        }
-
-        var leafs = this.countLeafs(this.rootNode, {left: 0, right: 0});
-
-        this.computeNodesYPosition(this.rootNode, {left: 0, right: 0}, leafs);
-
-        that = this;
-
-        var traverse = function (node) {
-
-            that.computeNodeXPosition(node);
-
-            node.drawNode();
-
-            for (var i in node.childNodes)
-                traverse(node.childNodes[i]);
-
-
-        };
-
-        if (fromNode != undefined)
-            traverse(fromNode);
-        else
-            traverse(this.rootNode);
-
-        this.syncDraw = true;
-
-
-    };
-
-
-    this.getDescendants = function (node) {
-
-        var descendants = [];
-
-        for (var i in node.childNodes) {
-
-            descendants.push(node.childNodes[i].id);
-
-            descendants = descendants.concat(this.getDescendants(node.childNodes[i]));
-
-        }
-
-        return descendants;
-
-    };
-
-
-
-    this.initalize();
+    /*===== LAUNCH =====*/
+    this.initialize();
 }
