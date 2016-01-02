@@ -18,12 +18,12 @@ module.exports = {
 
             MindMap.subscribe(req.socket, mindmap.id);
 
-            // TODO Order by parent (something compicated)
-            Node.find({where: {mindmap: req.param('id')}}).populate('styles', {owner: req.session.user.id}).exec(function (err, nodes) {
+            // TODO Order by parent (something compicated) And take default style
+            // , {owner: req.session.user.id}
+            Node.find({where: {mindmap: req.param('id')}}).populate('styles').exec(function (err, nodes) {
                 if (err) return res.serverError();
 
                 if (nodes) {
-
                     _.forEach(nodes, function (n) {
                         // On laisse un seul style
                         n.style = SerializeService.unserialize(n.styles[0].style);

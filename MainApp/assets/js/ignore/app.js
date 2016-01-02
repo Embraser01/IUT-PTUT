@@ -487,40 +487,42 @@ MindmapFrame = function (c) {
          * @param worker
          * @param text
          * @param style
+         * @param isMe
          */
-        this.editNode = function (worker, text, style) {
-
+        this.editNode = function (worker, text, style, isMe) {
 
             var drawFromParent = false;
 
             if (text != null)
                 this.textContent = text;
 
+            if (style) {
 
-            if ("dx" in style)
-                this.style.dx = style.dx;
+                if ("dx" in style)
+                    this.style.dx = style.dx;
 
-            if ("folded" in style)
-                this.style.folded = style.folded;
+                if ("folded" in style)
+                    this.style.folded = style.folded;
 
-            if ("container" in style && "width" in syle.container)
-                this.style.container.width = style.container.width;
+                if ("container" in style && "width" in syle.container)
+                    this.style.container.width = style.container.width;
 
-            if ("font" in style) {
+                if ("font" in style) {
 
-                for (var k in style.font)
-                    if (k in style.font)
-                        this.style.font[k] = style.font[k];
-            }
+                    for (var k in style.font)
+                        if (k in style.font)
+                            this.style.font[k] = style.font[k];
+                }
 
-            if ("parentBranch" in style && "color" in syle.parentBranch)
-                this.style.parentBranch.color = style.parentBranch.color;
+                if ("parentBranch" in style && "color" in syle.parentBranch)
+                    this.style.parentBranch.color = style.parentBranch.color;
 
-            if ("unifiedChildren" in style) {
-                drawFromParent = true;
-                for (var k in style.unifiedChildren)
-                    if (k in style.unifiedChildren)
-                        this.style.unifiedChildren[k] = style.unifiedChildren[k];
+                if ("unifiedChildren" in style) {
+                    drawFromParent = true;
+                    for (var k in style.unifiedChildren)
+                        if (k in style.unifiedChildren)
+                            this.style.unifiedChildren[k] = style.unifiedChildren[k];
+                }
             }
 
             if (drawFromParent && this.parentNode != null)
@@ -528,7 +530,7 @@ MindmapFrame = function (c) {
             else
                 mindmap.drawMap(this);
 
-            mindmap.ioManager.out.editNode(this);
+            if (isMe) mindmap.ioManager.out.editNode(this);
         };
 
 
@@ -1455,24 +1457,21 @@ MindmapFrame = function (c) {
             };
 
             //When user edit node
-            this.editNode = function (node) {
+            this.editNode = function (node, updateStyle) {
 
                 console.log("Out : edit Node", node);
 
-                //TODO: Notification d'édition de noeud - Émission
-                //Données utiles : node.textContent, node.style,
+                var path = basePath + "node/update/" + (updateStyle) ? 'yes' : 'no'
 
-                io.socket.post(basePath + "node/update", {
+                io.socket.post(path, {
                     nodes: [{
                         parent_node: node.parent_node,
-                        style: style,
-                        label: '',
-                        permission: permission
+                        style: node.style,
+                        label: node.textContent
                     }]
                 }, function (nodes) {
-                    // Request creation of a new node (receive nodes newly created)
 
-                    for (var node in nodes) mindmap.ioManager.in.createdNode(node);
+                    for (var node in nodes) mindmap.ioManager.in.editNode(0, node, false);
 
                 });
             };
@@ -1603,9 +1602,9 @@ MindmapFrame = function (c) {
              };*/
 
             //When a collaborator edit a node
-            this.editNode = function (workerId, node) {
+            this.editNode = function (workerId, node, isMe) {
 
-                mindmap.nodes[node.id].editNode(workerId, node.textContent, node.style);
+                mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
 
                 console.log("In : Node edited");
 
@@ -1649,10 +1648,22 @@ MindmapFrame = function (c) {
                 switch (message.verb) {
 
                     case 'messaged':
-                        if (message.data.header == 'Chat_public') {
-                            // TODO Ajouter le message à la liste ^^
-                        } else if (message.data.header == 'GetAll') {
-                            load(message.data.msg);
+                        switch (message.data.header) {
+                            case 'Chat_public':
+                                // TODO Ajouter le message à la liste ^^
+                                break;
+                            case 'New_nodes':
+                                _.forEach(message.data.msg, function (n) {
+                                    this.createdNode(n);
+                                });
+                                break;
+                            case 'Update_nodes_w_style':
+                            case 'Update_nodes':
+                                _.forEach(message.data.msg, function (n) {
+                                    this.editNode(0 , n, false);
+                                });
+                                break;
+
                         }
                         // TODO Ajouter toutes les possibilités (select/ edit/ delete)
                         break;
