@@ -34,7 +34,7 @@ module.exports = {
 
                     _.forEach(new_nodes, function (n, key) {
                         n.style = SerializeService.unserialize(new_styles[key].style);
-                        n.parent_node = n.parent_node.id;
+                        //n.parent_node = n.parent_node.id;
 
                         if (n.parent_node === 0) n.parent_node = null;
                     });
@@ -65,7 +65,7 @@ module.exports = {
         });
 
 
-        Node.update(formatted_nodes_id, formatted_nodes).exec(function (err, new_nodes) {
+        Node.update({where: {id: formatted_nodes_id}}, formatted_nodes).exec(function (err, new_nodes) {
             if (err) console.log(err);
 
             if (updateStyle === 'yes') {
@@ -86,14 +86,14 @@ module.exports = {
                     });
                 });
 
-                Style.update(formatted_styles_id, formatted_styles).exec(function (err, new_styles) {
+                Style.update({where: formatted_styles_id}, formatted_styles).exec(function (err, new_styles) {
                     if (err) return;
 
                     if (new_nodes) {
 
                         _.forEach(new_nodes, function (n, key) {
                             n.style = SerializeService.unserialize(new_styles[key].style);
-                            n.parent_node = n.parent_node.id;
+                            //n.parent_node = n.parent_node.id;
 
                             if (n.parent_node === 0) n.parent_node = null;
                         });

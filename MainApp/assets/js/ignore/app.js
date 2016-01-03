@@ -1471,7 +1471,9 @@ MindmapFrame = function (c) {
                     }]
                 }, function (nodes) {
 
-                    for (var node in nodes) mindmap.ioManager.in.editNode(0, node, false);
+                    _.forEach(nodes, function (n) {
+                        mindmap.ioManager.in.editNode(0, n, false);
+                    });
 
                 });
             };
@@ -1481,10 +1483,25 @@ MindmapFrame = function (c) {
 
                 console.log("Out : edit several Nodes", nodes);
 
-                //TODO: Notification de modifciation de plusieurs noeuds - Émission
-                //Données utiles : nodes[i].id, nodes[i].style.order
+                var path = basePath + "node/update/yes";
 
-                //Tu obtients chaque neoud via : for(var i in nodes)
+                var data = {nodes: []};
+
+                _.forEach(nodes, function (n) {
+                    data.nodes.push({
+                        parent_node: n.parent_node,
+                        style: n.style,
+                        label: n.textContent
+                    });
+                });
+
+                io.socket.post(path, data, function (nodes) {
+
+                    _.forEach(nodes, function (n) {
+                        mindmap.ioManager.in.editNode(0, n, false);
+                    });
+
+                });
             };
 
             //When user unselect a node
@@ -1654,13 +1671,13 @@ MindmapFrame = function (c) {
                                 break;
                             case 'New_nodes':
                                 _.forEach(message.data.msg, function (n) {
-                                    this.createdNode(n);
+                                    mindmap.ioManager.in.createdNode(n);
                                 });
                                 break;
                             case 'Update_nodes_w_style':
                             case 'Update_nodes':
                                 _.forEach(message.data.msg, function (n) {
-                                    this.editNode(0 , n, false);
+                                    mindmap.ioManager.in.editNode(0, n, false);
                                 });
                                 break;
 
