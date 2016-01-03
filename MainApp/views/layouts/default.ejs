@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title><%= (title) ? title + '|' + AppName : AppName %></title>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&lang=fr">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!--STYLES-->
+    <!--STYLES END-->
+
+    <!--SCRIPTS-->
+    <!--SCRIPTS END-->
+
+</head>
+<body class="mdl-color-text--grey-700 mdl-color--grey-100">
+
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+
+    <header class="mdl-layout__header">
+        <div class="container">
+            <div class="page-bar">
+
+                <span class="page-bar-title"><a href="/"><%= AppName %></a></span>
+                <div class="mdl-layout-spacer"></div>
+
+                <nav class="page-bar-navigation">
+                    <% if(req.session.user != null) { %>
+                    <a id="menu-user"
+                       class="mdl-navigation__link mdl-navigation__link--icon">
+                        <img class="avatar" src="/images/users/<%= req.session.user.id %>.jpg">
+                        <span><%= req.session.user.firstname + ' ' + req.session.user.name %></span>
+                        <i class="material-icons">keyboard_arrow_down</i>
+                    </a>
+
+                    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                        for="menu-user">
+                        <li class="mdl-menu__item"><a class="mdl-navigation__link"
+                                                      href="/auth/process/logout">Logout</a></li>
+
+                    </ul>
+                    <% } else { %>
+                    <a href="/auth/login" class="mdl-navigation__link">Connexion</a>
+                    <a href="/auth/signup" class="mdl-navigation__link">Inscription</a>
+                    <% } %>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="mdl-layout__content">
+        <div class="page-content">
+            <div class="container">
+                <%- body %>
+            </div>
+        </div>
+
+        <footer class="page-footer">
+            <div class="container">
+                <div class="mdl-mega-footer__bottom-section">
+                    <div class="mdl-logo">&copy; 2016 <%= AppName %></div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+</div>
+
+
+</body>
+</html>

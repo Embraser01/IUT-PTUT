@@ -7,7 +7,7 @@ module.exports = {
             Message.find().where({mindmap: mindmap.id}).populate('owner').exec(function (err, messages) {
                 if (err) return res.serverError();
 
-                return res.view('mindmap/index', {mindmap: mindmap, messages: messages});
+                return res.view('mindmap/index', DataViewService.create(mindmap.name, {mindmap: mindmap, messages: messages}));
             });
         });
     },

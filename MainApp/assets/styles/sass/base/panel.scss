@@ -1,0 +1,59 @@
+.panel {
+  @extend .mdl-shadow--2dp;
+
+  margin: 20px auto;
+  padding: 10px 40px 20px;
+  background: #fff;
+}
+
+.panel-auth {
+  text-align: center;
+
+  .mdl-textfield {
+    display: block;
+    margin:0 auto;
+  }
+}
+
+.panel-auth-illustration {
+  text-align: left;
+
+  background-image: url('/images/illustration.jpg');
+  background-size: cover;
+  color: #fff;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.panel-fill {
+  display: flex;
+  flex-direction: column;
+
+  > .panel {
+    flex: 1;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.mdl-cell > .panel {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.panel__header {
+
+}
+
+.panel-expand-header {
+  display: flex;
+  justify-content:center;
+  align-items:center;
+
+  .panel__header {
+    flex: 1;
+  }
+}
+
+.panel__content {
+
+}

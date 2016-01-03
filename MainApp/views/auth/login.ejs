@@ -1,30 +1,59 @@
-<!----------- LOGIN FORM ----------->
+<h2>Connexion</h2>
 
-<div id="connection">
-    <form action="/auth/process/login" method="post">
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--6-col">
 
-        <h3 id="form-title" class="mdl-color-text--accent">LOGIN</h3>
+        <div class="panel panel-auth">
+            <header class="panel__header">
+                <h4>Connexion via compte Mindmap</h4>
+            </header>
+            <section class="panel__content">
+                <form action="/auth/process/login" method="post">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" name="mail" type="email" id="sample1">
+                        <label class="mdl-textfield__label" for="sample1">Adresse e-mail</label>
+                        <span class="mdl-textfield__error">L'adresse e-mail n'est pas valide</span>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" name="password" type="password" id="sample2">
+                        <label class="mdl-textfield__label" for="sample2">Mot de passe</label>
+                    </div>
+                    <div>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
+                            Se connecter
+                        </button>
+                    </div>
+                </form>
+                <br>
+                <hr>
 
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" id="mail" name="mail" type="email" required/>
-            <label class="mdl-textfield__label" for="mail">Mail address</label>
+                <h4>Connexion via réseau social</h4>
+
+                <button class="mdl-js-button mdl-js-ripple-effect button-social button-social-googleplus">
+                    <i class="flaticon-google116"></i>
+                    Google+
+                </button>
+
+                <button class="mdl-js-button mdl-js-ripple-effect button-social button-social-twitter">
+                    <i class="flaticon-twitter20"></i>
+                    Twitter
+                </button>
+
+                <button class="mdl-js-button mdl-js-ripple-effect button-social button-social-facebook">
+                    <i class="flaticon-facebook31"></i>
+                    Facebook
+                </button>
+            </section>
         </div>
 
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" type="password" id="password" name="password" required/>
-            <label class="mdl-textfield__label" for="password">Password</label>
+    </div>
+    <div class="mdl-cell mdl-cell--6-col panel-fill">
+
+        <div class="panel panel-auth-illustration panel-expand-header">
+            <header class="panel__header">
+                <h3>Une carte mentale sans réfléchir.</h3>
+            </header>
         </div>
 
-        <%
-        if(typeof error != 'undefined'){
-            console.log(error);%>
-            <span class="mdl-textfield__error"><%= error %></span>
-        <% } %>
-
-        <button id="valider" type="submit"
-                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-            GO
-        </button>
-
-    </form>
+    </div>
 </div>

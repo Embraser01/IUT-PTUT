@@ -1,43 +1,69 @@
-<!----------- SIGNUP FORM ----------->
+<h2>Inscription</h2>
 
-<div id="signup">
-    <form action="/auth/process/signup" method="post">
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--6-col panel-fill">
 
-        <h3 id="form-title" class="mdl-color-text--accent">SIGN UP</h3>
-
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" id="firstname" name="firstname"/>
-            <label class="mdl-textfield__label" for="firstname">First name</label>
+        <div class="panel panel-auth-illustration panel-expand-header">
+            <header class="panel__header">
+                <h3>Explorer les cartes que vous aimez.</h3>
+            </header>
         </div>
 
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" id="name" name="name"/>
-            <label class="mdl-textfield__label" for="name">Name</label>
+    </div>
+    <div class="mdl-cell mdl-cell--6-col">
+
+        <div class="panel panel-auth">
+            <header class="panel__header">
+                <h4>Inscription</h4>
+            </header>
+            <section class="panel__content">
+                <form action="/auth/process/signup" method="post">
+
+                    <div class="mdl-grid">
+
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input" name="name" type="text" id="input-lastname">
+                                <label class="mdl-textfield__label" for="input-lastname">Nom</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input" name="firstname" type="text" id="input-firstname">
+                                <label class="mdl-textfield__label" for="input-firstname">Prénom</label>
+                            </div>
+                        </div>
+
+                        <div class="mdl-cell mdl-cell--12-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input" name="mail" type="email" id="input-email">
+                                <label class="mdl-textfield__label" for="input-email">Adresse e-mail</label>
+                                <span class="mdl-textfield__error">L'adresse e-mail n'est pas valide</span>
+                            </div>
+                        </div>
+
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input" name="password" type="password" id="input-password">
+                                <label class="mdl-textfield__label" for="input-password">Mot de passe</label>
+                            </div>
+                        </div>
+                        <div class="mdl-cell mdl-cell--6-col">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <input class="mdl-textfield__input" name="paswwordConfirmation" type="password" id="input-password-confirmation">
+                                <label class="mdl-textfield__label" for="input-password-confirmation">Mot de passe (confirm.)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
+                            S'inscrire
+                        </button>
+                    </div>
+                </form>
+            </section>
         </div>
 
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" id="mail" name="mail"/>
-            <label class="mdl-textfield__label" for="mail">Mail address</label>
-        </div>
-
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" type="password" id="password" name="password"/>
-            <label class="mdl-textfield__label" for="password">Password</label>
-        </div>
-
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            <input class="mdl-textfield__input" type="password" id="passwordConfirmation" name="passwordConfirmation"/>
-            <label class="mdl-textfield__label" for="passwordConfirmation">Password confirmation</label>
-        </div>
-
-        <% if(typeof error_msg != 'undefined') { %>
-        <span class="mdl-textfield__error"><%- error_msg %></span>
-        <% } %>
-
-        <button id="valider" type="submit"
-                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-            GO
-        </button>
-
-    </form>
+    </div>
 </div>

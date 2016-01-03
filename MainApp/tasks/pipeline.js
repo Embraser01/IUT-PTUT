@@ -8,7 +8,6 @@
  * for matching multiple files, and the ! prefix for excluding files.)
  */
 
-// TODO AJOUTER COMPILATEUR SASS
 
 // Path to public folder
 var tmpPath = '.tmp/public/';
@@ -18,7 +17,7 @@ var tmpPath = '.tmp/public/';
 // (if you're using LESS with the built-in default config, you'll want
 //  to change `assets/styles/importer.less` instead.)
 var cssFilesToInject = [
-    'styles/**/*.css'
+    'styles/importer.css'
 ];
 
 

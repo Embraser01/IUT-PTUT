@@ -8,10 +8,11 @@ module.exports = {
             var error = req.session.signup_error;
 
             req.session.signup_error = null;
-            return res.view('auth/signup', {error_msg: error.message});
+            // TODO Erreurs
+            return res.view('auth/signup', DataViewService.create('Inscription', {}));
         }
 
-        return res.view('auth/signup');
+        return res.view('auth/signup', DataViewService.create('Inscription'));
     },
 
     login: function (req, res) {
@@ -19,10 +20,10 @@ module.exports = {
             var error = req.session.login_error;
 
             req.session.login_error = null;
-            return res.view('auth/login', {error_msg: error.message});
+            return res.view('auth/login', DataViewService.create('Connexion', {}));
         }
 
-        return res.view('auth/login');
+        return res.view('auth/login', DataViewService.create('Connexion'));
     },
 
 
@@ -38,7 +39,7 @@ module.exports = {
             passwordConfirmation: req.param('passwordConfirmation')
         }, function (err, user) {
             if (err) {
-                req.session.signup_error = { message: err.message };
+                req.session.signup_error = {message: err.message};
                 return res.redirect('/auth/signup');
             }
 
@@ -56,11 +57,11 @@ module.exports = {
             password: req.param('password')
         }, function (err, user) {
             if (err) {
-                req.session.login_error = { message: err.message };
+                req.session.login_error = {message: err.message};
                 return res.redirect('/auth/login');
             }
-            if(!user){ // Not found in database
-                req.session.login_error = { message: 'User not found' };
+            if (!user) { // Not found in database
+                req.session.login_error = {message: 'User not found'};
                 return res.redirect('/auth/login');
             }
 

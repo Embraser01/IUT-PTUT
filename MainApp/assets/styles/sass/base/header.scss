@@ -1,0 +1,50 @@
+@import "vars";
+
+.mdl-layout__header {
+  max-height: $height;
+}
+
+/**
+ * La barre principale de la page
+ */
+
+.page-bar {
+  @extend .mdl-layout__header-row;
+
+  padding: 0;
+}
+
+.page-bar .mdl-navigation__link {
+  padding-right: 0
+}
+
+/* Bouton retour */
+.page-bar .navigation-back {
+  position: absolute;
+  margin-left: -50px;
+}
+
+.page-bar .mdl-layout-title {
+  padding-left: 15px; /* même valeur que : .app-bar .mdl-navigation__link { padding-left } */
+
+  a {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+.page-bar-title {
+  @extend .mdl-layout-title;
+}
+
+.page-bar-navigation {
+  @extend .mdl-navigation, .mdl-layout--large-screen-only;
+}
+
+.page-bar .avatar {
+  height: 25px;
+  background: #1565C0;
+  border-radius: 50%;
+  margin-right: 10px;
+  padding: 5px;
+}

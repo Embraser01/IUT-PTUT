@@ -1,0 +1,36 @@
+/**
+ * Les fenêtres contextuelles
+ */
+.window { }
+
+.window__header,
+.window__header *,
+.window__content {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.window__header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+
+  background: #42a5f5;
+  cursor: pointer;
+}
+
+.window__title {
+  color: #fff;
+  font-weight: 700;
+}
+
+.window__btn-close {
+  color: #fff;
+}
+
+.window__content {
+  padding: 10px;
+
+  color: rgba(0, 0, 0, 0.8);
+  background: #fff;
+}

@@ -1,0 +1,25 @@
+$height: 40px;
+
+/**
+ * La barre "application" (fichier, edition, ...)
+ */
+.app-bar,
+.app-bar .mdl-navigation__link {
+  height: $height;
+}
+
+.app-bar {
+  background: #fff;
+}
+
+.app-bar .mdl-navigation__link {
+  color: #1E88E5;
+  line-height: $height;
+  padding: 0 15px;
+
+  transition: .2s all;
+}
+
+.app-bar .mdl-navigation__link:hover {
+  background-color: rgba(0, 0, 0, .05);
+}

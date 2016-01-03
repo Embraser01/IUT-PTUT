@@ -1,0 +1,17 @@
+/* Fixe l'alignement des icons avec leur texte */
+.mdl-navigation__link--icon > span,
+.mdl-navigation__link--icon > .material-icons {
+    margin-right: 8px;
+    line-height: inherit;
+    vertical-align: top;
+}
+
+/* Pour ajouter un effet au survol d'une icône */
+.material-icons.hover {
+    opacity: .7;
+    transition: .2s opacity;
+}
+
+.material-icons.hover:hover {
+    opacity: 1;
+}
