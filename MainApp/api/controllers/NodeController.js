@@ -34,7 +34,6 @@ function queryStylesUpdate(nodes, req) {
     part_req3 = part_req3.slice(0, -1) + ");";
 
     request_style += part_req1 + part_req2 + part_req3;
-    console.log(nodes);
     return request_style;
     //return EscapeService.escape(request_style);
 }
@@ -109,7 +108,6 @@ module.exports = {
                     Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
                         if (err) return console.log(err);
 
-                        console.log(nodes);
                         if (nodes) {
                             _.forEach(nodes, function (n) {
                                 // On laisse un seul style
