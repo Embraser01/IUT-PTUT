@@ -157,13 +157,16 @@ module.exports = {
             ids.push(n.id);
         });
 
-        Node.destroy({id: ids}).exec(function (err){
-            if(err) return console.log(err);
+        Node.destroy({id: ids}).exec(function (err) {
+            if (err) return console.log(err);
 
-            MindMapMsgService.send('Delete_nodes', req, nodes); // Notify users
-            return res.json(ids);
-        })
+            Style.destroy({node: ids}).exec(function (err) {
+                if (err) return console.log(err);
 
+                MindMapMsgService.send('Delete_nodes', req, nodes); // Notify users
+                return res.json(ids);
+            });
+        });
     },
 
     getAll: function (req, res) {
