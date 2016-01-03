@@ -2,8 +2,39 @@
  * La mindmap !!!
  */
 #mindmap {
-  height: 100%;
   width: 100%;
+  height: 800px;
+}
 
-  background: red
+svg {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transform: translate3d(0, 0, 0);
+
+}
+
+path, rect, line {
+  transition: filter 0.3s ease-in-out;
+}
+
+rect, text {
+  cursor:pointer;
+}
+
+g:not([id=""]) > circle[name=folder] {
+  fill: red;
+  transition: fill 0.5s;
+}
+
+g:not([id=""]) > circle[name=lx], g:not([id=""]) > circle[name=rx] {
+  fill: transparent;
+  transition: fill 0.5s;
+}
+
+g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
+  fill:#64b5f6;
 }

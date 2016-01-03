@@ -61,7 +61,13 @@ module.exports.routes = {
 
     /*===== MindMap Controller =====*/
 
-    'get /mm/:id': 'MindMapController.index',
+    'get /mm/:id': {
+        controller: 'MindMapController',
+        action: 'index',
+        locals: {
+            layout: 'layouts/mindmap'
+        }
+    },
     'post /mm/:id/join': 'MindMapController.join',
     'post /mm/:id/leave': 'MindMapController.leave',
 
