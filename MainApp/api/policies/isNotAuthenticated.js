@@ -1,14 +1,31 @@
 module.exports = function (req, res, next) {
 
-    // If `req.session.me` exists, that means the user is logged in.
-    if (!req.isAuthenticated()) return next();
+    if (req.isSocket) {
+        if (req.session &&
+            req.session.passport && !req.session.passport.user) {
+            //Use this:
 
-    // If this is not an HTML-wanting browser, e.g. AJAX/sockets/cURL/etc.,
-    // send a 401 response letting the user agent know they need to login to
-    // access this endpoint.
-    if (req.wantsJSON) {
-        return res.send(401);
+            // Initialize Passport
+            passport.initialize()(req, res, function () {
+                // Use the built-in sessions
+                passport.session()(req, res, function () {
+                    // Make the user available throughout the frontend
+                    res.locals.user = req.user;
+                    //the user should be deserialized by passport now;
+                    next();
+                });
+            });
+        }
+        else {
+            res.json(401);
+        }
     }
-    // Otherwise if this is an HTML-wanting browser, do a redirect.
-    return res.redirect('/');
+    else if (!req.isAuthenticated()) {
+        return next();
+    }
+    else {
+        // User is not allowed
+        // (default res.forbidden() behavior can be overridden in `config/403.js`)
+        return res.redirect('/');
+    }
 };
