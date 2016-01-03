@@ -1528,18 +1528,18 @@ MindmapFrame = function (c) {
             }
 
             //When user delete nodes
-            this.deleteNodes = function (id) {
+            this.deleteNodes = function (ids) {
 
-                console.log("Out : delete Node", id);
+                console.log("Out : delete Node", ids);
 
                 //TODO: Notification de suppression de noeud - Émission
                 //Données utiles : id
 
                 var data = {nodes: []};
 
-                _.forEach(nodes, function (n) {
+                _.forEach(ids, function (n) {
                     data.nodes.push({
-                        id: n.id
+                        id: n
                     });
                 });
 
@@ -1653,17 +1653,11 @@ MindmapFrame = function (c) {
 
                 var traverseDelete = function (node) {
 
-                    var nodeId = node.id;
+                    if(!node) return;
 
-                    var childNodesId = [];
-
-                    for (var i in node.childNodes)
-                        childNodesId.push(node.childNodes[i].id);
-
-                    for (var j = 0; j < childNodesId.length; j++) {
-                        traverseDelete(mindmap.nodes[childNodesId[j]]);
-
-                    }
+                    _.forEach(node.childNodes, function (n) {
+                        traverseDelete(mindmap.nodes[n]);
+                    });
 
                     mindmap.workers[node.worker] = null;
 
