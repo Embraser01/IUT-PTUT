@@ -2,6 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="google-signin-client_id" content="1029741521146-qc7gbqcsgg4igqi54m7i5vhccnapnsu6.apps.googleusercontent.com">
+
     <title><%= (title) ? title + '|' + AppName : AppName %></title>
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&lang=fr">
@@ -10,6 +12,7 @@
     <!--STYLES-->
     <!--STYLES END-->
 
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <!--SCRIPTS-->
     <!--SCRIPTS END-->
 
@@ -26,11 +29,11 @@
                 <div class="mdl-layout-spacer"></div>
 
                 <nav class="page-bar-navigation">
-                    <% if(req.session.user != null) { %>
+                    <% if(req.isAuthenticated()) { %>
                     <a id="menu-user"
                        class="mdl-navigation__link mdl-navigation__link--icon">
-                        <img class="avatar" src="/images/users/<%= req.session.user.id %>.jpg">
-                        <span><%= req.session.user.firstname + ' ' + req.session.user.name %></span>
+                        <img class="avatar" src="/images/users/<%= req.user.id %>.jpg">
+                        <span><%= req.user.firstname + ' ' + req.user.name %></span>
                         <i class="material-icons">keyboard_arrow_down</i>
                     </a>
 

@@ -67,19 +67,6 @@ module.exports = {
         members: {
             collection: 'member',
             via: 'user'
-        },
-
-        toJSON: function() {
-            var obj = this.toObject();
-            delete obj.password;
-            delete obj.messages;
-            delete obj.mindmaps;
-            delete obj.styles;
-            delete obj.members;
-            delete obj.permissions;
-            delete obj.nodes;
-            delete obj.mail;
-            return obj;
         }
     },
 

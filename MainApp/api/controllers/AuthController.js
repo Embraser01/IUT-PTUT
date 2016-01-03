@@ -1,3 +1,5 @@
+var passport = require('passport');
+
 module.exports = {
 
     //===== VIEWS =====//
@@ -43,7 +45,12 @@ module.exports = {
                 return res.redirect('/auth/signup');
             }
 
-            req.session.user = user;
+            req.login(user, function (err) {
+                if (err) return next(err);
+
+                if (req.wantsJSON) return res.ok('Signup successful !');
+                return res.redirect('/');
+            });
 
             if (req.wantsJSON) return res.ok('Signup successful !');
             return res.redirect('/');
@@ -52,10 +59,7 @@ module.exports = {
 
     processLogin: function (req, res) {
 
-        User.login({
-            mail: req.param('mail'),
-            password: req.param('password')
-        }, function (err, user) {
+        passport.authenticate('local', function (err, user, info) {
             if (err) {
                 req.session.login_error = {message: err.message};
                 return res.redirect('/auth/login');
@@ -64,20 +68,42 @@ module.exports = {
                 req.session.login_error = {message: 'User not found'};
                 return res.redirect('/auth/login');
             }
+            req.logIn(user, function (err) {
+                if (err) res.send(err);
 
-            req.session.user = user;
+                return res.redirect('/');
+            })
+        })(req, res);
 
-            if (req.wantsJSON) return res.ok('Login successful !');
-            return res.redirect('/');
-        });
+        /*User.login({
+         mail: req.param('mail'),
+         password: req.param('password')
+         }, function (err, user) {
+         if (err) {
+         req.session.login_error = {message: err.message};
+         return res.redirect('/auth/login');
+         }
+         if (!user) { // Not found in database
+         req.session.login_error = {message: 'User not found'};
+         return res.redirect('/auth/login');
+         }
+
+         req.session.user = user;
+
+         if (req.wantsJSON) return res.ok('Login successful !');
+         return res.redirect('/');
+         });*/
     },
 
     processLogout: function (req, res) {
-        req.session.user = null;
 
-        if (req.wantsJSON) {
-            return res.ok('Logged out successfully!');
-        }
+        /*req.session.user = null;
+
+         if (req.wantsJSON) {
+         return res.ok('Logged out successfully!');
+         }*/
+
+        req.logout();
 
         return res.redirect('/auth/login');
     }
