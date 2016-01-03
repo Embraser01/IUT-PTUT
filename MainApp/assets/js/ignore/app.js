@@ -504,7 +504,7 @@ MindmapFrame = function (c) {
                 if ("folded" in style)
                     this.style.folded = style.folded;
 
-                if ("container" in style && "width" in syle.container)
+                if ("container" in style && "width" in style.container)
                     this.style.container.width = style.container.width;
 
                 if ("font" in style) {
@@ -514,7 +514,7 @@ MindmapFrame = function (c) {
                             this.style.font[k] = style.font[k];
                 }
 
-                if ("parentBranch" in style && "color" in syle.parentBranch)
+                if ("parentBranch" in style && "color" in style.parentBranch)
                     this.style.parentBranch.color = style.parentBranch.color;
 
                 if ("unifiedChildren" in style) {
@@ -1465,9 +1465,10 @@ MindmapFrame = function (c) {
 
                 io.socket.post(path, {
                     nodes: [{
-                        parent_node: node.parent_node,
+                        parent_node: node.parentNode.id,
                         style: node.style,
-                        label: node.textContent
+                        label: node.textContent,
+                        id: node.id
                     }]
                 }, function (nodes) {
 
@@ -1489,9 +1490,10 @@ MindmapFrame = function (c) {
 
                 _.forEach(nodes, function (n) {
                     data.nodes.push({
-                        parent_node: n.parent_node,
+                        parent_node: n.parentNode.id,
                         style: n.style,
-                        label: n.textContent
+                        label: n.textContent,
+                        id: n.id
                     });
                 });
 

@@ -1,39 +1,42 @@
 function queryNodesUpdate(nodes) {
     var request_node = "UPDATE Node SET ";
-    var part_req1 = "parent_node = CASE id ";
-    var part_req2 = "label = CASE id";
-    var part_req3 = "WHERE id IN (";
+    var part_req1 = "`parent_node` = (CASE `id` ";
+    var part_req2 = "`label` = (CASE `id` ";
+    var part_req3 = "WHERE `id` IN (";
 
     _.forEach(nodes, function (n) {
         part_req1 += "WHEN " + n.id + " THEN " + n.parent_node + " ";
-        part_req2 += "WHEN " + n.id + " THEN " + n.label + " ";
+        part_req2 += "WHEN " + n.id + " THEN '" + n.label + "' ";
         part_req3 += n.id + ",";
     });
-    part_req1 += "ELSE parent_node END, ";
-    part_req2 += "ELSE label END ";
+    part_req1 += "ELSE `parent_node` END), ";
+    part_req2 += "ELSE `label` END) ";
     part_req3 = part_req3.slice(0, -1) + ");";
 
     request_node += part_req1 + part_req2 + part_req3;
-    return EscapeService.escape(request_node);
+    return request_node;
+    //return EscapeService.escape(request_node);
 }
 
-function queryStylesUpdate(nodes) {
+function queryStylesUpdate(nodes, req) {
     var request_style = "UPDATE Style SET ";
-    var part_req1 = "style = CASE node ";
-    var part_req2 = "fold = CASE node";
-    var part_req3 = "WHERE owner = " + req.user.id + " AND node IN (";
+    var part_req1 = "`style` = (CASE `node` ";
+    var part_req2 = "`fold` = (CASE `node`";
+    var part_req3 = "WHERE `owner` = " + req.user.id + " AND `node` IN (";
 
     _.forEach(nodes, function (n) {
-        part_req1 += "WHEN " + n.id + " THEN " + SerializeService.serialize(n.style) + " ";
-        part_req2 += "WHEN " + n.id + " THEN " + n.fold + " ";
+        part_req1 += "WHEN " + n.id + " THEN '" + SerializeService.serialize(n.style) + "' ";
+        part_req2 += "WHEN " + n.id + " THEN " + n.style.fold + " ";
         part_req3 += n.id + ",";
     });
-    part_req1 += "ELSE style END, ";
-    part_req2 += "ELSE fold END ";
+    part_req1 += "ELSE `style` END), ";
+    part_req2 += "ELSE `fold` END) ";
     part_req3 = part_req3.slice(0, -1) + ");";
 
     request_style += part_req1 + part_req2 + part_req3;
-    return EscapeService.escape(request_style);
+    console.log(nodes);
+    return request_style;
+    //return EscapeService.escape(request_style);
 }
 
 
@@ -100,16 +103,18 @@ module.exports = {
             if (err) return console.log(err);
 
             if (updateStyle === 'yes') {
-                Style.query(queryStylesUpdate(nodes), function (err) {
+                Style.query(queryStylesUpdate(nodes, req), function (err) {
                     if (err) return console.log(err);
 
                     Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
                         if (err) return console.log(err);
 
+                        console.log(nodes);
                         if (nodes) {
                             _.forEach(nodes, function (n) {
                                 // On laisse un seul style
                                 n.style = SerializeService.unserialize(n.styles[0].style);
+                                n.style.fold = n.styles[0].fold;
                                 n.styles = null;
 
                                 // Remplace 0 par null pour le parent
@@ -130,6 +135,7 @@ module.exports = {
                         _.forEach(nodes, function (n) {
                             // On laisse un seul style
                             n.style = SerializeService.unserialize(n.styles[0].style);
+                            n.style.fold = n.styles[0].fold;
                             n.styles = null;
 
                             // Remplace 0 par null pour le parent
