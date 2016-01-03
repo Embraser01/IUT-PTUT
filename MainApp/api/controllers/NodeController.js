@@ -151,6 +151,18 @@ module.exports = {
 
 
     delete: function (req, res) {
+        var nodes = req.param('nodes');
+        var ids = [];
+        _.forEach(nodes, function (n) {
+            ids.push(n.id);
+        });
+
+        Node.destroy({id: ids}).exec(function (err){
+            if(err) return console.log(err);
+
+            MindMapMsgService.send('Delete_nodes', req, nodes); // Notify users
+            return res.json(ids);
+        })
 
     },
 

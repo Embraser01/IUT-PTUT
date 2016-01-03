@@ -771,6 +771,7 @@ MindmapFrame = function (c) {
 
         if (canDelete) {
 
+            var ids_to_delete = [];
 
             var traverseDelete = function (node) {
 
@@ -788,11 +789,13 @@ MindmapFrame = function (c) {
 
                 node.destroyNode();
 
-                mindmap.ioManager.out.deleteNode(nodeId);
+                ids_to_delete.push(nodeId);
 
             };
 
             traverseDelete(this.getSelectedNode());
+
+            if(ids_to_delete) mindmap.ioManager.out.deleteNodes(ids_to_delete);
 
             this.drawMap();
 
@@ -1524,14 +1527,29 @@ MindmapFrame = function (c) {
                 //Données utiles : node.id
             }
 
-            //When user delete a node
-            this.deleteNode = function (id) {
+            //When user delete nodes
+            this.deleteNodes = function (id) {
 
                 console.log("Out : delete Node", id);
 
                 //TODO: Notification de suppression de noeud - Émission
                 //Données utiles : id
 
+                var data = {nodes: []};
+
+                _.forEach(nodes, function (n) {
+                    data.nodes.push({
+                        id: n.id
+                    });
+                });
+
+                io.socket.post(basePath + "node/delete", data, function (ids) {
+
+                    _.forEach(ids, function (n) {
+                        mindmap.ioManager.in.deleteNode(0, n);
+                    });
+
+                });
             }
 
         };
@@ -1657,7 +1675,6 @@ MindmapFrame = function (c) {
 
                 mindmap.drawMap();
 
-
                 console.log("In : Node deleted");
 
             };
@@ -1680,6 +1697,11 @@ MindmapFrame = function (c) {
                             case 'Update_nodes':
                                 _.forEach(message.data.msg, function (n) {
                                     mindmap.ioManager.in.editNode(0, n, false);
+                                });
+                                break;
+                            case 'Delete_nodes':
+                                _.forEach(message.data.msg, function (n) {
+                                    mindmap.ioManager.in.deleteNode(0, n);
                                 });
                                 break;
 
