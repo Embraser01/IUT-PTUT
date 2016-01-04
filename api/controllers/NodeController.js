@@ -4,10 +4,12 @@ function queryNodesUpdate(nodes) {
     var part_req2 = "`label` = (CASE `id` ";
     var part_req3 = "WHERE `id` IN (";
 
+    // Escape all things, we are not sure if id is an int or not
+
     _.forEach(nodes, function (n) {
-        part_req1 += "WHEN " + n.id + " THEN " + n.parent_node + " ";
-        part_req2 += "WHEN " + n.id + " THEN '" + n.label + "' ";
-        part_req3 += n.id + ",";
+        part_req1 += "WHEN '" + EscapeService.escape(n.id) + "' THEN '" + EscapeService.escape(n.parent_node) + "' ";
+        part_req2 += "WHEN '" + EscapeService.escape(n.id) + "' THEN '" + EscapeService.escape(n.label) + "' ";
+        part_req3 += EscapeService.escape(n.id) + ",";
     });
     part_req1 += "ELSE `parent_node` END), ";
     part_req2 += "ELSE `label` END) ";
@@ -15,27 +17,22 @@ function queryNodesUpdate(nodes) {
 
     request_node += part_req1 + part_req2 + part_req3;
     return request_node;
-    //return EscapeService.escape(request_node);
 }
 
 function queryStylesUpdate(nodes, req) {
     var request_style = "UPDATE Style SET ";
     var part_req1 = "`style` = (CASE `node` ";
-    var part_req2 = "`fold` = (CASE `node`";
-    var part_req3 = "WHERE `owner` = " + req.user.id + " AND `node` IN (";
+    var part_req2 = "WHERE `owner` = " + req.user.id + " AND `node` IN (";
 
     _.forEach(nodes, function (n) {
-        part_req1 += "WHEN " + n.id + " THEN '" + SerializeService.serialize(n.style) + "' ";
-        part_req2 += "WHEN " + n.id + " THEN " + n.style.fold + " ";
-        part_req3 += n.id + ",";
+        part_req1 += "WHEN '" + EscapeService.escape(n.id) + "' THEN '" + EscapeService.escape(SerializeService.serialize(n.style)) + "' ";
+        part_req2 += n.id + ",";
     });
-    part_req1 += "ELSE `style` END), ";
-    part_req2 += "ELSE `fold` END) ";
-    part_req3 = part_req3.slice(0, -1) + ");";
+    part_req1 += "ELSE `style` END) ";
+    part_req2 = part_req2.slice(0, -1) + ");";
 
-    request_style += part_req1 + part_req2 + part_req3;
+    request_style += part_req1 + part_req2;
     return request_style;
-    //return EscapeService.escape(request_style);
 }
 
 

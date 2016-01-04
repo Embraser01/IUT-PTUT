@@ -12,12 +12,7 @@ module.exports = {
         style: {
             type: 'string',
             required: true,
-            size: 255 // TODO Check size
-        },
-
-        fold: {
-            type: 'boolean',
-            required: true
+            size: 255
         },
 
 
