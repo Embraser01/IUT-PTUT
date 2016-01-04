@@ -74,34 +74,61 @@ module.exports = {
                 return res.redirect('/');
             })
         })(req, res);
-
-        /*User.login({
-         mail: req.param('mail'),
-         password: req.param('password')
-         }, function (err, user) {
-         if (err) {
-         req.session.login_error = {message: err.message};
-         return res.redirect('/auth/login');
-         }
-         if (!user) { // Not found in database
-         req.session.login_error = {message: 'User not found'};
-         return res.redirect('/auth/login');
-         }
-
-         req.session.user = user;
-
-         if (req.wantsJSON) return res.ok('Login successful !');
-         return res.redirect('/');
-         });*/
     },
 
+
+    // https://developers.facebook.com/docs/
+    // https://developers.facebook.com/docs/reference/login/
+    facebook: function(req, res) {
+        passport.authenticate('facebook', { failureRedirect: '/auth/login', scope: ['mail'] }, function(err, user) {
+            req.logIn(user, function(err) {
+                if (err) {
+                    console.log(err);
+                    res.view('500');
+                    return;
+                }
+
+                return res.redirect('/');
+            });
+        })(req, res);
+    },
+
+    // https://developers.google.com/
+    // https://developers.google.com/accounts/docs/OAuth2Login#scope-param
+    google: function(req, res) {
+        passport.authenticate('google', { failureRedirect: '/auth/login', scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/plus.profile.emails.read'] }, function(err, user) {
+            req.logIn(user, function(err) {
+                if (err) {
+                    console.log(err);
+                    res.view('500');
+                    return;
+                }
+
+                return res.redirect('/');
+            });
+        })(req, res);
+    },
+
+    // https://apps.twitter.com/
+    // https://apps.twitter.com/app/new
+    twitter: function(req, res) {
+        passport.authenticate('twitter', { failureRedirect: '/auth/login' }, function(err, user) {
+            req.logIn(user, function(err) {
+                if (err) {
+                    console.log(err);
+                    res.view('500');
+                    return;
+                }
+
+                return res.redirect('/');
+            });
+        })(req, res);
+    },
+
+
+
+
     processLogout: function (req, res) {
-
-        /*req.session.user = null;
-
-         if (req.wantsJSON) {
-         return res.ok('Logged out successfully!');
-         }*/
 
         req.logout();
 

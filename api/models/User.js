@@ -13,14 +13,22 @@ module.exports = {
 
         name: {
             type: 'string',
-            required: true,
+            defaultTo: '',
             size: 40
         },
 
         firstname: {
             type: 'string',
-            required: true,
+            defaultTo: '',
             size: 30
+        },
+
+        provider: {
+            type: 'string'
+        },
+
+        ext_id: {
+            type: 'string'
         },
 
         mail: {

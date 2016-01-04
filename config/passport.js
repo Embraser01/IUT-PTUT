@@ -1,18 +1,10 @@
-var passport = require('passport'),
-    LocalStrategy = require('passport-local').Strategy;
+var passport = require('passport')
+    , LocalStrategy = require('passport-local').Strategy
+    , FacebookStrategy = require('passport-facebook').Strategy
+    , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
+    , TwitterStrategy = require('passport-twitter').Strategy;
 var crypto = require('crypto');
 
-
-//helper functions
-function findById(id, fn) {
-    User.findOne(id).exec(function (err, user) {
-        if (err) {
-            return fn(null, null);
-        } else {
-            return fn(null, user);
-        }
-    });
-}
 
 function findByMail(m, fn) {
 
@@ -28,6 +20,44 @@ function findByMail(m, fn) {
         }
     });
 }
+
+
+var verifyExtHandler = function(token, tokenSecret, profile, done){
+    process.nextTick(function() {
+
+        User.findOne({ext_id: profile.id}, function(err, user) {
+            if (user) {
+                return done(null, user);
+            } else {
+
+                var data = {
+                    provider: profile.provider,
+                    ext_id: profile.id
+                };
+
+                if (profile.emails && profile.emails[0] && profile.emails[0].value) {
+                    data.mail = profile.emails[0].value;
+                } else {
+                    done(new Error("Email is missing"), null);
+                }
+                if (profile.name) {
+                    if(profile.name.givenName) data.firstname = profile.name.givenName;
+
+                    if(profile.name.familyName) data.name = profile.name.familyName;
+
+                    if(!data.name
+                        && !data.firstname
+                        && profile.name.displayName)
+                        data.firstname = profile.name.displayName;
+                }
+
+                User.create(data, function(err, user) {
+                    return done(err, user);
+                });
+            }
+        });
+    });
+};
 
 // Passport session setup.
 // To support persistent login sessions, Passport needs to be able to
@@ -80,3 +110,21 @@ passport.use(new LocalStrategy({
 
     }
 ));
+
+passport.use(new FacebookStrategy({
+    clientID: "1495800297394232",
+    clientSecret: "fcd8ebebdca9b3a1bd3ed86d0493dd47",
+    callbackURL: "http://mindmap.finch4.xyz/auth/facebook/callback"
+}, verifyHandler));
+
+passport.use(new GoogleStrategy({
+    clientID: '1029741521146-qc7gbqcsgg4igqi54m7i5vhccnapnsu6.apps.googleusercontent.com',
+    clientSecret: '4nBxqW2U6VIJEMMwrlNpb0Bw',
+    callbackURL: 'http://mindmap.finch4.xyz/auth/google/callback'
+}, verifyHandler));
+
+passport.use(new TwitterStrategy({
+    consumerKey: '3yWc5VDMuRiCxmv54UsfgSh1Z',
+    consumerSecret: '0MQ0TGu9d7cVYt2FapeU6rrTWQNIvGgEDH7aXBbMs6OC4GOObJ',
+    callbackURL: 'http://mindmap.finch4.xyz/auth/twitter/callback'
+}, verifyHandler));
