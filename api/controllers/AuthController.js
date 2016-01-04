@@ -45,15 +45,12 @@ module.exports = {
                 return res.redirect('/auth/signup');
             }
 
-            req.login(user, function (err) {
-                if (err) return next(err);
+            req.logIn(user, function (err) {
+                if (err) return res.serverError();
 
                 if (req.wantsJSON) return res.ok('Signup successful !');
                 return res.redirect('/');
             });
-
-            if (req.wantsJSON) return res.ok('Signup successful !');
-            return res.redirect('/');
         });
     },
 

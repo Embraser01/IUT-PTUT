@@ -24,7 +24,6 @@ function findByMail(m, fn) {
 
 var verifyExtHandler = function (token, tokenSecret, profile, done) {
     process.nextTick(function () {
-        console.log(profile);
 
         User.findOne({ext_id: profile.id}, function (err, user) {
             if (user) {
