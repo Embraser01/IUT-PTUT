@@ -80,11 +80,11 @@ module.exports = {
     // https://developers.facebook.com/docs/
     // https://developers.facebook.com/docs/reference/login/
     facebook: function(req, res) {
-        passport.authenticate('facebook', { failureRedirect: '/auth/login', scope: ['mail'] }, function(err, user) {
+        passport.authenticate('facebook', { failureRedirect: '/auth/login', scope: ['email'] }, function(err, user) {
             req.logIn(user, function(err) {
                 if (err) {
                     console.log(err);
-                    res.view('500');
+                    res.serverError();
                     return;
                 }
 
@@ -100,7 +100,7 @@ module.exports = {
             req.logIn(user, function(err) {
                 if (err) {
                     console.log(err);
-                    res.view('500');
+                    res.serverError();
                     return;
                 }
 
@@ -113,10 +113,11 @@ module.exports = {
     // https://apps.twitter.com/app/new
     twitter: function(req, res) {
         passport.authenticate('twitter', { failureRedirect: '/auth/login' }, function(err, user) {
+            console.log(user);
             req.logIn(user, function(err) {
                 if (err) {
                     console.log(err);
-                    res.view('500');
+                    res.serverError();
                     return;
                 }
 
@@ -124,8 +125,6 @@ module.exports = {
             });
         })(req, res);
     },
-
-
 
 
     processLogout: function (req, res) {

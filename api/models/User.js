@@ -13,13 +13,13 @@ module.exports = {
 
         name: {
             type: 'string',
-            defaultTo: '',
+            defaultsTo: '',
             size: 40
         },
 
         firstname: {
             type: 'string',
-            defaultTo: '',
+            defaultsTo: '',
             size: 30
         },
 
@@ -33,14 +33,12 @@ module.exports = {
 
         mail: {
             type: 'email',
-            required: true,
             unique: true,
             size: 254
         },
 
         password: {
             type: 'string',
-            required: true,
             size: 64
         },
 
@@ -92,17 +90,5 @@ module.exports = {
         })
         .exec(cb);
 
-    },
-
-    login: function (inputs, cb) {
-
-        if(!inputs.password) return cb(new Error("You have to give a password !"));
-        if(!inputs.mail) return cb(new Error("You have to give a mail address !"));
-
-        User.findOne({
-                mail: inputs.mail,
-                password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')
-        })
-        .exec(cb);
     }
 }

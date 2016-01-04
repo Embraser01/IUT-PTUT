@@ -57,6 +57,12 @@ module.exports.routes = {
     '/auth/process/logout': 'AuthController.processLogout',
     'post /auth/process/signup': 'AuthController.processSignup',
     'post /auth/process/login': 'AuthController.processLogin',
+    '/auth/facebook': 'AuthController.facebook',
+    '/auth/facebook/callback': 'AuthController.facebook',
+    '/auth/google': 'AuthController.google',
+    '/auth/google/callback': 'AuthController.google',
+    '/auth/twitter': 'AuthController.twitter',
+    '/auth/twitter/callback': 'AuthController.twitter',
 
 
     /*===== MindMap Controller =====*/
