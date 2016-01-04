@@ -50,7 +50,7 @@ module.exports = {
 
             MindMap.unsubscribe(req.socket, mindmap.id);
 
-            return res.ok();
+            return res.json();
         });
     }
 };
