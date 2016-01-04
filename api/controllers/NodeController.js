@@ -47,10 +47,10 @@ module.exports = {
         var formatted_nodes = [];
         _.forEach(nodes, function (n) {
             formatted_nodes.push({
+                parent_node: n.parent_node,
                 label: n.label,
                 mindmap: req.param('id'),
-                owner: req.user.id,
-                parent_node: n.parent_node
+                owner: req.user.id
             });
         });
 
@@ -62,7 +62,6 @@ module.exports = {
             _.forEach(nodes, function (n, key) {
                 formatted_styles.push({
                     style: n.style,
-                    fold: n.fold,
                     node: new_nodes[key].id,
                     owner: req.user.id
                 });
