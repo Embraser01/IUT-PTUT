@@ -662,13 +662,7 @@ MindmapFrame = function (c) {
      * Id of the user
      * @type {number}
      */
-    this.worker = 1;
-
-    /**
-     * Set the user id in the list of worker
-     * @type {null}
-     */
-    this.workers[this.worker] = null;
+    this.worker = -1;
 
     /**
      * Root Node of the mindmap
@@ -911,6 +905,15 @@ MindmapFrame = function (c) {
             this.drawMap();
 
         }
+    };
+
+    /**
+     * Set the user id in the list of worker
+     * @type {null}
+     */
+    this.setWorker = function(user_id){
+        this.worker = user_id;
+        this.workers[this.worker] = null;
     };
 
 
@@ -1534,8 +1537,6 @@ MindmapFrame = function (c) {
 
         this.out = new function () {
 
-            // (mindmap.worker ? normalement tu dois connaitre via auth qui te parle sur le socket)
-
             this.join = function () {
 
                 io.socket.post(basePath + "join", function (data) {
@@ -1544,7 +1545,8 @@ MindmapFrame = function (c) {
                     console.log("Parsing data ...");
                     console.log(data);
 
-                    _.forEach(data, function (n) {
+                    mindmap.setWorker(data.user);
+                    _.forEach(data.nodes, function (n) {
                         mindmap.ioManager.in.createdNode(n);
                     });
 
@@ -1568,8 +1570,7 @@ MindmapFrame = function (c) {
                         parent_node: parent_nodeId,
                         style: style,
                         label: 'New node',
-                        permission: permission,
-                        fold: false
+                        permission: permission
                     }]
                 }, function (nodes) {
                     // Request creation of a new node (receive nodes newly created)

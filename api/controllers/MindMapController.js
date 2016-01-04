@@ -1,6 +1,7 @@
 module.exports = {
     index: function (req, res) {
 
+        // TODO ajouter le noeud racine pour afficher quelque chose avant le chargement
         MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
             if (err) return res.serverError();
 
@@ -18,7 +19,7 @@ module.exports = {
 
             MindMap.subscribe(req.socket, mindmap.id);
 
-            // TODO Order by parent (something compicated) And take default style
+            // TODO Order by parent (something complicated) And take default style
             // , {owner: req.session.user.id}
             Node.find({where: {mindmap: req.param('id')}}).populate('styles').exec(function (err, nodes) {
                 if (err) return res.serverError();
@@ -34,7 +35,10 @@ module.exports = {
                         if (n.parent_node === 0) n.parent_node = null;
                     });
                 }
-                return res.json(nodes);
+                return res.json({
+                    nodes: nodes,
+                    user: req.user.id
+                });
             });
         });
     },
