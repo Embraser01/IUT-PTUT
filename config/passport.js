@@ -24,7 +24,6 @@ function findByMail(m, fn) {
 var verifyExtHandler = function (token, tokenSecret, profile, done) {
     process.nextTick(function () {
 
-        console.log(profile);
         User.findOne({ext_id: profile.id}, function (err, user) {
             if (user) {
                 return done(null, user);
@@ -47,7 +46,6 @@ var verifyExtHandler = function (token, tokenSecret, profile, done) {
 
                 if(profile.provider == 'facebook') data.img_url = 'https://graph.facebook.com/' + profile.id + '/picture';
 
-                console.log(data);
                 User.create(data, function (err, user) {
                     return done(err, user);
                 });

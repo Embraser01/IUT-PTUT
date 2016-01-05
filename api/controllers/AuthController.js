@@ -41,6 +41,7 @@ module.exports = {
         }, function (err, user) {
             if (err) {
                 req.session.signup_error = {message: err.message};
+                console.log(err);
                 return res.redirect('/auth/signup');
             }
 

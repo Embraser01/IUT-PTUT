@@ -81,6 +81,7 @@ module.exports = {
         // TODO Add image profile link
         User.create({
                 display_name: inputs.display_name,
+                mail: inputs.mail,
                 password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')
         })
         .exec(cb);
