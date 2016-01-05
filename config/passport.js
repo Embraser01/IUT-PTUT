@@ -47,6 +47,7 @@ var verifyExtHandler = function (token, tokenSecret, profile, done) {
 
                 if(profile.provider == 'facebook') data.img_url = 'https://graph.facebook.com/' + profile.id + '/picture';
 
+                console.log(data);
                 User.create(data, function (err, user) {
                     return done(err, user);
                 });

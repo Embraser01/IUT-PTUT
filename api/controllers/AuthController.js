@@ -34,8 +34,7 @@ module.exports = {
     processSignup: function (req, res) {
 
         User.signup({
-            name: req.param('name'),
-            firstname: req.param('firstname'),
+            display_name: req.param('firstname') + ' ' + req.param('name'),
             mail: req.param('mail'),
             password: req.param('password'),
             passwordConfirmation: req.param('passwordConfirmation')
@@ -68,6 +67,8 @@ module.exports = {
             req.logIn(user, function (err) {
                 if (err) res.send(err);
 
+                // TODO rememeber me : req.session.cookie.maxAge = 1000 * 60 * 3;
+
                 return res.redirect('/');
             })
         })(req, res);
@@ -80,7 +81,7 @@ module.exports = {
         passport.authenticate('facebook', {
             failureRedirect: '/auth/login'
         }, function (err, user) {
-            if (err) console.log(err);
+            if (err) return console.log(err);
             req.logIn(user, function (err) {
                 if (err) {
                     console.log(err);
@@ -100,7 +101,7 @@ module.exports = {
             failureRedirect: '/auth/login',
             scope: ['https://www.googleapis.com/auth/plus.login']
         }, function (err, user) {
-            if (err) console.log(err);
+            if (err) return console.log(err);
 
             req.logIn(user, function (err) {
                 if (err) {
@@ -118,7 +119,7 @@ module.exports = {
     // https://apps.twitter.com/app/new
     twitter: function (req, res) {
         passport.authenticate('twitter', {failureRedirect: '/auth/login'}, function (err, user) {
-            if(err) console.log(err);
+            if(err) return console.log(err);
             req.logIn(user, function (err) {
                 if (err) {
                     console.log(err);
