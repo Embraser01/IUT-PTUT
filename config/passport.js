@@ -21,10 +21,10 @@ function findByMail(m, fn) {
     });
 }
 
-
 var verifyExtHandler = function (token, tokenSecret, profile, done) {
     process.nextTick(function () {
 
+        console.log(profile);
         User.findOne({ext_id: profile.id}, function (err, user) {
             if (user) {
                 return done(null, user);
@@ -39,15 +39,10 @@ var verifyExtHandler = function (token, tokenSecret, profile, done) {
                     data.mail = profile.emails[0].value;
                 }
                 if (profile.name) {
-                    if (profile.name.givenName) data.firstname = profile.name.givenName;
-
-                    if (profile.name.familyName) data.name = profile.name.familyName;
+                    data.display_name = (profile.name.givenName || profile.displayName || '');
+                    data.display_name += ' ' + (profile.name.familyName || '');
 
                     // TODO Ameliorer le chargement du nom
-                    if (!data.name
-                        && !data.firstname
-                        && profile.displayName)
-                        data.firstname = profile.displayName;
                 }
 
                 User.create(data, function (err, user) {
@@ -113,17 +108,17 @@ passport.use(new LocalStrategy({
 passport.use(new FacebookStrategy({
     clientID: "1495800297394232",
     clientSecret: "fcd8ebebdca9b3a1bd3ed86d0493dd47",
-    callbackURL: "http://mindmap.finch4.xyz/auth/facebook/callback"
+    callbackURL: "http://mindmap.finch4.xyz/auth/facebook"
 }, verifyExtHandler));
 
 passport.use(new GoogleStrategy({
-    clientID: '1029741521146-qc7gbqcsgg4igqi54m7i5vhccnapnsu6.apps.googleusercontent.com',
-    clientSecret: '4nBxqW2U6VIJEMMwrlNpb0Bw',
-    callbackURL: 'http://mindmap.finch4.xyz/'
+    clientID: '1029741521146-eb56ggu46da490ta054ladk6sdjet09h.apps.googleusercontent.com',
+    clientSecret: 'LvX-UkhMxccaQ2G2MPXEcAUx',
+    callbackURL: 'http://mindmap.finch4.xyz/auth/google'
 }, verifyExtHandler));
 
 passport.use(new TwitterStrategy({
     consumerKey: '3yWc5VDMuRiCxmv54UsfgSh1Z',
     consumerSecret: '0MQ0TGu9d7cVYt2FapeU6rrTWQNIvGgEDH7aXBbMs6OC4GOObJ',
-    callbackURL: 'http://mindmap.finch4.xyz/auth/twitter/callback'
+    callbackURL: 'http://mindmap.finch4.xyz/auth/twitter'
 }, verifyExtHandler));

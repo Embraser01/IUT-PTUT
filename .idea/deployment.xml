@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="Marco - PTUT | Finch 4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="Finch 4 | Marco - PTUT">
     <serverData>
-      <paths name="Marco - PTUT | Finch 4">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/PTUT" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-          <excludedPaths>
-            <excludedPath path="/node_modules" />
-            <excludedPath path="/source" />
-          </excludedPaths>
-        </serverdata>
-      </paths>
-      <paths name="Marco - Stream 2 | Finch 4 ">
+      <paths name="Finch 4 Marco">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="Marco | Finch 4">
+      <paths name="Finch 4 | Marco - PTUT">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/node_modules" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="Finch 4 | Marco Method">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="Finch 4 | Marco'">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />

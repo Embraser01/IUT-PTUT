@@ -5,6 +5,8 @@ module.exports = {
         MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
             if (err) return res.serverError();
 
+            if(!mindmap) return res.notFound(); // TODO Delete this when isAllowed done
+
             Message.find().where({mindmap: mindmap.id}).populate('owner').exec(function (err, messages) {
                 if (err) return res.serverError();
 

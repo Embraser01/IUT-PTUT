@@ -11,16 +11,8 @@ module.exports = {
 
         //===== ATTRIBUTES =====//
 
-        name: {
-            type: 'string',
-            defaultsTo: '',
-            size: 40
-        },
-
-        firstname: {
-            type: 'string',
-            defaultsTo: '',
-            size: 30
+        display_name: {
+            type: 'string'
         },
 
         provider: {
@@ -83,9 +75,7 @@ module.exports = {
         if (!pwdRegex.test(inputs.password)) return cb(new Error("Password is not secure !"));
 
         User.create({
-                name: inputs.name,
-                firstname: inputs.firstname,
-                mail: inputs.mail,
+                display_name: inputs.firstname + ' ' + inputs.name,
                 password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')
         })
         .exec(cb);
