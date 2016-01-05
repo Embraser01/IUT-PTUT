@@ -149,6 +149,7 @@ nbproject
 
 ## Plugin-specific files:
 
+/.idea
 # IntelliJ
 /out/
 
