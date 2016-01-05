@@ -33,7 +33,7 @@
                 <a id="menu-user"
                    class="mdl-navigation__link mdl-navigation__link--icon">
                     <img class="avatar" src="/images/users/<%= req.session.user.id %>.jpg">
-                    <span><%= req.session.user.firstname + ' ' + req.session.user.name %></span>
+                    <span><%= req.user.display_name %></span>
                     <i class="material-icons">keyboard_arrow_down</i>
                 </a>
 

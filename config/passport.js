@@ -35,15 +35,17 @@ var verifyExtHandler = function (token, tokenSecret, profile, done) {
                     ext_id: profile.id
                 };
 
-                if (profile.emails && profile.emails[0] && profile.emails[0].value) {
-                    data.mail = profile.emails[0].value;
-                }
                 if (profile.name) {
                     data.display_name = (profile.name.givenName || profile.displayName || '');
                     data.display_name += ' ' + (profile.name.familyName || '');
 
-                    // TODO Ameliorer le chargement du nom
+                } else {
+                    data.display_name = profile.displayName || ('Guest from ' + data.provider);
                 }
+
+                if(profile.photos && profile.photos[0]) data.img_url = profile.photos[0].value;
+
+                if(profile.provider == 'facebook') data.img_url = 'https://graph.facebook.com/' + profile.id + '/picture';
 
                 User.create(data, function (err, user) {
                     return done(err, user);

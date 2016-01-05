@@ -29,7 +29,6 @@
     <!--STYLES-->
     <!--STYLES END-->
 
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <!--SCRIPTS-->
     <!--SCRIPTS END-->
 
@@ -49,8 +48,13 @@
                     <% if(req.isAuthenticated()) { %>
                     <a id="menu-user"
                        class="mdl-navigation__link mdl-navigation__link--icon">
-                        <img class="avatar" src="/images/users/<%= req.user.id %>.jpg">
-                        <span><%= req.user.firstname + ' ' + req.user.name %></span>
+                        <% if(req.user.img_url) { %>
+                        <img class="avatar" src="<%- req.user.img_url %>">
+                        <% } else  { %>
+                        <i class="material-icons">account_circle</i>
+                        <% } %>
+
+                        <span><%= req.user.display_name %></span>
                         <i class="material-icons">keyboard_arrow_down</i>
                     </a>
 

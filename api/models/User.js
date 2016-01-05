@@ -23,6 +23,10 @@ module.exports = {
             type: 'string'
         },
 
+        img_url: {
+            type: 'string'
+        },
+
         mail: {
             type: 'email',
             unique: true,
@@ -74,6 +78,7 @@ module.exports = {
         if (inputs.password !== inputs.passwordConfirmation) return cb(new Error("Password and Password confirmation are different !"));
         if (!pwdRegex.test(inputs.password)) return cb(new Error("Password is not secure !"));
 
+        // TODO Add image profile link
         User.create({
                 display_name: inputs.firstname + ' ' + inputs.name,
                 password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')

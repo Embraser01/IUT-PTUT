@@ -76,9 +76,12 @@ module.exports = {
 
     // https://developers.facebook.com/docs/
     // https://developers.facebook.com/docs/reference/login/
-    facebook: function(req, res) {
-        passport.authenticate('facebook', { failureRedirect: '/auth/login', scope: ['email'] }, function(err, user) {
-            req.logIn(user, function(err) {
+    facebook: function (req, res) {
+        passport.authenticate('facebook', {
+            failureRedirect: '/auth/login'
+        }, function (err, user) {
+            if (err) console.log(err);
+            req.logIn(user, function (err) {
                 if (err) {
                     console.log(err);
                     res.serverError();
@@ -92,9 +95,14 @@ module.exports = {
 
     // https://developers.google.com/
     // https://developers.google.com/accounts/docs/OAuth2Login#scope-param
-    google: function(req, res) {
-        passport.authenticate('google', { failureRedirect: '/auth/login', scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/plus.profile.emails.read'] }, function(err, user) {
-            req.logIn(user, function(err) {
+    google: function (req, res) {
+        passport.authenticate('google', {
+            failureRedirect: '/auth/login',
+            scope: ['https://www.googleapis.com/auth/plus.login']
+        }, function (err, user) {
+            if (err) console.log(err);
+
+            req.logIn(user, function (err) {
                 if (err) {
                     console.log(err);
                     res.serverError();
@@ -108,10 +116,10 @@ module.exports = {
 
     // https://apps.twitter.com/
     // https://apps.twitter.com/app/new
-    twitter: function(req, res) {
-        passport.authenticate('twitter', { failureRedirect: '/auth/login' }, function(err, user) {
-            console.log(user);
-            req.logIn(user, function(err) {
+    twitter: function (req, res) {
+        passport.authenticate('twitter', {failureRedirect: '/auth/login'}, function (err, user) {
+            if(err) console.log(err);
+            req.logIn(user, function (err) {
                 if (err) {
                     console.log(err);
                     res.serverError();
