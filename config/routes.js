@@ -67,6 +67,7 @@ module.exports.routes = {
 
     /*===== MindMap Controller =====*/
 
+    'post /mm/create': 'MindMapController.create',
     'get /mm/:id': {
         controller: 'MindMapController',
         action: 'index',
