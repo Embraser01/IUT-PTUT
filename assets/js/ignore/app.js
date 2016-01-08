@@ -536,7 +536,6 @@ MindmapFrame = function (c) {
                 if ("folded" in style)
                     this.style.folded = style.folded;
 
-                // TODO Delete this function if this is not necessary
                 if ("container" in style && "width" in style.container)
                     this.style.container.width = style.container.width;
 
