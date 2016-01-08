@@ -7,9 +7,9 @@ function queryNodesUpdate(nodes) {
     // Escape all things, we are not sure if id is an int or not
 
     _.forEach(nodes, function (n) {
-        part_req1 += "WHEN '" + EscapeService.escape(n.id) + "' THEN '" + EscapeService.escape(n.parent_node) + "' ";
-        part_req2 += "WHEN '" + EscapeService.escape(n.id) + "' THEN '" + EscapeService.escape(n.label) + "' ";
-        part_req3 += EscapeService.escape(n.id) + ",";
+        part_req1 += "WHEN '" + EscapeService.escape(n.id.toString()) + "' THEN '" + EscapeService.escape(n.parent_node.toString()) + "' ";
+        part_req2 += "WHEN '" + EscapeService.escape(n.id.toString()) + "' THEN '" + EscapeService.escape(n.label) + "' ";
+        part_req3 += EscapeService.escape(n.id.toString()) + ",";
     });
     part_req1 += "ELSE `parent_node` END), ";
     part_req2 += "ELSE `label` END) ";
@@ -25,8 +25,8 @@ function queryStylesUpdate(nodes, req) {
     var part_req2 = "WHERE `owner` = " + req.user.id + " AND `node` IN (";
 
     _.forEach(nodes, function (n) {
-        part_req1 += "WHEN '" + EscapeService.escape(n.id) + "' THEN '" + EscapeService.escape(SerializeService.serialize(n.style)) + "' ";
-        part_req2 += n.id + ",";
+        part_req1 += "WHEN '" + EscapeService.escape(n.id.toString()) + "' THEN '" + EscapeService.escape(SerializeService.serialize(n.style)) + "' ";
+        part_req2 += EscapeService.escape(n.id.toString()) + ",";
     });
     part_req1 += "ELSE `style` END) ";
     part_req2 = part_req2.slice(0, -1) + ");";
@@ -108,7 +108,6 @@ module.exports = {
                             _.forEach(nodes, function (n) {
                                 // On laisse un seul style
                                 n.style = SerializeService.unserialize(n.styles[0].style);
-                                n.style.fold = n.styles[0].fold;
                                 n.styles = null;
 
                                 // Remplace 0 par null pour le parent
@@ -129,7 +128,6 @@ module.exports = {
                         _.forEach(nodes, function (n) {
                             // On laisse un seul style
                             n.style = SerializeService.unserialize(n.styles[0].style);
-                            n.style.fold = n.styles[0].fold;
                             n.styles = null;
 
                             // Remplace 0 par null pour le parent

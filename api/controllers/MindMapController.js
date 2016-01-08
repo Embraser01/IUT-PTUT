@@ -27,6 +27,7 @@ module.exports = {
         var style = {
             order: 1,
             dx: 0,
+            folded: false,
             container: {
                 kind: "rectangle",
                 borderThickness: "0",
@@ -104,7 +105,6 @@ module.exports = {
                     _.forEach(nodes, function (n) {
                         // On laisse un seul style
                         n.style = SerializeService.unserialize(n.styles[0].style);
-                        n.style.fold = n.styles[0].fold;
                         n.styles = null;
 
                         // Remplace 0 par null pour le parent

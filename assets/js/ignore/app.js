@@ -3,7 +3,7 @@
  *
  * nodes: [{
  *          id: id_du_noeud,
- *          parent_node: id_du_noeud_parent,
+ *          parentNode: id_du_noeud_parent,
  *          label: label_du_noeud,
  *          style: {
  *              order: ordre_parmi_ses_freres,
@@ -50,14 +50,14 @@ MindmapFrame = function (c) {
      * MindMap Node Object
      *
      * @param id {Integer} Node unique identifiant
-     * @param parent_node {MindmapNode}Parent node
+     * @param parentNode {MindmapNode}Parent node
      * @param worker id of the user who work on this node
      * @param permission ?? Permission of the user for this node
      * @param style {Object} Style of the node
      * @param label {String} Label of the node
      * @constructor
      */
-    MindmapNode = function (id, parent_node, worker, permission, style, label) {
+    MindmapNode = function (id, parentNode, worker, permission, style, label) {
 
 
         /*====== VARIABLES =====*/
@@ -75,7 +75,7 @@ MindmapFrame = function (c) {
          * @null
          * @type {MindmapNode}
          */
-        this.parent_node = parent_node;
+        this.parentNode = parentNode;
 
         /**
          * Label of the node
@@ -206,12 +206,12 @@ MindmapFrame = function (c) {
             this.textElement.appendChild(this.textNode);
 
             //Create DOM Element for branch, set orientation
-            if (this.parent_node != null) {
+            if (this.parentNode != null) {
 
-                if (this.parent_node.parent_node == undefined)
+                if (this.parentNode.parentNode == undefined)
                     this.orientation = (this.style.dx < 0) ? 'left' : 'right';
                 else
-                    this.orientation = this.parent_node.orientation;
+                    this.orientation = this.parentNode.orientation;
 
                 if (this.orientation == 'left')
                     this.style.dx = -Math.abs(this.style.dx);
@@ -481,22 +481,22 @@ MindmapFrame = function (c) {
 
             //branchElement init
 
-            if (this.parent_node != null) {
+            if (this.parentNode != null) {
 
                 //edit pathEelement.d
-                if (this.position.x < this.parent_node.position.x) {
+                if (this.position.x < this.parentNode.position.x) {
 
-                    var path = 'M' + this.parent_node.nodeConnecter.lx + ',' + this.parent_node.nodeConnecter.y + ' ';
-                    path += 'C' + (this.nodeConnecter.rx + 0.333 * (this.parent_node.nodeConnecter.lx - this.nodeConnecter.rx)) + ',' + this.parent_node.nodeConnecter.y + ' ';
-                    path += (this.nodeConnecter.rx + 0.666 * (this.parent_node.nodeConnecter.lx - this.nodeConnecter.rx)) + ',' + this.nodeConnecter.y + ' ';
+                    var path = 'M' + this.parentNode.nodeConnecter.lx + ',' + this.parentNode.nodeConnecter.y + ' ';
+                    path += 'C' + (this.nodeConnecter.rx + 0.333 * (this.parentNode.nodeConnecter.lx - this.nodeConnecter.rx)) + ',' + this.parentNode.nodeConnecter.y + ' ';
+                    path += (this.nodeConnecter.rx + 0.666 * (this.parentNode.nodeConnecter.lx - this.nodeConnecter.rx)) + ',' + this.nodeConnecter.y + ' ';
                     path += this.nodeConnecter.rx + ',' + this.nodeConnecter.y;
 
                 }
                 else {
 
-                    var path = 'M' + this.parent_node.nodeConnecter.rx + ',' + this.parent_node.nodeConnecter.y + ' ';
-                    path += 'C' + (this.parent_node.nodeConnecter.rx + 0.666 * (this.nodeConnecter.lx - this.parent_node.nodeConnecter.rx)) + ',' + this.parent_node.nodeConnecter.y + ' ';
-                    path += (this.parent_node.nodeConnecter.rx + 0.333 * (this.nodeConnecter.lx - this.parent_node.nodeConnecter.rx)) + ',' + this.nodeConnecter.y + ' ';
+                    var path = 'M' + this.parentNode.nodeConnecter.rx + ',' + this.parentNode.nodeConnecter.y + ' ';
+                    path += 'C' + (this.parentNode.nodeConnecter.rx + 0.666 * (this.nodeConnecter.lx - this.parentNode.nodeConnecter.rx)) + ',' + this.parentNode.nodeConnecter.y + ' ';
+                    path += (this.parentNode.nodeConnecter.rx + 0.333 * (this.nodeConnecter.lx - this.parentNode.nodeConnecter.rx)) + ',' + this.nodeConnecter.y + ' ';
                     path += this.nodeConnecter.lx + ',' + this.nodeConnecter.y;
 
                 }
@@ -544,12 +544,7 @@ MindmapFrame = function (c) {
 
                     _.forEach(style.font, function (n, key) {
                         this.style.font[key] = n;
-                    });
-
-                    // TODO Delete this function if this is not necessary
-                    //for (var k in style.font)
-                    //    if (k in style.font)
-                    //        this.style.font[k] = style.font[k];
+                    }.bind(this));
                 }
 
                 if ("parentBranch" in style && "color" in style.parentBranch)
@@ -560,17 +555,12 @@ MindmapFrame = function (c) {
 
                     _.forEach(style.font, function (n, key) {
                         this.style.unifiedChildren[key] = n;
-                    });
-
-                    // TODO Delete this function if this is not necessary
-                    //for (var k in style.unifiedChildren)
-                    //    if (k in style.unifiedChildren)
-                    //        this.style.unifiedChildren[k] = style.unifiedChildren[k];
+                    }.bind(this));
                 }
             }
 
-            if (drawFromParent && this.parent_node != null)
-                mindmap.drawMap(this.parent_node);
+            if (drawFromParent && this.parentNode != null)
+                mindmap.drawMap(this.parentNode);
             else
                 mindmap.drawMap(this);
 
@@ -587,9 +577,9 @@ MindmapFrame = function (c) {
             mindmap.layers.nodes.removeChild(this.nodeElement);
             mindmap.layers.branchs.removeChild(this.branchElement);
 
-            var parentChildId = this.parent_node.childNodes.indexOf(this);
+            var parentChildId = this.parentNode.childNodes.indexOf(this);
 
-            this.parent_node.childNodes.splice(parentChildId, 1);
+            this.parentNode.childNodes.splice(parentChildId, 1);
 
             delete mindmap.nodes[this.id];
 
@@ -598,7 +588,7 @@ MindmapFrame = function (c) {
 
         /*===== INITIALISATION =====*/
 
-        if (parent_node != null) parent_node.childNodes.push(this);
+        if (parentNode != null) parentNode.childNodes.push(this);
         else mindmap.rootNode = this;
 
         this.init();
@@ -784,11 +774,11 @@ MindmapFrame = function (c) {
      * TODO Javadoc
      * @param childNodes
      * @param clientY
-     * @param parent_node
+     * @param parentNode
      * @param orientation
      * @returns {{prevY_i: *, current_i: *, nextY_i: *}}
      */
-    this.nearBrothersVerticalPosition = function (childNodes, clientY, parent_node, orientation) {
+    this.nearBrothersVerticalPosition = function (childNodes, clientY, parentNode, orientation) {
 
         childNodes.sort(function (a, b) {
             return a.nodeElement.getBoundingClientRect().top - b.nodeElement.getBoundingClientRect().top;
@@ -807,7 +797,7 @@ MindmapFrame = function (c) {
 
             node_i.style.order = i;
 
-            if (node_i == parent_node)
+            if (node_i == parentNode)
                 current_i = i;
 
             //get only node which are in same side
@@ -911,7 +901,7 @@ MindmapFrame = function (c) {
      * Set the user id in the list of worker
      * @type {null}
      */
-    this.setWorker = function(user_id){
+    this.setWorker = function (user_id) {
         this.worker = user_id;
         this.workers[this.worker] = null;
     };
@@ -1033,8 +1023,8 @@ MindmapFrame = function (c) {
     this.computeNodeXPosition = function (node) { //Correct position accroding to orientation
 
 
-        if (node != this.rootNode && node.parent_node != this.rootNode)
-            node.orientation = node.parent_node.orientation;
+        if (node != this.rootNode && node.parentNode != this.rootNode)
+            node.orientation = node.parentNode.orientation;
 
         if (node.orientation == 'left')
             node.style.dx = -Math.abs(node.style.dx);
@@ -1045,18 +1035,18 @@ MindmapFrame = function (c) {
             node.position.x = node.position.y = 0;
         else if (node.orientation == 'left') {
 
-            if (node.parent_node == this.rootNode)
-                node.position.x = node.parent_node.position.x - Math.abs(node.style.dx) - parseInt(node.parent_node.rectElement.getAttribute('width')) / 2;
+            if (node.parentNode == this.rootNode)
+                node.position.x = node.parentNode.position.x - Math.abs(node.style.dx) - parseInt(node.parentNode.rectElement.getAttribute('width')) / 2;
             else
-                node.position.x = node.parent_node.position.x - Math.abs(node.style.dx) - parseInt(node.parent_node.rectElement.getAttribute('width'));
+                node.position.x = node.parentNode.position.x - Math.abs(node.style.dx) - parseInt(node.parentNode.rectElement.getAttribute('width'));
 
         }
         else if (node.orientation == 'right') {
 
-            if (node.parent_node == this.rootNode)
-                node.position.x = node.parent_node.position.x + Math.abs(node.style.dx) + parseInt(node.parent_node.rectElement.getAttribute('width')) / 2;
+            if (node.parentNode == this.rootNode)
+                node.position.x = node.parentNode.position.x + Math.abs(node.style.dx) + parseInt(node.parentNode.rectElement.getAttribute('width')) / 2;
             else
-                node.position.x = node.parent_node.position.x + Math.abs(node.style.dx) + parseInt(node.parent_node.rectElement.getAttribute('width'));
+                node.position.x = node.parentNode.position.x + Math.abs(node.style.dx) + parseInt(node.parentNode.rectElement.getAttribute('width'));
         }
 
     };
@@ -1168,22 +1158,22 @@ MindmapFrame = function (c) {
                                 }
                             };
 
-                            for (var i in eventManager.eventData.parent_node.childNodes) {
-                                eventManager.eventData.parent_node.childNodes[i].style.order = i;
+                            for (var i in eventManager.eventData.parentNode.childNodes) {
+                                eventManager.eventData.parentNode.childNodes[i].style.order = i;
                             }
 
                             var orientation = (eventManager.eventData.attach.getAttribute("name") == "lx") ? "left" : "right";
 
-                            var nearBrothers = mindmap.nearBrothersVerticalPosition(eventManager.eventData.parent_node.childNodes, e.clientY, eventManager.eventData.parent_node, orientation);
+                            var nearBrothers = mindmap.nearBrothersVerticalPosition(eventManager.eventData.parentNode.childNodes, e.clientY, eventManager.eventData.parentNode, orientation);
                             // console.log(nearBrothers)
 
                             if (nearBrothers.prevY_i == undefined)
                                 style.order = -1;
                             else if (nearBrothers.nextY_i == undefined)
-                                style.order = eventManager.eventData.parent_node.childNodes.length;
+                                style.order = eventManager.eventData.parentNode.childNodes.length;
                             else {
 
-                                style.order = (parseInt(eventManager.eventData.parent_node.childNodes[nearBrothers.prevY_i].style.order) + parseInt(eventManager.eventData.parent_node.childNodes[nearBrothers.nextY_i].style.order)) / 2;
+                                style.order = (parseInt(eventManager.eventData.parentNode.childNodes[nearBrothers.prevY_i].style.order) + parseInt(eventManager.eventData.parentNode.childNodes[nearBrothers.nextY_i].style.order)) / 2;
 
 
                             }
@@ -1194,12 +1184,12 @@ MindmapFrame = function (c) {
                             else
                                 style.dx = 100;
 
-                            style.container = JSON.parse(JSON.stringify(eventManager.eventData.parent_node.style.container));
-                            style.font = JSON.parse(JSON.stringify(eventManager.eventData.parent_node.style.font));
+                            style.container = JSON.parse(JSON.stringify(eventManager.eventData.parentNode.style.container));
+                            style.font = JSON.parse(JSON.stringify(eventManager.eventData.parentNode.style.font));
                             style.font.size = 16;
-                            style.parentBranch = JSON.parse(JSON.stringify(eventManager.eventData.parent_node.style.parentBranch));
+                            style.parentBranch = JSON.parse(JSON.stringify(eventManager.eventData.parentNode.style.parentBranch));
 
-                            mindmap.ioManager.out.newNode(eventManager.eventData.parent_node.id, mindmap.worker, null, style);
+                            mindmap.ioManager.out.newNode(eventManager.eventData.parentNode.id, mindmap.worker, null, style);
 
 
                             //Tout ce qui concerne la création du noeud s'arrête ici
@@ -1208,7 +1198,7 @@ MindmapFrame = function (c) {
 
                         case 'mousemove':
 
-                            var attach_x = eventManager.eventData.parent_node.nodeElement.getBoundingClientRect().left;
+                            var attach_x = eventManager.eventData.parentNode.nodeElement.getBoundingClientRect().left;
 
                             mindmap.newBranchElement.style.display = "";
 
@@ -1221,29 +1211,29 @@ MindmapFrame = function (c) {
 
                             if (eventManager.eventData.attach.getAttribute("name") == 'lx') {
 
-                                if (eventManager.eventData.w <= 100 && (eventManager.eventData.parent_node.nodeConnecter.lx - nodeConnecter.x) > eventManager.eventData.w)
-                                    eventManager.eventData.w = (eventManager.eventData.parent_node.nodeConnecter.lx - nodeConnecter.x);
+                                if (eventManager.eventData.w <= 100 && (eventManager.eventData.parentNode.nodeConnecter.lx - nodeConnecter.x) > eventManager.eventData.w)
+                                    eventManager.eventData.w = (eventManager.eventData.parentNode.nodeConnecter.lx - nodeConnecter.x);
 
-                                if ((eventManager.eventData.parent_node.nodeConnecter.lx - nodeConnecter.x) < eventManager.eventData.w)
-                                    nodeConnecter.x = eventManager.eventData.parent_node.nodeConnecter.lx - eventManager.eventData.w;
+                                if ((eventManager.eventData.parentNode.nodeConnecter.lx - nodeConnecter.x) < eventManager.eventData.w)
+                                    nodeConnecter.x = eventManager.eventData.parentNode.nodeConnecter.lx - eventManager.eventData.w;
 
-                                var path = 'M' + eventManager.eventData.parent_node.nodeConnecter.lx + ',' + eventManager.eventData.parent_node.nodeConnecter.y + ' ';
-                                path += 'C' + (nodeConnecter.x + 0.333 * (eventManager.eventData.parent_node.nodeConnecter.lx - nodeConnecter.x)) + ',' + eventManager.eventData.parent_node.nodeConnecter.y + ' ';
-                                path += (nodeConnecter.x + 0.666 * (eventManager.eventData.parent_node.nodeConnecter.lx - nodeConnecter.x)) + ',' + this.nodeConnecter.y + ' ';
+                                var path = 'M' + eventManager.eventData.parentNode.nodeConnecter.lx + ',' + eventManager.eventData.parentNode.nodeConnecter.y + ' ';
+                                path += 'C' + (nodeConnecter.x + 0.333 * (eventManager.eventData.parentNode.nodeConnecter.lx - nodeConnecter.x)) + ',' + eventManager.eventData.parentNode.nodeConnecter.y + ' ';
+                                path += (nodeConnecter.x + 0.666 * (eventManager.eventData.parentNode.nodeConnecter.lx - nodeConnecter.x)) + ',' + this.nodeConnecter.y + ' ';
                                 path += nodeConnecter.x + ',' + this.nodeConnecter.y;
 
                             }
                             else if (eventManager.eventData.attach.getAttribute("name") == 'rx') {
 
-                                if (eventManager.eventData.w <= 100 && -(eventManager.eventData.parent_node.nodeConnecter.rx - nodeConnecter.x) > eventManager.eventData.w)
-                                    eventManager.eventData.w = -(eventManager.eventData.parent_node.nodeConnecter.rx - nodeConnecter.x);
+                                if (eventManager.eventData.w <= 100 && -(eventManager.eventData.parentNode.nodeConnecter.rx - nodeConnecter.x) > eventManager.eventData.w)
+                                    eventManager.eventData.w = -(eventManager.eventData.parentNode.nodeConnecter.rx - nodeConnecter.x);
 
-                                if ((eventManager.eventData.parent_node.nodeConnecter.rx - nodeConnecter.x) > -eventManager.eventData.w)
-                                    nodeConnecter.x = eventManager.eventData.parent_node.nodeConnecter.rx + eventManager.eventData.w;
+                                if ((eventManager.eventData.parentNode.nodeConnecter.rx - nodeConnecter.x) > -eventManager.eventData.w)
+                                    nodeConnecter.x = eventManager.eventData.parentNode.nodeConnecter.rx + eventManager.eventData.w;
 
-                                var path = 'M' + eventManager.eventData.parent_node.nodeConnecter.rx + ',' + eventManager.eventData.parent_node.nodeConnecter.y + ' ';
-                                path += 'C' + (eventManager.eventData.parent_node.nodeConnecter.rx + 0.666 * (nodeConnecter.x - eventManager.eventData.parent_node.nodeConnecter.rx)) + ',' + eventManager.eventData.parent_node.nodeConnecter.y + ' ';
-                                path += (eventManager.eventData.parent_node.nodeConnecter.rx + 0.333 * (nodeConnecter.x - eventManager.eventData.parent_node.nodeConnecter.rx)) + ',' + this.nodeConnecter.y + ' ';
+                                var path = 'M' + eventManager.eventData.parentNode.nodeConnecter.rx + ',' + eventManager.eventData.parentNode.nodeConnecter.y + ' ';
+                                path += 'C' + (eventManager.eventData.parentNode.nodeConnecter.rx + 0.666 * (nodeConnecter.x - eventManager.eventData.parentNode.nodeConnecter.rx)) + ',' + eventManager.eventData.parentNode.nodeConnecter.y + ' ';
+                                path += (eventManager.eventData.parentNode.nodeConnecter.rx + 0.333 * (nodeConnecter.x - eventManager.eventData.parentNode.nodeConnecter.rx)) + ',' + this.nodeConnecter.y + ' ';
                                 path += nodeConnecter.x + ',' + this.nodeConnecter.y;
 
                             }
@@ -1283,7 +1273,7 @@ MindmapFrame = function (c) {
                             eventManager.eventType = null;
 
                             if (eventManager.eventData.node != mindmap.rootNode)
-                                mindmap.ioManager.out.editNodes(eventManager.eventData.node.parent_node.childNodes);
+                                mindmap.ioManager.out.editNodes(eventManager.eventData.node.parentNode.childNodes);
 
                             mindmap.selectNode(eventManager.eventData.node);
 
@@ -1294,17 +1284,17 @@ MindmapFrame = function (c) {
 
                             var dx = (e.clientX - eventManager.eventData.x) / mindmap.view.zoom + eventManager.eventData.dx;
 
-                            var nearBrothers = mindmap.nearBrothersVerticalPosition(eventManager.eventData.node.parent_node.childNodes, e.clientY, eventManager.eventData.node, eventManager.eventData.node.orientation);
+                            var nearBrothers = mindmap.nearBrothersVerticalPosition(eventManager.eventData.node.parentNode.childNodes, e.clientY, eventManager.eventData.node, eventManager.eventData.node.orientation);
 
                             var prevY_i = nearBrothers.prevY_i;
                             var current_i = nearBrothers.current_i;
                             var nextY_i = nearBrothers.nextY_i;
 
                             if (prevY_i != null && current_i < prevY_i && prevY_i != nextY_i) {
-                                mindmap.switchNodeInSiblings(eventManager.eventData.node, eventManager.eventData.node.parent_node.childNodes[prevY_i]);
+                                mindmap.switchNodeInSiblings(eventManager.eventData.node, eventManager.eventData.node.parentNode.childNodes[prevY_i]);
                             }
                             else if (nextY_i != null && current_i > nextY_i && prevY_i != nextY_i) {
-                                mindmap.switchNodeInSiblings(eventManager.eventData.node, eventManager.eventData.node.parent_node.childNodes[nextY_i]);
+                                mindmap.switchNodeInSiblings(eventManager.eventData.node, eventManager.eventData.node.parentNode.childNodes[nextY_i]);
                             }
 
                             var middle_x = mindmap.rootNode.rectElement.getBoundingClientRect().left + mindmap.rootNode.rectElement.getBoundingClientRect().width / 2;
@@ -1317,7 +1307,7 @@ MindmapFrame = function (c) {
                                 if (-100 < dx)
                                     dx = -100;
 
-                                if (eventManager.eventData.node.parent_node == mindmap.rootNode && e.clientX > middle_x) {
+                                if (eventManager.eventData.node.parentNode == mindmap.rootNode && e.clientX > middle_x) {
                                     eventManager.eventData.node.orientation = "right";
                                     change_side = true;
 
@@ -1329,7 +1319,7 @@ MindmapFrame = function (c) {
                                 if (dx < 100)
                                     dx = 100;
 
-                                if (eventManager.eventData.node.parent_node == mindmap.rootNode && e.clientX < middle_x) {
+                                if (eventManager.eventData.node.parentNode == mindmap.rootNode && e.clientX < middle_x) {
                                     eventManager.eventData.node.orientation = "left";
                                     change_side = true;
                                 }
@@ -1339,7 +1329,7 @@ MindmapFrame = function (c) {
 
                             eventManager.eventData.node.style.dx = dx;
 
-                            mindmap.drawMap(eventManager.eventData.node.parent_node);
+                            mindmap.drawMap(eventManager.eventData.node.parentNode);
 
                             if (change_side) {
 
@@ -1371,7 +1361,7 @@ MindmapFrame = function (c) {
 
                             if (e.target.nodeName == 'text' || e.target.nodeName == 'rect' || e.target.nodeName == 'line') {
 
-                                var nodeId = e.target.parent_node.id;
+                                var nodeId = e.target.parentNode.id;
 
                                 if (mindmap.nodes[nodeId] != mindmap.rootNode && mindmap.nodes[nodeId].childNodes.length > 0) {
 
@@ -1411,7 +1401,7 @@ MindmapFrame = function (c) {
                             else if (e.target.nodeName == 'text' || e.target.nodeName == 'rect' || e.target.nodeName == 'line') {
                                 eventManager.eventType = 'offsetNode';
 
-                                var nodeId = e.target.parent_node.id;
+                                var nodeId = e.target.parentNode.id;
 
                                 eventManager.eventData = {
                                     x: e.clientX,
@@ -1423,10 +1413,10 @@ MindmapFrame = function (c) {
                             else if (e.target.nodeName == 'circle' && (e.target.getAttribute("name") == "lx" || e.target.getAttribute("name") == "rx")) {
                                 eventManager.eventType = 'newNode';
 
-                                var nodeId = e.target.parent_node.id;
+                                var nodeId = e.target.parentNode.id;
 
                                 eventManager.eventData = {
-                                    parent_node: mindmap.nodes[nodeId],
+                                    parentNode: mindmap.nodes[nodeId],
                                     attach: e.target,
                                     newNode: null,
                                     w: 0
@@ -1561,13 +1551,13 @@ MindmapFrame = function (c) {
 
 
             ////When user query server to get the id of a new node
-            this.newNode = function (parent_nodeId, worker, permission, style) {
+            this.newNode = function (parentNodeId, worker, permission, style) {
 
                 console.log("Out : demande création noeud");
 
                 io.socket.post(basePath + "node/new", {
                     nodes: [{
-                        parent_node: parent_nodeId,
+                        parent_node: parentNodeId,
                         style: style,
                         label: 'New node',
                         permission: permission
@@ -1590,7 +1580,7 @@ MindmapFrame = function (c) {
 
                 io.socket.post(path, {
                     nodes: [{
-                        parent_node: node.parent_node.id,
+                        parent_node: node.parentNode.id,
                         style: node.style,
                         label: node.label,
                         id: node.id
@@ -1615,7 +1605,7 @@ MindmapFrame = function (c) {
 
                 _.forEach(nodes, function (n) {
                     data.nodes.push({
-                        parent_node: n.parent_node.id,
+                        parent_node: n.parentNode.id,
                         style: n.style,
                         label: n.label,
                         id: n.id
@@ -1691,14 +1681,14 @@ MindmapFrame = function (c) {
                 node = mindmap.nodes[node.id];
 
 
-                if (node.parent_node) {
-                    node.parent_node.childNodes.sort(function (a, b) {
+                if (node.parentNode) {
+                    node.parentNode.childNodes.sort(function (a, b) {
                         return a.style.order - b.style.order;
                     });
 
-                    for (var i in node.parent_node.childNodes) {
+                    for (var i in node.parentNode.childNodes) {
 
-                        node.parent_node.childNodes[i].style.order = i;
+                        node.parentNode.childNodes[i].style.order = i;
                     }
                 }
                 mindmap.newBranchElement.style.display = "none"; //bug risk
