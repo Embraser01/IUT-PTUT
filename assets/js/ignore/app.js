@@ -527,11 +527,25 @@ MindmapFrame = function (c) {
 
             if (text != null)
                 this.label = text;
+			
+			console.log(this.label, style)
 
             if (style) {
 
-                if ("dx" in style)
-                    this.style.dx = style.dx;
+				
+                if ("dx" in style) {
+                    this.style.dx = style.dx;	
+					
+					//TODO: Risque de bug, peut être que ce test ne s'applique qu'à la première génération
+					if (this.style.dx < 0)
+						this.orientation = 'left';
+					else
+						this.orientation = 'right';
+				}
+
+				
+                if ("order" in style)
+                    this.style.order = style.order;
 
                 if ("folded" in style)
                     this.style.folded = style.folded;
@@ -1675,7 +1689,7 @@ MindmapFrame = function (c) {
                     }
                     mindmap.workers[node.worker] = node.id; //On séléctionne le nouveau noeud
                 }
-                console.log(node);
+                // console.log(node);
                 mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
                 node = mindmap.nodes[node.id];
 
@@ -1753,6 +1767,8 @@ MindmapFrame = function (c) {
             this.editNode = function (workerId, node, isMe) {
 
                 mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
+				
+				console.log("When a collaborator edit a node", node.label, node.style.order)
 
                 console.log("In : Node edited");
 
@@ -1829,3 +1845,7 @@ MindmapFrame = function (c) {
 
     this.initialize();
 }
+
+
+//dbg
+// setTimeout(function (){console.clear();document.title = new Date().getTime()%100;}, 2000);
