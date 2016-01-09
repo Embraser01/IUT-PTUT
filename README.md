@@ -5,7 +5,7 @@
 * Cloner le repo
 * Faire un npm install
 * Créer trois fichiers dans /config:
-* * connections.js
+  * connections.js
 ```javascript
 
 module.exports.connections = {
@@ -21,7 +21,7 @@ module.exports.connections = {
 
 ```
 
-* * local.js
+  * local.js
 
 ```javascript
 
@@ -35,7 +35,7 @@ module.exports = {
 ```
 
 
-* * passport.js
+   * passport.js
 
 ```javascript
 
@@ -170,7 +170,7 @@ passport.use(new TwitterStrategy({
 
 * Forcer la construction de la base de données (changer la première et remettre par défaut)
 
-* * /config/model.js
+  * /config/model.js
 
 ```javascript
 
