@@ -1676,7 +1676,7 @@ MindmapFrame = function (c) {
                 io.socket.post(basePath + "node/delete", data, function (ids) {
 
                     _.forEach(ids, function (n) {
-                        mindmap.ioManager.in.deleteNode(0, n);
+                        mindmap.ioManager.in.deleteNode(n.id);
                     });
 
                 });
@@ -1780,7 +1780,7 @@ MindmapFrame = function (c) {
             };
 
             //When a collaborator delete a node
-            this.deleteNode = function (workerId, nodeId) {
+            this.deleteNode = function (nodeId) {
 
 
                 var traverseDelete = function (node) {
@@ -1827,7 +1827,7 @@ MindmapFrame = function (c) {
                                 break;
                             case 'Delete_nodes':
                                 _.forEach(message.data.msg, function (n) {
-                                    mindmap.ioManager.in.deleteNode(0, n);
+                                    mindmap.ioManager.in.deleteNode(n.id);
                                 });
                                 break;
 
