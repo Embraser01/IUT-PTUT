@@ -527,23 +527,23 @@ MindmapFrame = function (c) {
 
             if (text != null)
                 this.label = text;
-			
-			console.log(this.label, style)
+
+            console.log(this.label, style)
 
             if (style) {
 
-				
-                if ("dx" in style) {
-                    this.style.dx = style.dx;	
-					
-					//TODO: Risque de bug, peut être que ce test ne s'applique qu'à la première génération
-					if (this.style.dx < 0)
-						this.orientation = 'left';
-					else
-						this.orientation = 'right';
-				}
 
-				
+                if ("dx" in style) {
+                    this.style.dx = style.dx;
+
+                    //TODO: Risque de bug, peut être que ce test ne s'applique qu'à la première génération
+                    if (this.style.dx < 0)
+                        this.orientation = 'left';
+                    else
+                        this.orientation = 'right';
+                }
+
+
                 if ("order" in style)
                     this.style.order = style.order;
 
@@ -579,7 +579,7 @@ MindmapFrame = function (c) {
 
 
             // TODO Bouger la fonction à la vraie edition et appeler cette fonction après la réponse serveur
-            if (isMe) mindmap.ioManager.out.editNode(this);
+            if (isMe) mindmap.ioManager.out.editNode(this, true);
         };
 
         /**
@@ -1285,8 +1285,8 @@ MindmapFrame = function (c) {
                         case 'mouseup':
                             eventManager.eventType = null;
 
-							// console.log(e.clientX, eventManager.eventData.x)
-							
+                            // console.log(e.clientX, eventManager.eventData.x)
+
                             if (eventManager.eventData.node != mindmap.rootNode && e.clientX != eventManager.eventData.x && e.clientY != eventManager.eventData.y)
                                 mindmap.ioManager.out.editNodes(eventManager.eventData.node.parentNode.childNodes);
 
@@ -1387,7 +1387,7 @@ MindmapFrame = function (c) {
 
                                     mindmap.drawMap();
 
-									mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
+                                    mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
                                 }
                             }
                             else if (e.target.nodeName == 'g' && e.target.name == 'node') {
@@ -1402,8 +1402,8 @@ MindmapFrame = function (c) {
                                         mindmap.nodes[nodeId].hideNodeChildren();
 
                                     mindmap.drawMap();
-									
-									mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
+
+                                    mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
 
                                 }
                             }
@@ -1772,8 +1772,8 @@ MindmapFrame = function (c) {
             this.editNode = function (workerId, node, isMe) {
 
                 mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
-				
-				// console.log("When a collaborator edit a node", node.label, node.style.order)
+
+                // console.log("When a collaborator edit a node", node.label, node.style.order)
 
                 //console.log("In : Node edited");
 
