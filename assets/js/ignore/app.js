@@ -1163,6 +1163,7 @@ MindmapFrame = function (c) {
 
 
                             var style = {
+                                "folded": false,
                                 "unifiedChildren": {
                                     "dx": false,
                                     "container": false,
