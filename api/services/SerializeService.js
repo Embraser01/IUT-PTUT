@@ -12,7 +12,7 @@ function unserialize_0_0_1_(bigCategory) {
         unserialized_style = {
             order: bigCategory[0],
             dx: bigCategory[1],
-            folded: bigCategory[2],
+            folded: bigCategory[2] == 'true',
             container: {
                 kind: containerData[0],
                 borderThickness: containerData[1],
