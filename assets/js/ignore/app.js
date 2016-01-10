@@ -1285,7 +1285,9 @@ MindmapFrame = function (c) {
                         case 'mouseup':
                             eventManager.eventType = null;
 
-                            if (eventManager.eventData.node != mindmap.rootNode)
+							// console.log(e.clientX, eventManager.eventData.x)
+							
+                            if (eventManager.eventData.node != mindmap.rootNode && e.clientX != eventManager.eventData.x && e.clientY != eventManager.eventData.y)
                                 mindmap.ioManager.out.editNodes(eventManager.eventData.node.parentNode.childNodes);
 
                             mindmap.selectNode(eventManager.eventData.node);
@@ -1385,6 +1387,7 @@ MindmapFrame = function (c) {
 
                                     mindmap.drawMap();
 
+									mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
                                 }
                             }
                             else if (e.target.nodeName == 'g' && e.target.name == 'node') {
@@ -1399,6 +1402,8 @@ MindmapFrame = function (c) {
                                         mindmap.nodes[nodeId].hideNodeChildren();
 
                                     mindmap.drawMap();
+									
+									mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
 
                                 }
                             }
@@ -1708,7 +1713,7 @@ MindmapFrame = function (c) {
 
                 mindmap.drawMap();
 
-                console.log("In : Node created");
+                //console.log("In : Node created");
             };
 
 
@@ -1740,7 +1745,7 @@ MindmapFrame = function (c) {
 
                 mindmap.nodes[nodeId].drawNode();
 
-                console.log("In : Node selected");
+                //console.log("In : Node selected");
 
             };
 
@@ -1751,7 +1756,7 @@ MindmapFrame = function (c) {
                 mindmap.nodes[nodeId].worker = null;
                 mindmap.nodes[nodeId].drawNode();
 
-                console.log("In : Node unselected");
+                //console.log("In : Node unselected");
 
             };
 
@@ -1759,7 +1764,7 @@ MindmapFrame = function (c) {
              //When a collaborator force me to unselect a node
              this.looseNode = function (workerId, nodeId) {
 
-             console.log("In : loose Node selection");
+             //console.log("In : loose Node selection");
 
              };*/
 
@@ -1768,9 +1773,9 @@ MindmapFrame = function (c) {
 
                 mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
 				
-				console.log("When a collaborator edit a node", node.label, node.style.order)
+				// console.log("When a collaborator edit a node", node.label, node.style.order)
 
-                console.log("In : Node edited");
+                //console.log("In : Node edited");
 
             };
 
@@ -1796,7 +1801,7 @@ MindmapFrame = function (c) {
 
                 mindmap.drawMap();
 
-                console.log("In : Node deleted");
+                //console.log("In : Node deleted");
 
             };
 
