@@ -1558,7 +1558,6 @@ MindmapFrame = function (c) {
                     _.forEach(data.nodes, function (n) {
                         mindmap.ioManager.in.createdNode(n);
                     });
-
                 });
             };
 

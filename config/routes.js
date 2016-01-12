@@ -89,5 +89,11 @@ module.exports.routes = {
     'post /mm/:id/node/new': 'NodeController.new',
     'post /mm/:id/node/update/:style': 'NodeController.update',
     'post /mm/:id/node/delete': 'NodeController.delete',
-    'post /mm/:id/node/getAll': 'NodeController.getAll'
+    'post /mm/:id/node/getAll': 'NodeController.getAll',
+
+
+    /*===== Test Controller =====*/
+
+    //'/test/order': 'TestController.getOne',
+    //'/test/order': 'TestController.all',
 };
