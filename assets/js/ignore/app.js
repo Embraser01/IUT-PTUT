@@ -577,7 +577,7 @@ MindmapFrame = function (c) {
             else
                 mindmap.drawMap(this);
 
-
+console.log(isMe);
             // TODO Bouger la fonction à la vraie edition et appeler cette fonction après la réponse serveur
             if (isMe) mindmap.ioManager.out.editNode(this, true);
         };
@@ -1594,7 +1594,7 @@ MindmapFrame = function (c) {
 
                 console.log("Out : edit Node", node);
 
-                var path = basePath + "node/update/" + (updateStyle) ? 'yes' : 'no'
+                var path = basePath + "node/update/" + (updateStyle ? 'yes' : 'no');
 
                 io.socket.post(path, {
                     nodes: [{
@@ -1770,7 +1770,7 @@ MindmapFrame = function (c) {
 
             //When a collaborator edit a node
             this.editNode = function (workerId, node, isMe) {
-
+console.log(isMe);
                 mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
 
                 // console.log("When a collaborator edit a node", node.label, node.style.order)
