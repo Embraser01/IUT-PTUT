@@ -277,6 +277,48 @@ MindmapFrame = function (c) {
             traverse(this);
 
         };
+		
+        /**
+         * Recursive function to show all children
+         */
+        this.showNodeChildren = function () {
+
+            var traverse = function (node) {
+                _.forEach(node.childNodes, function (n) {
+                    n.showNode();
+                    traverse(n);
+                });
+            };
+            traverse(this);
+
+        };
+		
+        this.orderizeChildren = function () {
+
+			if (this.parentNode) {
+				this.parentNode.childNodes.sort(function (a, b) {
+					return parseFloat(a.style.order) - parseFloat(b.style.order);
+				});
+
+				for (var i in this.parentNode.childNodes) {
+					this.parentNode.childNodes[i].style.order = parseInt(i);
+				}
+				
+				console.log(this.label, this.parentNode.childNodes);
+			}
+        };
+		
+        this.orderizeDescendance = function () {
+
+            var traverse = function (node) {
+                _.forEach(node.childNodes, function (n) {
+                    n.orderizeChildren();
+                    traverse(n);
+                });
+            };
+            traverse(this);
+
+        };
 
         /**
          * Draw the node with the style attribute
@@ -528,7 +570,7 @@ MindmapFrame = function (c) {
             if (text != null)
                 this.label = text;
 
-            console.log(this.label, style)
+            // console.log(this.label, style)
 
             if (style) {
 
@@ -547,8 +589,20 @@ MindmapFrame = function (c) {
                 if ("order" in style)
                     this.style.order = style.order;
 
-                if ("folded" in style)
+                if ("folded" in style) {
+					
+					var refreshFolded = (this.style.folded != style.folded);
+					
                     this.style.folded = style.folded;
+
+					if(refreshFolded) {
+						if(this.style.folded)
+							this.hideNodeChildren();
+						else
+							this.showNodeChildren();
+					}
+				}
+
 
                 if ("container" in style && "width" in style.container)
                     this.style.container.width = style.container.width;
@@ -577,7 +631,7 @@ MindmapFrame = function (c) {
             else
                 mindmap.drawMap(this);
 
-console.log(isMe);
+
             // TODO Bouger la fonction à la vraie edition et appeler cette fonction après la réponse serveur
             if (isMe) mindmap.ioManager.out.editNode(this, true);
         };
@@ -1284,12 +1338,14 @@ console.log(isMe);
                     switch (e.type) {
 
                         case 'mouseup':
-                            eventManager.eventType = null;
+                            eventManager.eventType = null;	
 
-                            // console.log(e.clientX, eventManager.eventData.x)
 
-                            if (eventManager.eventData.node != mindmap.rootNode && e.clientX != eventManager.eventData.x && e.clientY != eventManager.eventData.y)
+                            if (eventManager.eventData.node != mindmap.rootNode && (e.clientX != eventManager.eventData.x || e.clientY != eventManager.eventData.y)) {
+							
                                 mindmap.ioManager.out.editNodes(eventManager.eventData.node.parentNode.childNodes);
+								
+							}
 
                             mindmap.selectNode(eventManager.eventData.node);
 
@@ -1374,24 +1430,25 @@ console.log(isMe);
 
                         case "dblclick" :
 
-
                             if (e.target.nodeName == 'text' || e.target.nodeName == 'rect' || e.target.nodeName == 'line') {
 
                                 var nodeId = e.target.parentNode.id;
+								
+								var node = mindmap.nodes[nodeId];
+								
+                                if (node != mindmap.rootNode && node.childNodes.length > 0) {
 
-                                if (mindmap.nodes[nodeId] != mindmap.rootNode && mindmap.nodes[nodeId].childNodes.length > 0) {
+                                    node.style.folded = !node.style.folded;
 
-                                    mindmap.nodes[nodeId].style.folded = !mindmap.nodes[nodeId].style.folded;
-
-                                    if (mindmap.nodes[nodeId].style.folded)
-                                        mindmap.nodes[nodeId].hideNodeChildren();
+                                    if (node.style.folded)
+                                        node.hideNodeChildren();
 
                                     mindmap.drawMap();
 
-                                    mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
+                                    mindmap.ioManager.out.editNode(node, true);
                                 }
                             }
-                            else if (e.target.nodeName == 'g' && e.target.name == 'node') {
+                            /*else if (e.target.nodeName == 'g' && e.target.name == 'node') {
 
                                 var nodeId = e.target.id;
 
@@ -1407,7 +1464,7 @@ console.log(isMe);
                                     mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
 
                                 }
-                            }
+                            }*/
 
                             break;
 
@@ -1552,12 +1609,17 @@ console.log(isMe);
                     // Subscribe to mindmap event and receive all the mindmap once
 
                     console.log("Parsing data ...");
-                    console.log(data);
+                    // console.log(data);
 
-                    mindmap.setWorker(data.user);
+					mindmap.ioManager.in.open(data.nodes);
+					/*
                     _.forEach(data.nodes, function (n) {
+
                         mindmap.ioManager.in.createdNode(n);
-                    });
+                    }); */
+
+					mindmap.setWorker(data.user);
+
                 });
             };
 
@@ -1604,7 +1666,6 @@ console.log(isMe);
                         id: node.id
                     }]
                 }, function (nodes) {
-
                     _.forEach(nodes, function (n) {
                         mindmap.ioManager.in.editNode(0, n, false);
                     });
@@ -1685,8 +1746,32 @@ console.log(isMe);
         };
 
         this.in = new function () {
-
+			
+			this.open = function (nodes) {
+				
+				for(var i in nodes) {
+					
+					var node = nodes[i];
+					mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
+					
+					if(nodes[i].parentNode == undefined)
+						this.rootNode = nodes[i];					
+					
+					if(node.id in mindmap.workers && mindmap.workers[node.id].worker != null)
+						mindmap.workers[ mindmap.workers[node.id].worker] = node.id;
+				}
+				
+				mindmap.rootNode.orderizeDescendance();
+				
+				mindmap.drawMap();
+				
+			};
+			
             this.createdNode = function (node) {
+				
+				// console.log(node.label, node.style.order);
+				
+				// node.style.order = parseFloat(node.style.order);
 
                 if (node.worker != null) { //Si le noeud possède un worker courant
                     if (mindmap.workers[node.worker] != null) { //Si le worker existe déjà
@@ -1694,9 +1779,10 @@ console.log(isMe);
                     }
                     mindmap.workers[node.worker] = node.id; //On séléctionne le nouveau noeud
                 }
-
-                node.style.order = node.style.order_bis; // Handle the bug with order attribute
-
+				// console.log(node.style.order, node.style.order_bis);
+				// console.log(node);
+				// node.style.order = node.style.order_bis;
+				
                 // console.log(node);
                 mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
                 node = mindmap.nodes[node.id];
@@ -1704,16 +1790,18 @@ console.log(isMe);
 
                 if (node.parentNode) {
                     node.parentNode.childNodes.sort(function (a, b) {
-                        return a.style.order - b.style.order;
+                        return parseFloat(a.style.order) - parseFloat(b.style.order);
                     });
 
                     for (var i in node.parentNode.childNodes) {
-
-                        node.parentNode.childNodes[i].style.order = i;
+                        node.parentNode.childNodes[i].style.order = parseInt(i);
                     }
+					
+					console.log(node.label, node.parentNode.childNodes);
                 }
                 mindmap.newBranchElement.style.display = "none"; //bug risk
-
+				
+				console.log(node.label, node.style.order);
                 mindmap.drawMap();
 
                 //console.log("In : Node created");
@@ -1773,12 +1861,12 @@ console.log(isMe);
 
             //When a collaborator edit a node
             this.editNode = function (workerId, node, isMe) {
-console.log(isMe);
+
                 mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
 
                 // console.log("When a collaborator edit a node", node.label, node.style.order)
 
-                //console.log("In : Node edited");
+                console.log("In : Node edited");
 
             };
 
@@ -1819,6 +1907,9 @@ console.log(isMe);
                                 break;
                             case 'New_nodes':
                                 _.forEach(message.data.msg, function (n) {
+									
+								
+									//console.log(n.style.order, n.style.order_bis);
                                     mindmap.ioManager.in.createdNode(n);
                                 });
                                 break;
