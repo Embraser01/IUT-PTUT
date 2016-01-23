@@ -11,6 +11,7 @@ function unserialize_0_0_1_(bigCategory) {
     try {
         unserialized_style = {
             order: bigCategory[0],
+            order_bis: bigCategory[0],
             dx: bigCategory[1],
             folded: bigCategory[2] == 'true',
             container: {

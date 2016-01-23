@@ -29,10 +29,15 @@
             <div class="mdl-layout-spacer"></div>
 
             <nav class="mdl-navigation mdl-layout--large-screen-only">
-                <% if(req.session.user != null) { %>
+                <% if(req.isAuthenticated()) { %>
                 <a id="menu-user"
                    class="mdl-navigation__link mdl-navigation__link--icon">
-                    <img class="avatar" src="/images/users/<%= req.session.user.id %>.jpg">
+                    <% if(req.user.img_url) { %>
+                    <img class="avatar" src="<%- req.user.img_url %>">
+                    <% } else  { %>
+                    <i class="material-icons">account_circle</i>
+                    <% } %>
+
                     <span><%= req.user.display_name %></span>
                     <i class="material-icons">keyboard_arrow_down</i>
                 </a>

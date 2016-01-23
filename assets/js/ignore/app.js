@@ -1694,6 +1694,9 @@ console.log(isMe);
                     }
                     mindmap.workers[node.worker] = node.id; //On séléctionne le nouveau noeud
                 }
+
+                node.style.order = node.style.order_bis; // Handle the bug with order attribute
+
                 // console.log(node);
                 mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
                 node = mindmap.nodes[node.id];
