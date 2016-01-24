@@ -329,6 +329,8 @@ MindmapFrame = function (c) {
                 x: this.position.x,
                 y: this.position.y
             };
+			
+			this.textElement.textContent = this.label;
 
             //folder correction
 
@@ -389,14 +391,20 @@ MindmapFrame = function (c) {
 
             if (this.style.font.weight == 'bold')
                 this.textElement.style.fontWeight = 'bold';
-
+			else
+                this.textElement.style.fontWeight = 'normal';
+			
             if (this.style.font.style == 'italic')
                 this.textElement.style.fontStyle = 'italic';
-
+			else
+                this.textElement.style.fontStyle = 'normal';
+			
             if (this.style.font.decoration == 'underline')
                 this.textElement.style.textDecoration = 'underline';
             else if (this.style.font.decoration == 'strike')
                 this.textElement.style.textDecoration = 'line-through';
+			else
+                this.textElement.style.textDecoration = 'none';
 
 
             //rectElement, textElement metric
@@ -611,6 +619,7 @@ MindmapFrame = function (c) {
 
                     _.forEach(style.font, function (n, key) {
                         this.style.font[key] = n;
+
                     }.bind(this));
                 }
 
@@ -1181,9 +1190,151 @@ MindmapFrame = function (c) {
 
 
     };
+	
+	
 
 
     /*===== MANAGERS =====*/
+	
+	this.editBoxManager = new function () {
+		
+		editBoxManager = this;
+		
+		this.editBox = document.getElementById("editBoxForm");
+		this.editBoxContainer = document.getElementById("editBox");
+		
+		this.syncDelay = null;
+		this.label = null;
+		this.style = null;
+		
+		this.labelLoad = function () {
+			if(mindmap.getSelectedNode() != undefined) {
+				editBoxManager.label = mindmap.getSelectedNode().label;				
+				return true;
+			}
+			return false;
+		};	
+		
+		this.styleLoad = function () {
+			if(mindmap.getSelectedNode() != undefined) {
+				editBoxManager.style = mindmap.getSelectedNode().style;
+				return true;
+			}
+			return false;
+		};
+		
+		this.load = function () {
+			
+			if(mindmap.getSelectedNode() != undefined) {
+			
+				this.editBoxContainer.style.display = "block";
+			
+				this.labelLoad();
+				this.styleLoad();
+				this.updateView();
+			
+			}
+			else {
+				
+				this.editBoxContainer.style.display = "none";
+				
+			}
+		};
+		
+		this.editBox.elements["editBox_label"].onkeyup = function () {
+			if(editBoxManager.labelLoad()) {
+				editBoxManager.label = this.value;
+				
+				if(this.syncDelay != undefined)
+					clearTimeout(this.syncDelay);
+				
+				this.syncDelay = setTimeout(editBoxManager.sync, 300);
+			}
+		};
+		
+		this.editBox.elements["editBox_bold"].onclick = function () {
+			if(editBoxManager.styleLoad()) {
+				editBoxManager.style.font.weight = this.checked ? "bold" : "normal";
+				
+				editBoxManager.sync();
+			}
+		};
+		this.editBox.elements["editBox_italic"].onclick = function () {
+			if(editBoxManager.styleLoad()) {
+				editBoxManager.style.font.style = this.checked ? "italic" : "normal";
+				
+				editBoxManager.sync();
+			}
+		};
+		this.editBox.elements["editBox_strike"].onclick = function () {
+			if(editBoxManager.styleLoad()) {
+				editBoxManager.style.font.decoration = this.checked ? "strike" : "none";
+				
+				editBoxManager.sync();
+			}
+		};
+		this.editBox.elements["editBox_underline"].onclick = function () {
+			if(editBoxManager.styleLoad()) {
+				editBoxManager.style.font.decoration = this.checked ? "underline" : "none";
+				
+				editBoxManager.sync();
+			}
+		};
+		
+		this.__labelUpdate = function (input, value) {
+			input.value = value;
+			if(value.length > 0) {
+				input.parentNode.classList.add("is-focused");
+			}
+			else {
+				input.parentNode.classList.remove("is-focused");
+			}
+		};
+		
+		this.__checkBoxUpdate = function (checkbox, checked) {
+
+			if(checked) {
+				checkbox.parentNode.classList.add("is-checked");
+				checkbox.checked = true;
+			}
+			else {
+				checkbox.parentNode.classList.remove("is-checked");
+				checkbox.checked = false;
+			}
+		};
+
+		this.updateView = function () {
+		
+			this.__labelUpdate(editBoxManager.editBox.elements["editBox_label"], this.label);
+		
+			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_bold"], editBoxManager.style.font.weight == "bold");
+			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_italic"], editBoxManager.style.font.style == "italic");
+			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_underline"], editBoxManager.style.font.decoration == "underline");
+			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_strike"], editBoxManager.style.font.decoration == "strike");
+			
+		};
+		
+		this.sync = function () {
+
+			editBoxManager.updateView();
+			
+			var node = mindmap.getSelectedNode();
+			
+			if(node != undefined) {
+				
+				node.label = editBoxManager.label;
+			
+				node.style = editBoxManager.style;
+				
+				mindmap.ioManager.out.editNode(node, true);
+			
+			}
+		}
+		
+
+		
+	};
+	
 
     /**
      * Local event manager
@@ -1511,7 +1662,9 @@ MindmapFrame = function (c) {
                                 };
                             }
                             // if(e.target.id == 'container') {
-                            else {
+                            else if(e.target.nodeName == "svg" || e.target.nodeName == "path") {
+								
+								// alert(e.target.nodeName);
 
                                 window.document.body.style.cursor = "grabbing";
 
@@ -1667,6 +1820,7 @@ MindmapFrame = function (c) {
                     }]
                 }, function (nodes) {
                     _.forEach(nodes, function (n) {
+						console.log(JSON.stringify(n.style, null, "\t"));
                         mindmap.ioManager.in.editNode(0, n, false);
                     });
 
@@ -1704,6 +1858,8 @@ MindmapFrame = function (c) {
             this.unselectNode = function (node) {
 
                 console.log("Out : unselect Node", node);
+				
+				editBoxManager.load();
 
                 //TODO: Notification de déséléction - Émission
                 //Données utiles : node.id
@@ -1713,6 +1869,8 @@ MindmapFrame = function (c) {
             this.selectNode = function (node) {
 
                 console.log("Out : select Node", node);
+				
+				editBoxManager.load();
 
                 //TODO: Notification de séléction - Émission
                 //Données utiles : node.id
