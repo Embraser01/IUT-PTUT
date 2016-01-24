@@ -1241,6 +1241,8 @@ MindmapFrame = function (c) {
 			}
 		};
 		
+		this.editBox.onsubmit = function () {return false;};
+		
 		this.editBox.elements["editBox_label"].onkeyup = function () {
 			if(editBoxManager.labelLoad()) {
 				editBoxManager.label = this.value;
