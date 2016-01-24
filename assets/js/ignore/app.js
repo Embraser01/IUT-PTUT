@@ -1820,7 +1820,7 @@ MindmapFrame = function (c) {
                     }]
                 }, function (nodes) {
                     _.forEach(nodes, function (n) {
-						console.log(JSON.stringify(n.style, null, "\t"));
+
                         mindmap.ioManager.in.editNode(0, n, false);
                     });
 
@@ -1955,11 +1955,10 @@ MindmapFrame = function (c) {
                         node.parentNode.childNodes[i].style.order = parseInt(i);
                     }
 					
-					console.log(node.label, node.parentNode.childNodes);
+
                 }
                 mindmap.newBranchElement.style.display = "none"; //bug risk
 				
-				console.log(node.label, node.style.order);
                 mindmap.drawMap();
 
                 //console.log("In : Node created");
