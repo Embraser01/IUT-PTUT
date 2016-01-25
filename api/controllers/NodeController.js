@@ -36,6 +36,20 @@ function queryStylesUpdate(nodes, req) {
 }
 
 
+function cbStyleInsertOrUpdate(err, styles) {
+    if (err) return console.log(err);
+
+    Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
+        if (err) return console.log(err);
+
+        nodes = SerializeService.styleLoad(nodes, req.session.user.id);
+
+        MindMapMsgService.send('Update_nodes_w_style', req, nodes); // Notify users
+        return res.json(nodes);
+    });
+}
+
+
 module.exports = {
 
     new: function (req, res) {
@@ -52,12 +66,12 @@ module.exports = {
         //    });
         //});
 
-        Node.find(nodes[0].parent_node).sort({height: 'asc'}).exec(function (err, pnodes){
+        Node.find(nodes[0].parent_node).sort({height: 'asc'}).exec(function (err, pnodes) {
             if (err) return console.log(err);
 
             // On est sure que le parent existe puisque on ne créer jamais la racine
             // Mais si jamais alors on renvoie un badRequest
-            if(!pnodes) return res.badRequest();
+            if (!pnodes) return res.badRequest();
 
 
             var formatted_nodes = [];
@@ -116,42 +130,46 @@ module.exports = {
             if (err) return console.log(err);
 
             if (updateStyle === 'yes') {
-                Style.query(queryStylesUpdate(nodes, req), function (err) {
+                // First we retreive node that already have a style define by the user
+                // Then we update these ones
+                // Then we insert others
+
+                Style.find({where: {node: ids, owner: req.session.user.id}}).exec(function (err, styles) {
                     if (err) return console.log(err);
 
-                    Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
-                        if (err) return console.log(err);
+                    var toUpdate = []; // List of style that need to be update (function take a array of node)
+                    var toInsert = []; // List of style that need to be insert (function take a array of style)
 
-                        if (nodes) {
-                            _.forEach(nodes, function (n) {
-                                // On laisse un seul style
-                                n.style = SerializeService.unserialize(n.styles[0].style);
-                                n.styles = null;
+                    _.forEach(nodes, function (node) {
+                        var tmp = _.find(styles, function (style) {
+                            return style.node === node.id;
+                        });
 
-                                // Remplace 0 par null pour le parent
-                                if (n.parent_node === 0) n.parent_node = null;
-                            });
-                        }
-
-                        MindMapMsgService.send('Update_nodes_w_style', req, nodes); // Notify users
-                        return res.json(nodes);
+                        // If we find a style that need to be update
+                        if (tmp) toUpdate.push(node);
+                        else toInsert.push({
+                            style: node.style,
+                            node: node.id,
+                            owner: req.session.user.id
+                        });
                     });
-                });
 
+                    // Make request if necessary
+                    if (toUpdate.empty()) Style.create(toInsert).exec(cbStyleInsertOrUpdate);
+                    else if (toInsert.empty())  Style.query(queryStylesUpdate(toUpdate, req), cbStyleInsertOrUpdate);
+                    else {
+                        Style.query(queryStylesUpdate(toUpdate, req), function (err) {
+                            if (err) return console.log(err);
+
+                            Style.create(toInsert).exec(cbStyleInsertOrUpdate);
+                        });
+                    }
+                });
             } else {
                 Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
                     if (err) return console.log(err);
 
-                    if (nodes) {
-                        _.forEach(nodes, function (n) {
-                            // On laisse un seul style
-                            n.style = SerializeService.unserialize(n.styles[0].style);
-                            n.styles = null;
-
-                            // Remplace 0 par null pour le parent
-                            if (n.parent_node === 0) n.parent_node = null;
-                        });
-                    }
+                    nodes = SerializeService.styleLoad(nodes, req.session.user.id);
 
                     MindMapMsgService.send('Update_nodes', req, nodes); // Notify users
                     return res.json(nodes);

@@ -116,6 +116,60 @@ module.exports = {
             default:
                 return unserialize_0_0_1_(bigCategory);
         }
+    },
+
+    styleLoad: function (nodes, user_id){
+        if (nodes) {
+            _.forEach(nodes, function (n) {
+                // On laisse un seul style
+                var tmp = this.getDefaultStyle();
+
+                _.forEach(n.styles, function (style) {
+                    tmp = (style.owner == user_id) ? style : tmp;
+                });
+
+                n.style = this.unserialize(tmp);
+                n.styles = null;
+
+                // Remplace 0 par null pour le parent
+                if (n.parent_node === 0) n.parent_node = null;
+            });
+        }
+
+        return nodes;
+    },
+
+    getDefaultStyle: function () {
+        return {
+            order: 1,
+            dx: 0,
+            folded: false,
+            container: {
+                kind: "none",
+                borderThickness: "0",
+                borderColor: "#263238",
+                background: "white",
+                radius: "7"
+            },
+            font: {
+                family: "sans-serif",
+                size: "24",
+                color: "#006064",
+                weight: "bold ",
+                style: "italic ",
+                decoration: "none",
+                align: "right"
+            },
+            parentBranch: {
+                color: "#42a5f5"
+            },
+            unifiedChildren: {
+                dx: false,
+                container: false,
+                font: false,
+                parentBranch: false
+            }
+        };
     }
 
 };
