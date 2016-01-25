@@ -330,7 +330,7 @@ MindmapFrame = function (c) {
                 y: this.position.y
             };
 			
-			this.textElement.textContent = this.label;
+			this.textElement.childNodes[0].nodeValue = this.label;
 
             //folder correction
 
