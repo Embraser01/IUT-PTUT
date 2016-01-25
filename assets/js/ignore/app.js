@@ -330,6 +330,8 @@ MindmapFrame = function (c) {
                 y: this.position.y
             };
 			
+			var tmpStyle = JSON.parse(JSON.stringify(this.style));
+			
 			this.textElement.childNodes[0].nodeValue = this.label;
 
             //folder correction
@@ -362,6 +364,10 @@ MindmapFrame = function (c) {
                 this.style.container.background = 'white';
                 this.style.container.radius = '7';
                 this.style.container.attach = 'sides';
+				
+				this.style.container.background = '#42a5f5'; //TODO, bg selon couleur de la branche
+				tmpStyle.font.color = '#ffffff'; //TODO, selon bg
+				
 
                 this.nodeElement.setAttribute("title", "Double-cliquer pour déplier");
 
@@ -392,7 +398,7 @@ MindmapFrame = function (c) {
 
             this.textElement.setAttribute('font-family', this.style.font.family);
             this.textElement.setAttribute('font-size', parseFloat(this.style.font.size));
-            this.textElement.setAttribute('fill', this.style.font.color);
+            this.textElement.setAttribute('fill', tmpStyle.font.color);
 
             if (this.style.font.weight == 'bold')
                 this.textElement.style.fontWeight = 'bold';
@@ -498,6 +504,7 @@ MindmapFrame = function (c) {
             // }
 
 
+
             this.leftConnecterElement.setAttribute("cx", 0);
             this.rightConnecterElement.setAttribute("cx", rectWidth);
             this.lockElement.setAttribute("cx", rectWidth / 2);
@@ -528,10 +535,14 @@ MindmapFrame = function (c) {
             else
                 this.lockElement.setAttribute("fill", "#f44336")
 
-            if (!this.style.folded) {
+			if (this == mindmap.rootNode) {
+				this.leftConnecterElement.style.display = "";
+				this.rightConnecterElement.style.display = "";
+			}
+            else if (!this.style.folded) {
                 if (this.orientation != 'right')
                     this.leftConnecterElement.style.display = "";
-                if (this.orientation != 'left')
+                else if (this.orientation != 'left')
                     this.rightConnecterElement.style.display = "";
 
             }
@@ -1238,10 +1249,14 @@ MindmapFrame = function (c) {
 			if(mindmap.getSelectedNode() != undefined) {
 			
 				this.editBoxContainer.style.display = "block";
-			
+				
+				this.editBox.elements["editBox_label"].focus();		
+				
 				this.labelLoad();
 				this.styleLoad();
 				this.updateView();
+				
+
 			
 			}
 			else {
@@ -1308,6 +1323,7 @@ MindmapFrame = function (c) {
 		this.editBox.elements["editBox_delete"].onclick = function () {
             if (mindmap.getSelectedNode() != null)
                 mindmap.deleteSelectedNode();
+				editBoxManager.editBoxContainer.style.display = "none";
 		};
 
 		this.editBox.elements["editBox_bold"].onclick = function () {
@@ -1364,8 +1380,12 @@ MindmapFrame = function (c) {
 		this.updateView = function () {
 		
 			this.__labelUpdate(editBoxManager.editBox.elements["editBox_label"], this.label);
+			
 			this.__labelUpdate(editBoxManager.editBox.elements["editBox_family"], this.style.font.family);
+			editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
+			
 			this.__labelUpdate(editBoxManager.editBox.elements["editBox_color"], this.style.font.color);
+			editBoxManager.editBox.elements["editBox_color"].style.color = this.style.font.color;
 		
 			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_bold"], editBoxManager.style.font.weight == "bold");
 			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_italic"], editBoxManager.style.font.style == "italic");
