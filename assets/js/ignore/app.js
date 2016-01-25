@@ -1305,6 +1305,11 @@ MindmapFrame = function (c) {
 			}
 		};
 		
+		this.editBox.elements["editBox_delete"].onclick = function () {
+            if (mindmap.getSelectedNode() != null)
+                mindmap.deleteSelectedNode();
+		};
+
 		this.editBox.elements["editBox_bold"].onclick = function () {
 			if(editBoxManager.styleLoad()) {
 				editBoxManager.style.font.weight = this.checked ? "bold" : "normal";

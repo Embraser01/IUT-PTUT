@@ -5,8 +5,8 @@
         <button disabled id="">Out: Unselect node</button>
         <button disabled id="">Out: Force unselect</button>
         <button id="out_modify">Out: Modify node</button>
-        <button disabled id="">Out: Modify nodes</button>-->
-        <button id="out_delete">Out: Delete node</button>
+        <button disabled id="">Out: Modify nodes</button>
+        <button id="out_delete">Out: Delete node</button>-->
     </div>
 
     <div style="position:fixed;z-index:10;bottom:10px;right:5px;">
@@ -15,8 +15,8 @@
         <button id="in_unselect">In: Unselect node</button>
         <button id="">In: Force loose node selection</button>
         <button id="in_modify">In: Modify node</button>
-        <button id="in_delete">In: Delete node</button>-->
-        <button id="redraw">Force redraw</button>
+        <button id="in_delete">In: Delete node</button>
+        <button id="redraw">Force redraw</button>-->
     </div>
 	
 	<div id="editBox" >
@@ -29,7 +29,7 @@
 				<label style="font-weight:bold;" class="mdl-textfield__label" for="editBox_label">Label</label>
 			</div>
 
-			<table>
+			<table style="width:100%;">
 				<tr>
 					<td><b>Format</b></td>
 					<td>
@@ -67,8 +67,10 @@
 						  <li name="Open Sans" style="font-family:Open Sans;" class="mdl-menu__item">Open Sans</li>
 						  <li name="Roboto" style="font-family:Roboto;" class="mdl-menu__item">Roboto</li>
 						  <li name="Verdana" style="font-family:Verdana;" class="mdl-menu__item">Verdana</li>
-						  <li name="Arial" style="font-family:Arial;"class="mdl-menu__item">Arial</li>
-						</ul>					
+						  <li name="comic sans ms" style="font-family:comic sans ms;"class="mdl-menu__item">Comic Sans Ms</li>
+						</ul>		
+
+
 					
 					</td>
 				
@@ -97,6 +99,11 @@
 					
 					</td>
 				
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align:center;">
+						<input name="editBox_delete" type="button" value="Supprimer" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" />
+					</td>
 				</tr>
 			</table>
 
