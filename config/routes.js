@@ -94,6 +94,5 @@ module.exports.routes = {
 
     /*===== Test Controller =====*/
 
-    //'/test/order': 'TestController.getOne',
-    //'/test/order': 'TestController.all',
+    //'/test/order': 'TestController.getOne'
 };

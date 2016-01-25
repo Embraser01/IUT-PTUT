@@ -13,6 +13,11 @@ module.exports = {
             size: 30
         },
 
+        height: {
+            type: 'integer',
+            defaultTo: 0
+        },
+
 
         //===== FOREIGN KEYS =====//
 

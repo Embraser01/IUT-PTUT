@@ -41,46 +41,65 @@ module.exports = {
     new: function (req, res) {
         var nodes = req.param('nodes');
 
-        var formatted_nodes = [];
-        _.forEach(nodes, function (n) {
+        // TODO Create more than one node at once
+        //var formatted_nodes = [];
+        //_.forEach(nodes, function (n) {
+        //    formatted_nodes.push({
+        //        parent_node: n.parent_node,
+        //        label: n.label,
+        //        mindmap: req.param('id'),
+        //        owner: req.user.id
+        //    });
+        //});
+
+        Node.find(nodes[0].parent_node).sort({height: 'asc'}).exec(function (err, pnodes){
+            if (err) return console.log(err);
+
+            // On est sure que le parent existe puisque on ne créer jamais la racine
+            // Mais si jamais alors on renvoie un badRequest
+            if(!pnodes) return res.badRequest();
+
+
+            var formatted_nodes = [];
             formatted_nodes.push({
-                parent_node: n.parent_node,
-                label: n.label,
+                parent_node: nodes[0].parent_node,
+                label: nodes[0].label,
                 mindmap: req.param('id'),
-                owner: req.user.id
+                owner: req.user.id,
+                height: pnodes[0].height + 1
             });
-        });
 
+            Node.create(formatted_nodes).exec(function (err, new_nodes) {
+                if (err) console.log(err);
 
-        Node.create(formatted_nodes).exec(function (err, new_nodes) {
-            if (err) console.log(err);
+                var formatted_styles = [];
+                _.forEach(nodes, function (n, key) {
+                    formatted_styles.push({
+                        style: n.style,
+                        node: new_nodes[key].id,
+                        owner: req.user.id
+                    });
+                });
 
-            var formatted_styles = [];
-            _.forEach(nodes, function (n, key) {
-                formatted_styles.push({
-                    style: n.style,
-                    node: new_nodes[key].id,
-                    owner: req.user.id
+                Style.create(formatted_styles).exec(function (err, new_styles) {
+                    if (err) return;
+
+                    if (new_nodes) {
+
+                        _.forEach(new_nodes, function (n, key) {
+                            n.style = SerializeService.unserialize(new_styles[key].style);
+                            //n.parent_node = n.parent_node.id;
+
+                            if (n.parent_node === 0) n.parent_node = null;
+                        });
+                    }
+
+                    MindMapMsgService.send('New_nodes', req, new_nodes); // Notify users
+                    return res.json(new_nodes);
                 });
             });
-
-            Style.create(formatted_styles).exec(function (err, new_styles) {
-                if (err) return;
-
-                if (new_nodes) {
-
-                    _.forEach(new_nodes, function (n, key) {
-                        n.style = SerializeService.unserialize(new_styles[key].style);
-                        //n.parent_node = n.parent_node.id;
-
-                        if (n.parent_node === 0) n.parent_node = null;
-                    });
-                }
-
-                MindMapMsgService.send('New_nodes', req, new_nodes); // Notify users
-                return res.json(new_nodes);
-            });
         });
+
     },
 
     update: function (req, res) {
@@ -92,7 +111,6 @@ module.exports = {
         _.forEach(nodes, function (n) {
             ids.push(n.id);
         });
-
 
         Node.query(queryNodesUpdate(nodes), function (err) {
             if (err) return console.log(err);

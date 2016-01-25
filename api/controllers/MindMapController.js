@@ -1,3 +1,34 @@
+var default_style = {
+    order: 1,
+    dx: 0,
+    folded: false,
+    container: {
+        kind: "none",
+        borderThickness: "0",
+        borderColor: "#263238",
+        background: "white",
+        radius: "7"
+    },
+    font: {
+        family: "sans-serif",
+        size: "24",
+        color: "#006064",
+        weight: "bold ",
+        style: "italic ",
+        decoration: "none",
+        align: "right"
+    },
+    parentBranch: {
+        color: "#42a5f5"
+    },
+    unifiedChildren: {
+        dx: false,
+        container: false,
+        font: false,
+        parentBranch: false
+    }
+};
+
 module.exports = {
     index: function (req, res) {
 
@@ -22,38 +53,7 @@ module.exports = {
 
     create: function (req, res) {
 
-        if(!req.param('name')) return res.redirect('/');
-
-        var style = {
-            order: 1,
-            dx: 0,
-            folded: false,
-            container: {
-                kind: "rectangle",
-                borderThickness: "0",
-                borderColor: "#263238",
-                background: "white",
-                radius: "7"
-            },
-            font: {
-                family: "sans-serif",
-                size: "24",
-                color: "#006064",
-                weight: "bold ",
-                style: "italic ",
-                decoration: "none",
-                align: "right"
-            },
-            parentBranch: {
-                color: "#42a5f5"
-            },
-            unifiedChildren: {
-                dx: false,
-                container: false,
-                font: false,
-                parentBranch: false
-            }
-        };
+        if (!req.param('name')) return res.redirect('/');
 
         MindMap.create({
             name: req.param('name'),
@@ -63,7 +63,6 @@ module.exports = {
                 console.log(err);
                 return res.serverError();
             }
-
             Node.create({
                 label: 'Start here !',
                 mindmap: mindmap.id,
@@ -75,8 +74,9 @@ module.exports = {
                     return res.serverError();
                 }
 
+                default_style.container.kind = "rectangle";
                 Style.create({
-                    style: style,
+                    style: default_style,
                     node: node.id,
                     owner: req.user.id
                 }, function (err, style) {
@@ -95,16 +95,26 @@ module.exports = {
         MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
 
             MindMap.subscribe(req.socket, mindmap.id);
+            req.session.mindmapList = (req.session.mindmapList) ? req.session.mindmapList.push(mindmap.id) : [mindmap.id];
 
-            // TODO Order by parent (something complicated) And take default style
-            // , {owner: req.session.user.id}
-            Node.find({where: {mindmap: req.param('id')}}).populate('styles').exec(function (err, nodes) {
+            MindMapMsgService.send('User_connect', null, user, mindmap.id); // Notify users
+
+
+            // TODO Stream data to go faster #BarryAllen
+
+            Node.find({where: {mindmap: req.param('id')}}).sort({height: 'asc'}).populate('styles').exec(function (err, nodes) {
                 if (err) return res.serverError();
 
                 if (nodes) {
                     _.forEach(nodes, function (n) {
                         // On laisse un seul style
-                        n.style = SerializeService.unserialize(n.styles[0].style);
+                        var tmp = default_style;
+
+                        _.forEach(n.styles, function (style) {
+                            tmp = (style.owner == req.user.id) ? style : tmp;
+                        });
+
+                        n.style = SerializeService.unserialize(tmp);
                         n.styles = null;
 
                         // Remplace 0 par null pour le parent
@@ -116,17 +126,6 @@ module.exports = {
                     user: req.user.id
                 });
             });
-        });
-    },
-
-
-    leave: function (req, res) {
-
-        MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
-
-            MindMap.unsubscribe(req.socket, mindmap.id);
-
-            return res.json();
         });
     }
 };
