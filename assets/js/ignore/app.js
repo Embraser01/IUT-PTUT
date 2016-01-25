@@ -1359,6 +1359,8 @@ MindmapFrame = function (c) {
 		this.updateView = function () {
 		
 			this.__labelUpdate(editBoxManager.editBox.elements["editBox_label"], this.label);
+			this.__labelUpdate(editBoxManager.editBox.elements["editBox_family"], this.style.font.family);
+			this.__labelUpdate(editBoxManager.editBox.elements["editBox_color"], this.style.font.color);
 		
 			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_bold"], editBoxManager.style.font.weight == "bold");
 			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_italic"], editBoxManager.style.font.style == "italic");
