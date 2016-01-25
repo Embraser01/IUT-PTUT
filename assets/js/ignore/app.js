@@ -334,8 +334,13 @@ MindmapFrame = function (c) {
 
             //folder correction
 
-            if (this == mindmap.rootNode)
-                this.style.folded = false;
+            if (this == mindmap.rootNode) {
+                this.style.folded = false;				
+				// consolelog("yolo")
+				// alert(this.position.x);
+				
+			}
+
 
             //style correction
 
@@ -470,7 +475,10 @@ MindmapFrame = function (c) {
             }
             // lineElement.style.filter = selection ? 'drop-shadow(5px 5px 7px #888)' : '';
 
-            if (this.orientation == 'left')
+
+			if (this == mindmap.rootNode)
+				nodePosition.x = 0;
+            else if (this.orientation == 'left')
                 nodePosition.x -= rectWidth / 2;
             else if (this.orientation == 'right')
                 nodePosition.x += rectWidth / 2;
@@ -1812,10 +1820,12 @@ MindmapFrame = function (c) {
                 console.log("Out : edit Node", node);
 
                 var path = basePath + "node/update/" + (updateStyle ? 'yes' : 'no');
+				
+				var father = (node.parentNode != undefined) ? node.parentNode.id : 0;
 
                 io.socket.post(path, {
                     nodes: [{
-                        parent_node: node.parentNode.id,
+                        parent_node: father, 
                         style: node.style,
                         label: node.label,
                         id: node.id
