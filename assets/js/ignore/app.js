@@ -1215,6 +1215,8 @@ MindmapFrame = function (c) {
 		this.label = null;
 		this.style = null;
 		
+		
+		
 		this.labelLoad = function () {
 			if(mindmap.getSelectedNode() != undefined) {
 				editBoxManager.label = mindmap.getSelectedNode().label;				
@@ -1259,6 +1261,47 @@ MindmapFrame = function (c) {
 					clearTimeout(this.syncDelay);
 				
 				this.syncDelay = setTimeout(editBoxManager.sync, 300);
+			}
+		};
+		
+		var fonts = document.getElementById("font_family_list").children;
+		
+		for(var i in fonts) {
+			fonts[i].onclick = function () {
+				editBoxManager.editBox.elements["editBox_family"].value = this.getAttribute("name");				
+				editBoxManager.editBox.elements["editBox_family"].onchange();
+			}
+		}
+		
+		this.editBox.elements["editBox_family"].onchange = function () {
+			if(editBoxManager.styleLoad()) {
+				editBoxManager.style.font.family = this.value;
+				editBoxManager.sync();
+			}
+		};
+		
+		var colors = document.getElementById("font_color_list").children;
+
+		for(var i in colors) {
+			colors[i].onclick = function () {
+				if(this.getAttribute("name") != "other") {
+					
+					editBoxManager.editBox.elements["editBox_color"].value = this.getAttribute("name");				
+					editBoxManager.editBox.elements["editBox_color"].onchange();
+						
+				}
+				else {
+					
+					document.getElementById('colorpicker').click();
+					
+				}
+			}
+		}
+		
+		this.editBox.elements["editBox_color"].onchange = function () {
+			if(editBoxManager.styleLoad()) {
+				editBoxManager.style.font.color = this.value;
+				editBoxManager.sync();
 			}
 		};
 		
