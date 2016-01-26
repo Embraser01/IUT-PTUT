@@ -40,7 +40,6 @@ function sendNodesUpdate(req, res, ids) {
     Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
         if (err) return console.log(err);
 
-        console.log(nodes);
         MindMapMsgService.send('Update_nodes', req, nodes); // Notify users before load style
 
         nodes = SerializeService.styleLoad(nodes, req.session.user.id);

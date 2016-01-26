@@ -3,16 +3,9 @@ module.exports = {
 
         // TODO ajouter le noeud racine pour afficher quelque chose avant le chargement
 
-
-        // TODO Move messages load in ChatController (socket)
-        Message.find().where({mindmap: req.mindmap.id}).populate('owner').exec(function (err, messages) {
-            if (err) return res.serverError();
-
-            return res.view('mindmap/index', DataViewService.create(req.mindmap.name, {
-                mindmap: req.mindmap,
-                messages: messages
-            }));
-        });
+        return res.view('mindmap/index', DataViewService.create(req.mindmap.name, {
+            mindmap: req.mindmap
+        }));
     },
 
 

@@ -40,6 +40,7 @@
  *          }
  *      }]
  */
+basePath = window.location.pathname + "/";
 
 MindmapFrame = function (c) {
 
@@ -233,7 +234,6 @@ MindmapFrame = function (c) {
 
             else if (100 > this.style.dx && this.style.dx > 0)
                 this.style.dx = 100;
-			
 
 
         };
@@ -279,7 +279,7 @@ MindmapFrame = function (c) {
             traverse(this);
 
         };
-		
+
         /**
          * Recursive function to show all children
          */
@@ -294,22 +294,22 @@ MindmapFrame = function (c) {
             traverse(this);
 
         };
-		
+
         this.orderizeChildren = function () {
 
-			if (this.parentNode) {
-				this.parentNode.childNodes.sort(function (a, b) {
-					return parseFloat(a.style.order) - parseFloat(b.style.order);
-				});
+            if (this.parentNode) {
+                this.parentNode.childNodes.sort(function (a, b) {
+                    return parseFloat(a.style.order) - parseFloat(b.style.order);
+                });
 
-				for (var i in this.parentNode.childNodes) {
-					this.parentNode.childNodes[i].style.order = parseInt(i);
-				}
-				
-				console.log(this.label, this.parentNode.childNodes);
-			}
+                for (var i in this.parentNode.childNodes) {
+                    this.parentNode.childNodes[i].style.order = parseInt(i);
+                }
+
+                console.log(this.label, this.parentNode.childNodes);
+            }
         };
-		
+
         this.orderizeDescendance = function () {
 
             var traverse = function (node) {
@@ -321,22 +321,22 @@ MindmapFrame = function (c) {
             traverse(this);
 
         };
-		
-		this.viewNode = function () {
-			
-			var nx = parseInt(document.body.offsetWidth / 2) / mindmap.view.zoom  - this.position.x;
-			var ny = parseInt(document.body.offsetHeight / 2) / mindmap.view.zoom - this.position.y;
-			
-			if(mindmap.rootNode == this)
-				nx += 0;
-			else if(this.orientation == "left")
-				nx += parseFloat(this.rectElement.getAttribute("width")) /2 ;
-			else if(this.orientation == "right")
-				nx -= parseFloat(this.rectElement.getAttribute("width")) /2;
-			
-			mindmap.setView(nx, ny);
-			
-		};
+
+        this.viewNode = function () {
+
+            var nx = parseInt(document.body.offsetWidth / 2) / mindmap.view.zoom - this.position.x;
+            var ny = parseInt(document.body.offsetHeight / 2) / mindmap.view.zoom - this.position.y;
+
+            if (mindmap.rootNode == this)
+                nx += 0;
+            else if (this.orientation == "left")
+                nx += parseFloat(this.rectElement.getAttribute("width")) / 2;
+            else if (this.orientation == "right")
+                nx -= parseFloat(this.rectElement.getAttribute("width")) / 2;
+
+            mindmap.setView(nx, ny);
+
+        };
 
         /**
          * Draw the node with the style attribute
@@ -347,17 +347,17 @@ MindmapFrame = function (c) {
                 x: this.position.x,
                 y: this.position.y
             };
-			
-			var tmpStyle = JSON.parse(JSON.stringify(this.style));
-			
-			this.textElement.childNodes[0].nodeValue = this.label;
+
+            var tmpStyle = JSON.parse(JSON.stringify(this.style));
+
+            this.textElement.childNodes[0].nodeValue = this.label;
 
             //folder correction
 
             if (this == mindmap.rootNode) {
-                this.style.folded = false;				
-				
-			}
+                this.style.folded = false;
+
+            }
 
 
             //style correction
@@ -380,13 +380,13 @@ MindmapFrame = function (c) {
                 this.style.container.background = 'white';
                 this.style.container.radius = '7';
                 this.style.container.attach = 'sides';
-				
-				this.style.container.background = '#42a5f5'; //TODO, bg selon couleur de la branche
-				tmpStyle.font.color = '#ffffff'; //TODO, selon bg
-				tmpStyle.font.weight = 'normal';
-				tmpStyle.font.style = 'normal';
-				tmpStyle.font.decoration = 'none';
-				
+
+                this.style.container.background = '#42a5f5'; //TODO, bg selon couleur de la branche
+                tmpStyle.font.color = '#ffffff'; //TODO, selon bg
+                tmpStyle.font.weight = 'normal';
+                tmpStyle.font.style = 'normal';
+                tmpStyle.font.decoration = 'none';
+
 
                 this.nodeElement.setAttribute("title", "Double-cliquer pour déplier");
 
@@ -421,19 +421,19 @@ MindmapFrame = function (c) {
 
             if (tmpStyle.font.weight == 'bold')
                 this.textElement.style.fontWeight = 'bold';
-			else
+            else
                 this.textElement.style.fontWeight = 'normal';
-			
+
             if (tmpStyle.font.style == 'italic')
                 this.textElement.style.fontStyle = 'italic';
-			else
+            else
                 this.textElement.style.fontStyle = 'normal';
-			
+
             if (tmpStyle.font.decoration == 'underline')
                 this.textElement.style.textDecoration = 'underline';
             else if (tmpStyle.font.decoration == 'strike')
                 this.textElement.style.textDecoration = 'line-through';
-			else
+            else
                 this.textElement.style.textDecoration = 'none';
 
 
@@ -501,8 +501,8 @@ MindmapFrame = function (c) {
             // lineElement.style.filter = selection ? 'drop-shadow(5px 5px 7px #888)' : '';
 
 
-			if (this == mindmap.rootNode)
-				nodePosition.x = 0;
+            if (this == mindmap.rootNode)
+                nodePosition.x = 0;
             else if (this.orientation == 'left')
                 nodePosition.x -= rectWidth / 2;
             else if (this.orientation == 'right')
@@ -521,7 +521,6 @@ MindmapFrame = function (c) {
             this.nodeConnecter.lx = nodePosition.x - rectWidth / 2;
             this.nodeConnecter.rx = nodePosition.x + rectWidth / 2;
             // }
-
 
 
             this.leftConnecterElement.setAttribute("cx", 0);
@@ -550,14 +549,14 @@ MindmapFrame = function (c) {
 
 
             if (this.worker == mindmap.worker)
-                this.lockElement.setAttribute("fill", "#4caf50")
+                this.lockElement.setAttribute("fill", "#4caf50");
             else
-                this.lockElement.setAttribute("fill", "#f44336")
+                this.lockElement.setAttribute("fill", "#f44336");
 
-			if (this == mindmap.rootNode) {
-				this.leftConnecterElement.style.display = "";
-				this.rightConnecterElement.style.display = "";
-			}
+            if (this == mindmap.rootNode) {
+                this.leftConnecterElement.style.display = "";
+                this.rightConnecterElement.style.display = "";
+            }
             else if (!this.style.folded) {
                 if (this.orientation != 'right')
                     this.leftConnecterElement.style.display = "";
@@ -636,18 +635,18 @@ MindmapFrame = function (c) {
                     this.style.order = style.order;
 
                 if ("folded" in style) {
-					
-					var refreshFolded = (this.style.folded != style.folded);
-					
+
+                    var refreshFolded = (this.style.folded != style.folded);
+
                     this.style.folded = style.folded;
 
-					if(refreshFolded) {
-						if(this.style.folded)
-							this.hideNodeChildren();
-						else
-							this.showNodeChildren();
-					}
-				}
+                    if (refreshFolded) {
+                        if (this.style.folded)
+                            this.hideNodeChildren();
+                        else
+                            this.showNodeChildren();
+                    }
+                }
 
 
                 if ("container" in style && "width" in style.container)
@@ -1228,24 +1227,22 @@ MindmapFrame = function (c) {
 
 
     };
-	
-	
 
 
     /*===== MANAGERS =====*/
 	
 	this.keyboardManager = new function () {
-		
+
 		keyboardManager = this;
-		
+
 		this.shift = false;
 		this.ctrl = false;
 		this.alt = false;
-		
+
 		window.onkeydown = function (e) {
-			
+
 			switch(e.keyCode) {
-				
+
 				case 16:
 					keyboardManager.shift = true;
 					break;
@@ -1255,15 +1252,15 @@ MindmapFrame = function (c) {
 				case 18:
 					keyboardManager.alt = true;
 					break;
-					
+
 			}
 
 		};
-		
+
 		window.onkeyup = function (e) {
 
 			switch(e.keyCode) {
-				
+
 				case 16:
 					keyboardManager.shift = false;
 					break;
@@ -1273,42 +1270,42 @@ MindmapFrame = function (c) {
 				case 18:
 					keyboardManager.alt = false;
 					break;
-					
+
 			}
-			
+
 			if(keyboardManager.ctrl) {
-				
+
 				switch(e.keyCode) {
 					case 65: //A
-					
+
 						break;
 					case 67: //C
-					
-					
+
+
 						break;
 					case 68: //D
-					
+
 						break;
 					case 86: //V
-					
+
 						break;
 					case 88: //X
-					
+
 						break;
 					case 89: //Y
-					
+
 						break;
 					case 90: //Z
-					
+
 						break;
 				}
 			}
 		};
-		
-		
-	
+
+
+
 	};
-	
+
 	this.hashManager = new function () {
 		
 		hashManager = this;
@@ -1350,346 +1347,333 @@ MindmapFrame = function (c) {
 		if(false && 'onhashchange' in window)
 			window.onhashchange = hashManager.on;
 
-		else
-			hashManager.fixHashObserver();
-		
-		
-	};
-	
-	this.workersListManager  = new function () {
-		
-		workersListManager = this;
-		
-		this.workersListElement = document.getElementById('workers');
-		
-		this.findWorker = function (id) {
-			
-			var allWorkers = this.workersListElement.children;
-			
-			for(var i in allWorkers) {
-				
-				if(allWorkers[i].tagName == "DIV" && allWorkers[i].getAttribute("name") == id)
-					return allWorkers[i];
-				
-			}
-			
-			return undefined;
-		};
-		
-		this.removeWorker = function (id) {
-			
-			var worker = workersListManager.findWorker(id);
-			
-			if(id != undefined) {
-				
-				workersListManager.workersListElement.removeChild(worker);
-				
-			}
-			
-		};
-		
-		this.addWorker = function (id) {
-			
-			var worker = document.createElement("DIV");
-			
-			worker.setAttribute("name", id);
-			
-			//TODO Changer selon img du worker
-			worker.setAttribute("style", 'background-image:url(https://pixabay.com/static/uploads/photo/2013/12/26/12/16/hahn-233898_960_720.jpg);');
-			
-			//TODO Changer nom du worker
-			worker.innerHTML = '<span>John Doe</span>';
-			
-			worker.onclick = function () {
-				
+        else
+            hashManager.fixHashObserver();
 
-				
-				var id = this.getAttribute("name");
-				
-				if(id in mindmap.workers) {
-					
-					var nodeId = mindmap.workers[id];
-					
-					if(nodeId != undefined) {			
 
-						window.location.hash = "#node:" + nodeId;		
-						
-					}
+    };
 
-					
-				}
-				
-			};
-			
-			workersListManager.workersListElement.appendChild(worker);
-			
-		};
-		
-		this.addWorker(1);
-		//this.removeWorker(2);
-		
-	};
-	
-	this.chatBoxManager = new function () {
-		
-		chatBoxManager = this;
-		
-		this.inputElement = document.getElementById("chatBoxInputElement");
-		this.submitElement = document.getElementById("chatBoxInputSend");
-		this.messages = document.getElementById("chatBoxMessages");
-		
-		this.postMessage = function () {
-			
-				var basePath = window.location.pathname + "/";
-				
-				console.log("$ chatBox.postMessage " + basePath + "chat/public", messageData);
-				
-				var messageData = {
-					msg : "test",
-					id : 1
-				};
-			
-                io.socket.post(basePath + "chat/public", messageData, function (data) {
+    this.workersListManager = new function () {
 
-					chatBoxManager.inputElement.value = "";
+        workersListManager = this;
 
-                });	
-		}
-		
-		this.submitElement.onclick = this.postMessage;
-		
-		this.inputElement.onkeyup = function (e) {
-			if (e.keyCode==13)
-				chatBoxManager.postMessage();
-		};
-		
-		this.onMessage = function (messageData) {
-			
-			console.log("$ chatBox.onMessage ", messageData);
-			
-			var message = document.createElement("tr");
-			
-			//TODO utiliser messageData pour ajouter le nouveau message à la liste
-			
-			message.innerHTML = '<td class="picture"> \
-							<div style="background-image:url(https://pixabay.com/static/uploads/photo/2013/10/27/22/45/animal-201564_960_720.jpg)"></div> \
+        this.workersListElement = document.getElementById('workers');
+
+        this.findWorker = function (id) {
+
+            var allWorkers = this.workersListElement.children;
+
+            for (var i in allWorkers) {
+
+                if (allWorkers[i].tagName == "DIV" && allWorkers[i].getAttribute("name") == id)
+                    return allWorkers[i];
+
+            }
+
+            return undefined;
+        };
+
+        this.removeWorker = function (user) {
+
+            var worker = workersListManager.findWorker(user.id);
+
+            if (worker != undefined) {
+
+                workersListManager.workersListElement.removeChild(worker);
+            }
+        };
+
+        this.addWorker = function (user) {
+
+            var worker = document.createElement("DIV");
+
+            worker.setAttribute("name", user.id);
+
+            worker.setAttribute("style", 'background-image:url(' + user.img_url + ');');
+
+            worker.innerHTML = '<span>' + user.display_name + '</span>';
+
+            worker.onclick = function () {
+
+
+                var id = this.getAttribute("name");
+
+                if (id in mindmap.workers) {
+
+                    var nodeId = mindmap.workers[id];
+
+                    if (nodeId != undefined) {
+
+                        window.location.hash = "#node:" + nodeId;
+                    }
+                }
+            };
+
+            workersListManager.workersListElement.appendChild(worker);
+        };
+
+        this.addWorker(1);
+        //this.removeWorker(2);
+
+    };
+
+    this.chatBoxManager = new function () {
+
+        chatBoxManager = this;
+
+        this.inputElement = document.getElementById("chatBoxInputElement");
+        this.submitElement = document.getElementById("chatBoxInputSend");
+        this.messages = document.getElementById("chatBoxMessages");
+
+        this.postMessage = function () {
+
+            var messageData = {
+                msg: chatBoxManager.inputElement.value
+            };
+
+            console.log("$ chatBox.postMessage " + basePath + "chat/public", messageData);
+
+            io.socket.post(basePath + "chat/public", messageData, function (data) {
+
+                chatBoxManager.inputElement.value = "";
+                mindmap.chatBoxManager.onMessage(data);
+
+            });
+        };
+
+        this.submitElement.onclick = this.postMessage;
+
+        this.inputElement.onkeyup = function (e) {
+            if (e.keyCode == 13)
+                chatBoxManager.postMessage();
+        };
+
+        this.onMessage = function (messageData) {
+
+            console.log("$ chatBox.onMessage ", messageData);
+
+            var message = document.createElement("tr");
+
+            //TODO utiliser messageData pour ajouter le nouveau message à la liste
+
+            message.innerHTML = '<td class="picture"> \
+							<div style="background-image:url(' + messageData.user.display_name + ')"></div> \
 						</td> \
 						<td> \
 							<div class="author"> \
-								Benji Chaz <span class="time">4.13 pm</span> \
+								' + messageData.user.display_name + ' <span class="time">messageData.createdAt</span> \
 							</div> \
 							<div class="message"> \
-								Yolo lorem ipsum la congolexciomatisatio ndes lois du marché mais oui c\'est clair \
+								' + messageData.data + '\
 							</div> \
 						</td>';
-			
-			this.messages.appendChild(message);
-			
-		};
-		
-		
-	};
-	
-	this.editBoxManager = new function () {
-		
-		editBoxManager = this;
-		
-		this.editBox = document.getElementById("editBoxForm");
-		this.editBoxContainer = document.getElementById("editBox");
-		
-		this.syncDelay = null;
-		this.label = null;
-		this.style = null;
-		
-		
-		
-		this.labelLoad = function () {
-			if(mindmap.getSelectedNode() != undefined) {
-				editBoxManager.label = mindmap.getSelectedNode().label;				
-				return true;
-			}
-			return false;
-		};	
-		
-		this.styleLoad = function () {
-			if(mindmap.getSelectedNode() != undefined) {
-				editBoxManager.style = mindmap.getSelectedNode().style;
-				return true;
-			}
-			return false;
-		};
-		
-		this.load = function () {
-			
-			if(mindmap.getSelectedNode() != undefined) {
-			
-				this.editBoxContainer.style.display = "block";
-				
-				this.editBox.elements["editBox_label"].focus();		
-				
-				this.labelLoad();
-				this.styleLoad();
-				this.updateView();
-				
 
-			
-			}
-			else {
-				
-				this.editBoxContainer.style.display = "none";
-				
-			}
-		};
-		
-		this.editBox.onsubmit = function () {return false;};
-		
-		this.editBox.elements["editBox_label"].onkeyup = function () {
-			if(editBoxManager.labelLoad()) {
-				editBoxManager.label = this.value;
-				
-				if(this.syncDelay != undefined)
-					clearTimeout(this.syncDelay);
-				
-				this.syncDelay = setTimeout(editBoxManager.sync, 300);
-			}
-		};
-		
-		var fonts = document.getElementById("font_family_list").children;
-		
-		for(var i in fonts) {
-			fonts[i].onclick = function () {
-				editBoxManager.editBox.elements["editBox_family"].value = this.getAttribute("name");				
-				editBoxManager.editBox.elements["editBox_family"].onchange();
-			}
-		}
-		
-		this.editBox.elements["editBox_family"].onchange = function () {
-			if(editBoxManager.styleLoad()) {
-				editBoxManager.style.font.family = this.value;
-				editBoxManager.sync();
-			}
-		};
-		
-		var colors = document.getElementById("font_color_list").children;
+            this.messages.appendChild(message);
 
-		for(var i in colors) {
-			colors[i].onclick = function () {
-				if(this.getAttribute("name") != "other") {
-					
-					editBoxManager.editBox.elements["editBox_color"].value = this.getAttribute("name");				
-					editBoxManager.editBox.elements["editBox_color"].onchange();
-						
-				}
-				else {
-					
-					document.getElementById('colorpicker').click();
-					
-				}
-			}
-		}
-		
-		this.editBox.elements["editBox_color"].onchange = function () {
-			if(editBoxManager.styleLoad()) {
-				editBoxManager.style.font.color = this.value;
-				editBoxManager.sync();
-			}
-		};
-		
-		this.editBox.elements["editBox_delete"].onclick = function () {
+        };
+
+
+    };
+
+    this.editBoxManager = new function () {
+
+        editBoxManager = this;
+
+        this.editBox = document.getElementById("editBoxForm");
+        this.editBoxContainer = document.getElementById("editBox");
+
+        this.syncDelay = null;
+        this.label = null;
+        this.style = null;
+
+
+        this.labelLoad = function () {
+            if (mindmap.getSelectedNode() != undefined) {
+                editBoxManager.label = mindmap.getSelectedNode().label;
+                return true;
+            }
+            return false;
+        };
+
+        this.styleLoad = function () {
+            if (mindmap.getSelectedNode() != undefined) {
+                editBoxManager.style = mindmap.getSelectedNode().style;
+                return true;
+            }
+            return false;
+        };
+
+        this.load = function () {
+
+            if (mindmap.getSelectedNode() != undefined) {
+
+                this.editBoxContainer.style.display = "block";
+
+                this.editBox.elements["editBox_label"].focus();
+
+                this.labelLoad();
+                this.styleLoad();
+                this.updateView();
+
+
+            }
+            else {
+
+                this.editBoxContainer.style.display = "none";
+
+            }
+        };
+
+        this.editBox.onsubmit = function () {
+            return false;
+        };
+
+        this.editBox.elements["editBox_label"].onkeyup = function () {
+            if (editBoxManager.labelLoad()) {
+                editBoxManager.label = this.value;
+
+                if (this.syncDelay != undefined)
+                    clearTimeout(this.syncDelay);
+
+                this.syncDelay = setTimeout(editBoxManager.sync, 300);
+            }
+        };
+
+        var fonts = document.getElementById("font_family_list").children;
+
+        for (var i in fonts) {
+            fonts[i].onclick = function () {
+                editBoxManager.editBox.elements["editBox_family"].value = this.getAttribute("name");
+                editBoxManager.editBox.elements["editBox_family"].onchange();
+            }
+        }
+
+        this.editBox.elements["editBox_family"].onchange = function () {
+            if (editBoxManager.styleLoad()) {
+                editBoxManager.style.font.family = this.value;
+                editBoxManager.sync();
+            }
+        };
+
+        var colors = document.getElementById("font_color_list").children;
+
+        for (var i in colors) {
+            colors[i].onclick = function () {
+                if (this.getAttribute("name") != "other") {
+
+                    editBoxManager.editBox.elements["editBox_color"].value = this.getAttribute("name");
+                    editBoxManager.editBox.elements["editBox_color"].onchange();
+
+                }
+                else {
+
+                    document.getElementById('colorpicker').click();
+
+                }
+            }
+        }
+
+        this.editBox.elements["editBox_color"].onchange = function () {
+            if (editBoxManager.styleLoad()) {
+                editBoxManager.style.font.color = this.value;
+                editBoxManager.sync();
+            }
+        };
+
+        this.editBox.elements["editBox_delete"].onclick = function () {
             if (mindmap.getSelectedNode() != null)
                 mindmap.deleteSelectedNode();
-				editBoxManager.editBoxContainer.style.display = "none";
-		};
+            editBoxManager.editBoxContainer.style.display = "none";
+        };
 
-		this.editBox.elements["editBox_bold"].onclick = function () {
-			if(editBoxManager.styleLoad()) {
-				editBoxManager.style.font.weight = this.checked ? "bold" : "normal";
-				
-				editBoxManager.sync();
-			}
-		};
-		this.editBox.elements["editBox_italic"].onclick = function () {
-			if(editBoxManager.styleLoad()) {
-				editBoxManager.style.font.style = this.checked ? "italic" : "normal";
-				
-				editBoxManager.sync();
-			}
-		};
-		this.editBox.elements["editBox_strike"].onclick = function () {
-			if(editBoxManager.styleLoad()) {
-				editBoxManager.style.font.decoration = this.checked ? "strike" : "none";
-				
-				editBoxManager.sync();
-			}
-		};
-		this.editBox.elements["editBox_underline"].onclick = function () {
-			if(editBoxManager.styleLoad()) {
-				editBoxManager.style.font.decoration = this.checked ? "underline" : "none";
-				
-				editBoxManager.sync();
-			}
-		};
-		
-		this.__labelUpdate = function (input, value) {
-			input.value = value;
-			if(value.length > 0) {
-				input.parentNode.classList.add("is-focused");
-			}
-			else {
-				input.parentNode.classList.remove("is-focused");
-			}
-		};
-		
-		this.__checkBoxUpdate = function (checkbox, checked) {
+        this.editBox.elements["editBox_bold"].onclick = function () {
+            if (editBoxManager.styleLoad()) {
+                editBoxManager.style.font.weight = this.checked ? "bold" : "normal";
 
-			if(checked) {
-				checkbox.parentNode.classList.add("is-checked");
-				checkbox.checked = true;
-			}
-			else {
-				checkbox.parentNode.classList.remove("is-checked");
-				checkbox.checked = false;
-			}
-		};
+                editBoxManager.sync();
+            }
+        };
+        this.editBox.elements["editBox_italic"].onclick = function () {
+            if (editBoxManager.styleLoad()) {
+                editBoxManager.style.font.style = this.checked ? "italic" : "normal";
 
-		this.updateView = function () {
-		
-			this.__labelUpdate(editBoxManager.editBox.elements["editBox_label"], this.label);
-			
-			this.__labelUpdate(editBoxManager.editBox.elements["editBox_family"], this.style.font.family);
-			editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
-			
-			this.__labelUpdate(editBoxManager.editBox.elements["editBox_color"], this.style.font.color);
-			editBoxManager.editBox.elements["editBox_color"].style.color = this.style.font.color;
-		
-			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_bold"], editBoxManager.style.font.weight == "bold");
-			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_italic"], editBoxManager.style.font.style == "italic");
-			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_underline"], editBoxManager.style.font.decoration == "underline");
-			this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_strike"], editBoxManager.style.font.decoration == "strike");
-			
-		};
-		
-		this.sync = function () {
+                editBoxManager.sync();
+            }
+        };
+        this.editBox.elements["editBox_strike"].onclick = function () {
+            if (editBoxManager.styleLoad()) {
+                editBoxManager.style.font.decoration = this.checked ? "strike" : "none";
 
-			editBoxManager.updateView();
-			
-			var node = mindmap.getSelectedNode();
-			
-			if(node != undefined) {
-				
-				node.label = editBoxManager.label;
-			
-				node.style = editBoxManager.style;
-				
-				mindmap.ioManager.out.editNode(node, true);
-			
-			}
-		}
-		
+                editBoxManager.sync();
+            }
+        };
+        this.editBox.elements["editBox_underline"].onclick = function () {
+            if (editBoxManager.styleLoad()) {
+                editBoxManager.style.font.decoration = this.checked ? "underline" : "none";
 
-		
-	};
-	
+                editBoxManager.sync();
+            }
+        };
+
+        this.__labelUpdate = function (input, value) {
+            input.value = value;
+            if (value.length > 0) {
+                input.parentNode.classList.add("is-focused");
+            }
+            else {
+                input.parentNode.classList.remove("is-focused");
+            }
+        };
+
+        this.__checkBoxUpdate = function (checkbox, checked) {
+
+            if (checked) {
+                checkbox.parentNode.classList.add("is-checked");
+                checkbox.checked = true;
+            }
+            else {
+                checkbox.parentNode.classList.remove("is-checked");
+                checkbox.checked = false;
+            }
+        };
+
+        this.updateView = function () {
+
+            this.__labelUpdate(editBoxManager.editBox.elements["editBox_label"], this.label);
+
+            this.__labelUpdate(editBoxManager.editBox.elements["editBox_family"], this.style.font.family);
+            editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
+
+            this.__labelUpdate(editBoxManager.editBox.elements["editBox_color"], this.style.font.color);
+            editBoxManager.editBox.elements["editBox_color"].style.color = this.style.font.color;
+
+            this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_bold"], editBoxManager.style.font.weight == "bold");
+            this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_italic"], editBoxManager.style.font.style == "italic");
+            this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_underline"], editBoxManager.style.font.decoration == "underline");
+            this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_strike"], editBoxManager.style.font.decoration == "strike");
+
+        };
+
+        this.sync = function () {
+
+            editBoxManager.updateView();
+
+            var node = mindmap.getSelectedNode();
+
+            if (node != undefined) {
+
+                node.label = editBoxManager.label;
+
+                node.style = editBoxManager.style;
+
+                mindmap.ioManager.out.editNode(node, true);
+
+            }
+        }
+
+
+    };
+
 
     /**
      * Local event manager
@@ -1844,14 +1828,14 @@ MindmapFrame = function (c) {
                     switch (e.type) {
 
                         case 'mouseup':
-                            eventManager.eventType = null;	
+                            eventManager.eventType = null;
 
 
                             if (eventManager.eventData.node != mindmap.rootNode && (e.clientX != eventManager.eventData.x || e.clientY != eventManager.eventData.y)) {
-							
+
                                 mindmap.ioManager.out.editNodes(eventManager.eventData.node.parentNode.childNodes);
-								
-							}
+
+                            }
 
                             mindmap.selectNode(eventManager.eventData.node);
 
@@ -1939,9 +1923,9 @@ MindmapFrame = function (c) {
                             if (e.target.nodeName == 'text' || e.target.nodeName == 'rect' || e.target.nodeName == 'line') {
 
                                 var nodeId = e.target.parentNode.id;
-								
-								var node = mindmap.nodes[nodeId];
-								
+
+                                var node = mindmap.nodes[nodeId];
+
                                 if (node != mindmap.rootNode && node.childNodes.length > 0) {
 
                                     node.style.folded = !node.style.folded;
@@ -1956,21 +1940,21 @@ MindmapFrame = function (c) {
                             }
                             /*else if (e.target.nodeName == 'g' && e.target.name == 'node') {
 
-                                var nodeId = e.target.id;
+                             var nodeId = e.target.id;
 
-                                if (mindmap.nodes[nodeId] != mindmap.rootNode && mindmap.nodes[nodeId].childNodes.length > 0) {
+                             if (mindmap.nodes[nodeId] != mindmap.rootNode && mindmap.nodes[nodeId].childNodes.length > 0) {
 
-                                    mindmap.nodes[nodeId].style.folded = !mindmap.nodes[nodeId].style.folded;
+                             mindmap.nodes[nodeId].style.folded = !mindmap.nodes[nodeId].style.folded;
 
-                                    if (mindmap.nodes[nodeId].style.folded)
-                                        mindmap.nodes[nodeId].hideNodeChildren();
+                             if (mindmap.nodes[nodeId].style.folded)
+                             mindmap.nodes[nodeId].hideNodeChildren();
 
-                                    mindmap.drawMap();
+                             mindmap.drawMap();
 
-                                    mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
+                             mindmap.ioManager.out.editNode(mindmap.nodes[nodeId]);
 
-                                }
-                            }*/
+                             }
+                             }*/
 
                             break;
 
@@ -2017,7 +2001,7 @@ MindmapFrame = function (c) {
                                 };
                             }
                             // if(e.target.id == 'container') {
-                            else if(e.target.nodeName == "svg" || e.target.nodeName == "path") {
+                            else if (e.target.nodeName == "svg" || e.target.nodeName == "path") {
 
 
                                 window.document.body.style.cursor = "grabbing";
@@ -2034,36 +2018,36 @@ MindmapFrame = function (c) {
 
                         case 'mousewheel':
                         case 'wheel' :
-						
-							if(e.target.nodeName == "svg" || e.target.nodeName == "g" || e.target.nodeName == "rect" || e.target.nodeName == "circle" || e.target.nodeName == "line" || e.target.nodeName == "text" || e.target.nodeName == "line" || e.target.nodeName == "path") {
 
-								if ('wheelDelta' in e)
-									var zoom = e.wheelDelta > 0;
-								else if ('deltaY' in e)
-									var zoom = e.deltaY < 0;
-								else
-									break;
+                            if (e.target.nodeName == "svg" || e.target.nodeName == "g" || e.target.nodeName == "rect" || e.target.nodeName == "circle" || e.target.nodeName == "line" || e.target.nodeName == "text" || e.target.nodeName == "line" || e.target.nodeName == "path") {
 
-								var zoom_coef = 2;
+                                if ('wheelDelta' in e)
+                                    var zoom = e.wheelDelta > 0;
+                                else if ('deltaY' in e)
+                                    var zoom = e.deltaY < 0;
+                                else
+                                    break;
 
-								if (zoom) {
-									mindmap.view.zoom *= zoom_coef;
-									mindmap.view.offset.x -= (zoom_coef * e.clientX - e.clientX) / mindmap.view.zoom;
-									mindmap.view.offset.y -= (zoom_coef * e.clientY - e.clientY) / mindmap.view.zoom;
+                                var zoom_coef = 2;
 
-								}
-								else {
-									mindmap.view.zoom /= zoom_coef;
+                                if (zoom) {
+                                    mindmap.view.zoom *= zoom_coef;
+                                    mindmap.view.offset.x -= (zoom_coef * e.clientX - e.clientX) / mindmap.view.zoom;
+                                    mindmap.view.offset.y -= (zoom_coef * e.clientY - e.clientY) / mindmap.view.zoom;
 
-									mindmap.view.offset.x += (e.clientX - e.clientX / zoom_coef ) / mindmap.view.zoom;
-									mindmap.view.offset.y += (e.clientY - e.clientY / zoom_coef ) / mindmap.view.zoom;
+                                }
+                                else {
+                                    mindmap.view.zoom /= zoom_coef;
+
+                                    mindmap.view.offset.x += (e.clientX - e.clientX / zoom_coef ) / mindmap.view.zoom;
+                                    mindmap.view.offset.y += (e.clientY - e.clientY / zoom_coef ) / mindmap.view.zoom;
 
 
-								}
+                                }
 
-								mindmap.setView();
-								
-							}
+                                mindmap.setView();
+
+                            }
 
                             break;
 
@@ -2081,8 +2065,6 @@ MindmapFrame = function (c) {
      * @type {ioManager}
      */
     this.ioManager = new function () {
-
-        var basePath = window.location.pathname + "/";
 
         this.controller = function () {
 
@@ -2122,26 +2104,18 @@ MindmapFrame = function (c) {
                     console.log("Parsing data ...");
                     console.log(data);
 
-					mindmap.ioManager.in.open(data.nodes);
-					/*
-                    _.forEach(data.nodes, function (n) {
+                    mindmap.ioManager.in.open(data.nodes);
+                    mindmap.setWorker(data.user);
 
-                        mindmap.ioManager.in.createdNode(n);
-                    }); */
+                    mindmap.hashManager.on();
+                });
 
-					mindmap.setWorker(data.user);
-					
-					mindmap.hashManager.on();
-
+                io.socket.post(basePath + "chat/getAll", function (data) {
+                    _.forEach(data, function (message) {
+                        mindmap.chatBoxManager.onMessage(message);
+                    });
                 });
             };
-
-            this.leave = function () {
-
-                //TODO: Leave, ici je sais pas quand on l'appel x)
-
-            }
-
 
             ////When user query server to get the id of a new node
             this.newNode = function (parentNodeId, worker, permission, style) {
@@ -2170,12 +2144,12 @@ MindmapFrame = function (c) {
                 console.log("Out : edit Node", node);
 
                 var path = basePath + "node/update/" + (updateStyle ? 'yes' : 'no');
-				
-				var father = (node.parentNode != undefined) ? node.parentNode.id : 0;
+
+                var father = (node.parentNode != undefined) ? node.parentNode.id : 0;
 
                 io.socket.post(path, {
                     nodes: [{
-                        parent_node: father, 
+                        parent_node: father,
                         style: node.style,
                         label: node.label,
                         id: node.id
@@ -2220,23 +2194,23 @@ MindmapFrame = function (c) {
             this.unselectNode = function (node) {
 
                 console.log("Out : unselect Node", node);
-				
-				editBoxManager.load();
+
+                editBoxManager.load();
 
                 //TODO: Notification de déséléction - Émission
                 //Données utiles : node.id
-            }
+            };
 
             //When user select a node
             this.selectNode = function (node) {
 
                 console.log("Out : select Node", node);
-				
-				editBoxManager.load();
+
+                editBoxManager.load();
 
                 //TODO: Notification de séléction - Émission
                 //Données utiles : node.id
-            }
+            };
 
             //When user delete nodes
             this.deleteNodes = function (ids) {
@@ -2266,32 +2240,32 @@ MindmapFrame = function (c) {
         };
 
         this.in = new function () {
-			
-			this.open = function (nodes) {
-				
-				for(var i in nodes) {
-					
-					var node = nodes[i];
-					mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
-					
-					if(nodes[i].parentNode == undefined)
-						this.rootNode = nodes[i];					
-					
-					if(node.id in mindmap.workers && mindmap.workers[node.id].worker != null)
-						mindmap.workers[ mindmap.workers[node.id].worker] = node.id;
-				}
-				
-				mindmap.rootNode.orderizeDescendance();
-				
-				mindmap.drawMap();
-				
-			};
-			
+
+            this.open = function (nodes) {
+
+                for (var i in nodes) {
+
+                    var node = nodes[i];
+                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
+
+                    if (nodes[i].parentNode == undefined)
+                        this.rootNode = nodes[i];
+
+                    if (node.id in mindmap.workers && mindmap.workers[node.id].worker != null)
+                        mindmap.workers[mindmap.workers[node.id].worker] = node.id;
+                }
+
+                mindmap.rootNode.orderizeDescendance();
+
+                mindmap.drawMap();
+
+            };
+
             this.createdNode = function (node) {
-				
-				// console.log(node.label, node.style.order);
-				
-				// node.style.order = parseFloat(node.style.order);
+
+                // console.log(node.label, node.style.order);
+
+                // node.style.order = parseFloat(node.style.order);
 
                 if (node.worker != null) { //Si le noeud possède un worker courant
                     if (mindmap.workers[node.worker] != null) { //Si le worker existe déjà
@@ -2299,10 +2273,10 @@ MindmapFrame = function (c) {
                     }
                     mindmap.workers[node.worker] = node.id; //On séléctionne le nouveau noeud
                 }
-				// console.log(node.style.order, node.style.order_bis);
-				// console.log(node);
-				// node.style.order = node.style.order_bis;
-				
+                // console.log(node.style.order, node.style.order_bis);
+                // console.log(node);
+                // node.style.order = node.style.order_bis;
+
                 // console.log(node);
                 mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
                 node = mindmap.nodes[node.id];
@@ -2316,11 +2290,11 @@ MindmapFrame = function (c) {
                     for (var i in node.parentNode.childNodes) {
                         node.parentNode.childNodes[i].style.order = parseInt(i);
                     }
-					
+
 
                 }
                 mindmap.newBranchElement.style.display = "none"; //bug risk
-				
+
                 mindmap.drawMap();
 
                 //console.log("In : Node created");
@@ -2416,27 +2390,25 @@ MindmapFrame = function (c) {
             };
 
             this.negotiate = function (message) {
-				
-				
-				
+
+
                 switch (message.verb) {
 
                     case 'messaged':
                         switch (message.data.header) {
                             case 'Chat_public':
-							
-								chatBoxManager.onMessage(message.data);
+                                _.forEach(message.data.msg, function (msg) {
+
+                                    mindmap.chatBoxManager.onMessage(msg);
+                                });
 
                                 break;
                             case 'New_nodes':
                                 _.forEach(message.data.msg, function (n) {
-									
-								
-									//console.log(n.style.order, n.style.order_bis);
+
                                     mindmap.ioManager.in.createdNode(n);
                                 });
                                 break;
-                            case 'Update_nodes_w_style':
                             case 'Update_nodes':
                                 _.forEach(message.data.msg, function (n) {
                                     mindmap.ioManager.in.editNode(0, n, false);
@@ -2446,6 +2418,12 @@ MindmapFrame = function (c) {
                                 _.forEach(message.data.msg, function (n) {
                                     mindmap.ioManager.in.deleteNode(n.id);
                                 });
+                                break;
+                            case 'User_connect':
+                                mindmap.workersListManager.addWorker(message.data.msg);
+                                break;
+                            case 'User_disconnect':
+                                mindmap.workersListManager.removeWorker(message.data.msg);
                                 break;
 
                         }
@@ -2466,7 +2444,7 @@ MindmapFrame = function (c) {
     /*===== LAUNCH =====*/
 
     this.initialize();
-}
+};
 
 
 //dbg

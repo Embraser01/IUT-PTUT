@@ -81,6 +81,7 @@ module.exports.routes = {
     /*===== Chat Controller =====*/
 
     'post /mm/:id/chat/public': 'ChatController.public',
+    'post /mm/:id/chat/getAll': 'ChatController.getAll',
 
 
     /*===== Node Controller =====*/

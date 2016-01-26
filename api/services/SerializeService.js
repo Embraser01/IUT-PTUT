@@ -173,6 +173,7 @@ module.exports = {
                     // Find dx and order from the owner of the node
                     _.forEach(n.styles, function (style) {
                         if (style.owner == n.owner) {
+                            //console.log('Recupération du noeud du propriétaire (dx et order)');
                             var tmp2 = unserialize_static(style.style);
                             n.style.dx = tmp2.dx;
                             n.style.order = tmp2.order;
