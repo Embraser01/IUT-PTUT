@@ -2,25 +2,38 @@ module.exports = function (req, res, next) {
 
     // TODO Check if an user is allowed to load this mindmap
     // Use only at join, check if he is allowed and put mindmap info in req.session.mindmap (id, name)
+    req.session.mindmapList = req.session.mindmapList || [];
+    var mindmapId = parseInt(req.param('id'));
 
-    MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
-        if (err) return res.serverError();
 
-        if (!mindmap) return res.notFound();
+    var mindmap = _.find(req.session.mindmapList, function (mm) {
+        return mm.id === mindmapId;
+    });
 
-        req.session.mindmapList = req.session.mindmapList || [];
-
-        var data = {
-            id: mindmap.id,
-            name: mindmap.name,
-            sockets: [sails.sockets.id(req.socket)]
-        };
-
-        req.session.mindmapList.push(data);
-
-        req.mindmap = data;
+    if (mindmap) {
+        req.mindmap = mindmap;
 
         return next();
+    } else {
 
-    });
+        MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
+            if (err) return res.serverError();
+
+            if (!mindmap) return res.notFound();
+            
+
+            var data = {
+                id: mindmap.id,
+                name: mindmap.name,
+                sockets: []
+            };
+
+            req.session.mindmapList.push(data);
+
+            req.mindmap = data;
+
+            return next();
+
+        });
+    }
 };

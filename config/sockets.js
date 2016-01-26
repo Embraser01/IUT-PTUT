@@ -124,8 +124,8 @@ module.exports.sockets = {
         if (!session.mindmapList) return cb();
 
         var user = {
-            id: session.user.id,
-            display_name: session.user.display_name
+            id: session.passport.user.id,
+            display_name: session.passport.user.display_name
         };
 
         var socketId = sails.sockets.id(socket);

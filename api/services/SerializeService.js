@@ -11,7 +11,6 @@ function unserialize_0_0_1_(bigCategory) {
     try {
         unserialized_style = {
             order: bigCategory[0],
-            order_bis: bigCategory[0],
             dx: bigCategory[1],
             folded: bigCategory[2] == 'true',
             container: {
@@ -46,6 +45,50 @@ function unserialize_0_0_1_(bigCategory) {
     }
     return unserialized_style;
 }
+
+var default_style = {
+    order: 1,
+    dx: 100,
+    folded: false,
+    container: {
+        kind: "none",
+        borderThickness: "0",
+        borderColor: "#263238",
+        background: "white",
+        radius: "7"
+    },
+    font: {
+        family: "sans-serif",
+        size: "24",
+        color: "#006064",
+        weight: "bold ",
+        style: "italic ",
+        decoration: "none",
+        align: "right"
+    },
+    parentBranch: {
+        color: "#42a5f5"
+    },
+    unifiedChildren: {
+        dx: false,
+        container: false,
+        font: false,
+        parentBranch: false
+    }
+};
+
+function unserialize_static(style) {
+    var bigCategory = style.split("|");
+
+    // Switch between version of style serialized
+
+    switch (bigCategory[7]) {
+        case "0.0.1":
+        default:
+            return unserialize_0_0_1_(bigCategory);
+    }
+}
+
 
 module.exports = {
 
@@ -107,28 +150,35 @@ module.exports = {
     },
 
     unserialize: function (style) {
-        var bigCategory = style.split("|");
-
-        // Switch between version of style serialized
-
-        switch (bigCategory[7]) {
-            case "0.0.1":
-            default:
-                return unserialize_0_0_1_(bigCategory);
-        }
+        return unserialize_static(style);
     },
 
-    styleLoad: function (nodes, user_id){
+    styleLoad: function (nodes, user_id) {
         if (nodes) {
             _.forEach(nodes, function (n) {
                 // On laisse un seul style
-                var tmp = this.getDefaultStyle();
+                var tmp = null;
+                var default_dx = 100;
+                var default_order = 0;
 
                 _.forEach(n.styles, function (style) {
                     tmp = (style.owner == user_id) ? style : tmp;
                 });
 
-                n.style = this.unserialize(tmp);
+                if(tmp) {
+                    n.style = unserialize_static(tmp.style);
+                } else {
+                    n.style = default_style;
+
+                    // Find dx and order from the owner of the node
+                    _.forEach(n.styles, function (style) {
+                        if (style.owner == n.owner) {
+                            var tmp2 = unserialize_static(style.style);
+                            n.style.dx = tmp2.dx;
+                            n.style.order = tmp2.order;
+                        }
+                    });
+                }
                 n.styles = null;
 
                 // Remplace 0 par null pour le parent
@@ -140,36 +190,7 @@ module.exports = {
     },
 
     getDefaultStyle: function () {
-        return {
-            order: 1,
-            dx: 0,
-            folded: false,
-            container: {
-                kind: "none",
-                borderThickness: "0",
-                borderColor: "#263238",
-                background: "white",
-                radius: "7"
-            },
-            font: {
-                family: "sans-serif",
-                size: "24",
-                color: "#006064",
-                weight: "bold ",
-                style: "italic ",
-                decoration: "none",
-                align: "right"
-            },
-            parentBranch: {
-                color: "#42a5f5"
-            },
-            unifiedChildren: {
-                dx: false,
-                container: false,
-                font: false,
-                parentBranch: false
-            }
-        };
+        return default_style;
     }
 
 };

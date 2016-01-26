@@ -10,6 +10,7 @@ module.exports = function (req, res, next) {
                 // Use the built-in sessions
                 passport.session()(req, res, function () {
 
+                    req.session.user = req.session.passport.user;
                     return next();
                 });
             });

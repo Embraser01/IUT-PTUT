@@ -1863,12 +1863,6 @@ MindmapFrame = function (c) {
                 });
             };
 
-            this.leave = function () {
-
-                //TODO: Leave, ici je sais pas quand on l'appel x)
-
-            }
-
 
             ////When user query server to get the id of a new node
             this.newNode = function (parentNodeId, worker, permission, style) {

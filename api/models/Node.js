@@ -15,7 +15,7 @@ module.exports = {
 
         height: {
             type: 'integer',
-            defaultTo: 0
+            defaultsTo: 0
         },
 
 

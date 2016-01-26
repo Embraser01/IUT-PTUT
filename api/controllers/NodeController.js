@@ -35,16 +35,15 @@ function queryStylesUpdate(nodes, req) {
     return request_style;
 }
 
-
-function cbStyleInsertOrUpdate(err, styles) {
-    if (err) return console.log(err);
+function sendNodesUpdate(req, res, ids) {
 
     Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
         if (err) return console.log(err);
 
-        nodes = SerializeService.styleLoad(nodes, req.session.user.id);
+        console.log(nodes);
+        MindMapMsgService.send('Update_nodes', req, nodes); // Notify users before load style
 
-        MindMapMsgService.send('Update_nodes_w_style', req, nodes); // Notify users
+        nodes = SerializeService.styleLoad(nodes, req.session.user.id);
         return res.json(nodes);
     });
 }
@@ -54,7 +53,7 @@ module.exports = {
 
     new: function (req, res) {
         var nodes = req.param('nodes');
-        if(!nodes) return res.badRequest();
+        if (!nodes) return res.badRequest();
 
         // TODO Create more than one node at once
         //var formatted_nodes = [];
@@ -101,15 +100,19 @@ module.exports = {
 
                     if (new_nodes) {
 
+                        // Add the style on nodes
                         _.forEach(new_nodes, function (n, key) {
-                            n.style = SerializeService.unserialize(new_styles[key].style);
-                            //n.parent_node = n.parent_node.id;
-
-                            if (n.parent_node === 0) n.parent_node = null;
+                            n.styles[0] = {
+                                style: new_styles[key].style,
+                                node: new_styles[key].node,
+                                owner: new_styles[key].owner
+                            }
                         });
-                    }
 
-                    MindMapMsgService.send('New_nodes', req, new_nodes); // Notify users
+                        SerializeService.styleLoad(new_nodes, req.user.id);
+
+                        MindMapMsgService.send('New_nodes', req, new_nodes); // Notify users
+                    }
                     return res.json(new_nodes);
                 });
             });
@@ -155,33 +158,49 @@ module.exports = {
                         });
                     });
 
-                    // Make request if necessary
-                    if (toUpdate.empty()) Style.create(toInsert).exec(cbStyleInsertOrUpdate);
-                    else if (toInsert.empty())  Style.query(queryStylesUpdate(toUpdate, req), cbStyleInsertOrUpdate);
+                    // Make request only if necessary
+                    if (toUpdate.length === 0) {
+                        Style.create(toInsert).exec(function (err, styles) {
+                            if (err) return console.log(err);
+
+                            sendNodesUpdate(req, res, ids);
+                        });
+                    }
+                    else if (toInsert.length === 0) {
+                        Style.query(queryStylesUpdate(toUpdate, req), function (err, styles) {
+                            if (err) return console.log(err);
+
+                            sendNodesUpdate(req, res, ids);
+                        });
+                    }
                     else {
                         Style.query(queryStylesUpdate(toUpdate, req), function (err) {
                             if (err) return console.log(err);
 
-                            Style.create(toInsert).exec(cbStyleInsertOrUpdate);
+                            Style.create(toInsert).exec(function (err, styles) {
+                                if (err) return console.log(err);
+
+                                sendNodesUpdate(req, res, ids);
+                            });
                         });
                     }
                 });
             } else {
-                Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
-                    if (err) return console.log(err);
-
-                    nodes = SerializeService.styleLoad(nodes, req.session.user.id);
-
-                    MindMapMsgService.send('Update_nodes', req, nodes); // Notify users
-                    return res.json(nodes);
-
-                });
+                sendNodesUpdate(req, res, ids);
             }
         });
     },
 
-    move: function (req, res){
+    move: function (req, res) {
         // TODO Height thing
+    },
+
+    select: function (req, res) {
+        // TODO Select broadcast
+    },
+
+    unselect: function (req, res) {
+        // TODO Unselect broadcast
     },
 
     delete: function (req, res) {
