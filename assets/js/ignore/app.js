@@ -1230,122 +1230,121 @@ MindmapFrame = function (c) {
 
 
     /*===== MANAGERS =====*/
-	
-	this.keyboardManager = new function () {
 
-		keyboardManager = this;
+    this.keyboardManager = new function () {
 
-		this.shift = false;
-		this.ctrl = false;
-		this.alt = false;
+        keyboardManager = this;
 
-		window.onkeydown = function (e) {
+        this.shift = false;
+        this.ctrl = false;
+        this.alt = false;
 
-			switch(e.keyCode) {
+        window.onkeydown = function (e) {
 
-				case 16:
-					keyboardManager.shift = true;
-					break;
-				case 17:
-					keyboardManager.ctrl = true;
-					break;
-				case 18:
-					keyboardManager.alt = true;
-					break;
+            switch (e.keyCode) {
 
-			}
+                case 16:
+                    keyboardManager.shift = true;
+                    break;
+                case 17:
+                    keyboardManager.ctrl = true;
+                    break;
+                case 18:
+                    keyboardManager.alt = true;
+                    break;
 
-		};
+            }
 
-		window.onkeyup = function (e) {
+        };
 
-			switch(e.keyCode) {
+        window.onkeyup = function (e) {
 
-				case 16:
-					keyboardManager.shift = false;
-					break;
-				case 17:
-					keyboardManager.ctrl = false;
-					break;
-				case 18:
-					keyboardManager.alt = false;
-					break;
+            switch (e.keyCode) {
 
-			}
+                case 16:
+                    keyboardManager.shift = false;
+                    break;
+                case 17:
+                    keyboardManager.ctrl = false;
+                    break;
+                case 18:
+                    keyboardManager.alt = false;
+                    break;
 
-			if(keyboardManager.ctrl) {
+            }
 
-				switch(e.keyCode) {
-					case 65: //A
+            if (keyboardManager.ctrl) {
 
-						break;
-					case 67: //C
+                switch (e.keyCode) {
+                    case 65: //A
 
-
-						break;
-					case 68: //D
-
-						break;
-					case 86: //V
-
-						break;
-					case 88: //X
-
-						break;
-					case 89: //Y
-
-						break;
-					case 90: //Z
-
-						break;
-				}
-			}
-		};
+                        break;
+                    case 67: //C
 
 
+                        break;
+                    case 68: //D
 
-	};
+                        break;
+                    case 86: //V
 
-	this.hashManager = new function () {
-		
-		hashManager = this;
-		
-		this.fixHashValue =  false;
-		
-		this.fixHashObserver = function () {
-			
-			if(hashManager.fixHashValue != window.location.hash) {
-				
-				hashManager.fixHashValue = window.location.hash;
-				
-				hashManager.on();
-				
-			}
-			
-			setTimeout(hashManager.fixHashObserver, 250);
-			
-		};
-		
-		this.on = function () {
-			
-			var hash = window.location.hash;
-			
-			var split = hash.substr(1).split(':');
-			
-			if(split.length == 2) {
-				
-				if(split[0] == 'node' && split[1] in mindmap.nodes) {
-					
-					mindmap.nodes[split[1]].viewNode();
-					
-				}
-				
-			}
-			
-		};
-		
-		if(false && 'onhashchange' in window)
-			window.onhashchange = hashManager.on;
+                        break;
+                    case 88: //X
+
+                        break;
+                    case 89: //Y
+
+                        break;
+                    case 90: //Z
+
+                        break;
+                }
+            }
+        };
+
+
+    };
+
+    this.hashManager = new function () {
+
+        hashManager = this;
+
+        this.fixHashValue = false;
+
+        this.fixHashObserver = function () {
+
+            if (hashManager.fixHashValue != window.location.hash) {
+
+                hashManager.fixHashValue = window.location.hash;
+
+                hashManager.on();
+
+            }
+
+            setTimeout(hashManager.fixHashObserver, 250);
+
+        };
+
+        this.on = function () {
+
+            var hash = window.location.hash;
+
+            var split = hash.substr(1).split(':');
+
+            if (split.length == 2) {
+
+                if (split[0] == 'node' && split[1] in mindmap.nodes) {
+
+                    mindmap.nodes[split[1]].viewNode();
+
+                }
+
+            }
+
+        };
+
+        if (false && 'onhashchange' in window)
+            window.onhashchange = hashManager.on;
 
         else
             hashManager.fixHashObserver();
@@ -1384,6 +1383,7 @@ MindmapFrame = function (c) {
         };
 
         this.addWorker = function (user) {
+            console.log(user);
 
             var worker = document.createElement("DIV");
 
@@ -1394,7 +1394,6 @@ MindmapFrame = function (c) {
             worker.innerHTML = '<span>' + user.display_name + '</span>';
 
             worker.onclick = function () {
-
 
                 var id = this.getAttribute("name");
 
@@ -1411,10 +1410,6 @@ MindmapFrame = function (c) {
 
             workersListManager.workersListElement.appendChild(worker);
         };
-
-        this.addWorker(1);
-        //this.removeWorker(2);
-
     };
 
     this.chatBoxManager = new function () {
@@ -1431,7 +1426,6 @@ MindmapFrame = function (c) {
                 msg: chatBoxManager.inputElement.value
             };
 
-            console.log("$ chatBox.postMessage " + basePath + "chat/public", messageData);
 
             io.socket.post(basePath + "chat/public", messageData, function (data) {
 
@@ -1450,18 +1444,14 @@ MindmapFrame = function (c) {
 
         this.onMessage = function (messageData) {
 
-            console.log("$ chatBox.onMessage ", messageData);
-
             var message = document.createElement("tr");
 
-            //TODO utiliser messageData pour ajouter le nouveau message à la liste
-
             message.innerHTML = '<td class="picture"> \
-							<div style="background-image:url(' + messageData.user.display_name + ')"></div> \
+							<div style="background-image:url(' + messageData.user.img_url + ')"></div> \
 						</td> \
 						<td> \
 							<div class="author"> \
-								' + messageData.user.display_name + ' <span class="time">messageData.createdAt</span> \
+								' + messageData.user.display_name + ' <span class="time">' + messageData.createdAt + '</span> \
 							</div> \
 							<div class="message"> \
 								' + messageData.data + '\
@@ -2397,11 +2387,7 @@ MindmapFrame = function (c) {
                     case 'messaged':
                         switch (message.data.header) {
                             case 'Chat_public':
-                                _.forEach(message.data.msg, function (msg) {
-
-                                    mindmap.chatBoxManager.onMessage(msg);
-                                });
-
+                                mindmap.chatBoxManager.onMessage(message.data.msg);
                                 break;
                             case 'New_nodes':
                                 _.forEach(message.data.msg, function (n) {

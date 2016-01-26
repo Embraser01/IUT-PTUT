@@ -67,14 +67,15 @@ module.exports = {
 
 
         var user = {
-            id: req.session.user.id,
-            display_name: req.session.user.display_name,
-            img_url: req.session.user.img_url
+            id: req.user.id,
+            display_name: req.user.display_name,
+            img_url: req.user.img_url
         };
 
-        MindMapMsgService.send('User_connect', null, user, mindmap.id); // Notify users
+        MindMapMsgService.send('User_connect', req, user);
 
 
+        // TODO Send user already connect
         // TODO Stream data to go faster #BarryAllen
 
         Node.find({where: {mindmap: mindmap.id}}).sort({height: 'asc'}).populate('styles').exec(function (err, nodes) {

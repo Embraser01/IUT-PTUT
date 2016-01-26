@@ -123,6 +123,8 @@ module.exports.sockets = {
     afterDisconnect: function (session, socket, cb) {
         if (!session.mindmapList) return cb();
 
+        if(!session.passport || !session.passport.user) return cb();
+
         var user = {
             id: session.passport.user.id,
             display_name: session.passport.user.display_name

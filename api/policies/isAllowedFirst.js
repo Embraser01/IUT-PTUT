@@ -5,6 +5,7 @@ module.exports = function (req, res, next) {
     req.session.mindmapList = req.session.mindmapList || [];
     var mindmapId = parseInt(req.param('id'));
 
+    if(!mindmapId) return res.badRequest();
 
     var mindmap = _.find(req.session.mindmapList, function (mm) {
         return mm.id === mindmapId;
@@ -16,8 +17,11 @@ module.exports = function (req, res, next) {
         return next();
     } else {
 
-        MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
-            if (err) return res.serverError();
+        MindMap.findOne(mindmapId).exec(function (err, mindmap) {
+            if (err) {
+                console.log(err);
+                return res.serverError();
+            }
 
             if (!mindmap) return res.notFound();
             
