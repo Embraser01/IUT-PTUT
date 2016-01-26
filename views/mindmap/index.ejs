@@ -1,33 +1,147 @@
 <div id="mindmap">
-    <div style="position:fixed;z-index:10;top:80px;left:5px;">
-        <!--<button disabled id="">Out: New node</button>
-        <button disabled id="">Out: Select node</button>
-        <button disabled id="">Out: Unselect node</button>
-        <button disabled id="">Out: Force unselect</button>
-        <button id="out_modify">Out: Modify node</button>
-        <button disabled id="">Out: Modify nodes</button>
-        <button id="out_delete">Out: Delete node</button>-->
-    </div>
 
-    <div style="position:fixed;z-index:10;bottom:10px;right:5px;">
- <!--       <button id="in_new">In: New node</button>
-        <button id="in_select">In: Select node</button>
-        <button id="in_unselect">In: Unselect node</button>
-        <button id="">In: Force loose node selection</button>
-        <button id="in_modify">In: Modify node</button>
-        <button id="in_delete">In: Delete node</button>
-        <button id="redraw">Force redraw</button>-->
-    </div>
+	<div id="workerArea">
+	
+		
+		<input type="checkbox" id="chatBoxStatut" />
+		<div id="chatBox">
+			
+		
+			<div id="chatBoxTitle" class="boxTitle">
+			Conversation
+			<label for="chatBoxStatut"><i class="closer material-icons">close</i></label>
+			</div>
+			<div id="chatBoxScroller">
+			
+				<table cellspacing="0" cellpadding="0" id="chatBoxMessages">
+					<tr>
+						<td class="picture">
+							<div style="background-image:url(ahttps://pixabay.com/static/uploads/photo/2013/10/27/22/45/animal-201564_960_720.jpg)"></div>
+						</td>
+						<td>
+							<div class="author">
+								Benji Chaz <span class="time">4.13 pm</span>
+							</div>
+							<div class="message">
+								Yolo lorem ipsum la congolexciomatisatio ndes lois du marché mais oui c'est clair
+							</div>
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td class="picture">
+							<div style="background-image:url(ahttps://pixabay.com/static/uploads/photo/2013/10/27/22/45/animal-201564_960_720.jpg)"></div>
+						</td>
+						<td>
+							<div class="author">
+								Benji Chaz <span class="time">4.13 pm</span>
+							</div>
+							<div class="message">
+								Yolo lorem ipsum la congolexciomatisatio ndes lois du marché mais oui c'est clair
+							</div>
+						</td>
+					</tr>
+					
+					
+					<tr>
+						<td class="picture">
+							<div style="background-image:url(ahttps://pixabay.com/static/uploads/photo/2013/10/27/22/45/animal-201564_960_720.jpg)"></div>
+						</td>
+						<td>
+							<div class="author">
+								Benji Chaz <span class="time">4.13 pm</span>
+							</div>
+							<div class="message">
+								Yolo lorem ipsum la congolexciomatisatio ndes lois du marché mais oui c'est clair
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td class="picture">
+							<div style="background-image:url(ahttps://pixabay.com/static/uploads/photo/2013/10/27/22/45/animal-201564_960_720.jpg)"></div>
+						</td>
+						<td>
+							<div class="author">
+								Benji Chaz <span class="time">4.13 pm</span>
+							</div>
+							<div class="message">
+								Yolo lorem ipsum la congolexciomatisatio ndes lois du marché mais oui c'est clair
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td class="picture">
+							<div style="background-image:url(ahttps://pixabay.com/static/uploads/photo/2013/10/27/22/45/animal-201564_960_720.jpg)"></div>
+						</td>
+						<td>
+							<div class="author">
+								Benji Chaz <span class="time">4.13 pm</span>
+							</div>
+							<div class="message">
+								Yolo lorem ipsum la congolexciomatisatio ndes lois du marché mais oui c'est clair
+							</div>
+						</td>
+					</tr>
+					
+					
+				</table>
+				
+				
+				
+			
+			
+			</div>
+			
+			<div id="chatBoxInput">
+			
+
+				<div id="chatBoxInputField">
+					<input id="chatBoxInputElement" type="text" placeholder="Message" class="simpleTextfield" />
+				</div>
+				<div id="chatBoxInputSend">
+					<i class="material-icons">send</i>
+				</div>
+
+
+
+			</div>
+		
+		</div>
+
+		<div id="workers">
+
+			<label id="chatBoxOpenerContainer" for="chatBoxStatut">
+				<div id="chatBoxOpener">
+					<i style="margin-top:12px;" class="material-icons">chat_bubble</i>
+				</div>
+			</label>
+			
+			
+			<div name="1" style="background-image:url(ahttps://pixabay.com/static/uploads/photo/2012/11/16/15/49/hahn-66341_960_720.jpg);"><span>Marc-Antoine Fernandez</span></div>
+			<div name="2" style="background-image:url(ahttps://pixabay.com/static/uploads/photo/2013/10/27/22/45/animal-201564_960_720.jpg);"><span>Marc-Antoine Fernandez</span></div>
+			
+			
+			<div name="3" style="background-image:url(ahttps://pixabay.com/static/uploads/photo/2013/12/26/12/16/hahn-233898_960_720.jpg);"><span>Hugo Alliaume</span></div>
+			
+			
+		</div>
+	
+	</div>
 	
 	<div id="editBox" >
-		<h3>Édition d'un noeud</h3>
 
+		<div class="boxTitle">
+			Édition d'un noeud
+		</div>
+			
 		<form id="editBoxForm">
 
-			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-				<input class="mdl-textfield__input" type="text" id="editBox_label">
-				<label style="font-weight:bold;" class="mdl-textfield__label" for="editBox_label">Label</label>
-			</div>
+
+			<input id="editBox_label" type="text" placeholder="Message" class="simpleTextfield" />
+
 
 			<table style="width:100%;">
 				<tr>
@@ -111,8 +225,7 @@
 		</form>
 	</div>
 
-    <svg xmlns="http://www.w3.org/2000/svg" id="container" width="100%"
-         height="100%" style="background-color: #eceff1;">
+    <svg xmlns="http://www.w3.org/2000/svg" id="container" width="100%" height="100%" style="background-color: #eceff1;">
 
     </svg>
 
@@ -131,95 +244,6 @@
         window.onmousewheel = Mindmap.eventManager.on;
         window.ondblclick = Mindmap.eventManager.on;
 
-/*
-
-        document.getElementById('out_modify').onclick = function () {
-            if (Mindmap.getSelectedNode() != null)
-                Mindmap.getSelectedNode().editNode(mindmap.worker, 'Edited node', {
-                    "font": {
-                        "weight": "bold",
-                        "style": "italic",
-                        "decoration": "strike"
-                    }
-                }, true);
-        };*/
-
-        document.getElementById('out_delete').onclick = function () {
-            if (Mindmap.getSelectedNode() != null)
-                Mindmap.deleteSelectedNode();
-        };
-
-        document.getElementById('redraw').onclick = function () {
-            Mindmap.drawMap();
-        };
-/*
-
-        document.getElementById('in_new').onclick = function () {
-
-            var parent_id = (Mindmap.getSelectedNode() == null) ? Mindmap.rootNode.id : Mindmap.getSelectedNode().id;
-
-            var style = {
-                order: 1,
-                dx: 1,
-                folded: false,
-                container: {
-                    kind: "rectangle",
-                    borderThickness: "0",
-                    borderColor: "#263238",
-                    background: "white",
-                    radius: "7"
-                },
-                font: {
-                    family: "sans-serif",
-                    size: "24",
-                    color: "#006064",
-                    weight: "bold ",
-                    style: "italic ",
-                    decoration: "none",
-                    align: "right"
-                },
-                parentBranch: {
-                    color: "#42a5f5"
-                },
-                unifiedChildren: {
-                    dx: false,
-                    container: false,
-                    font: false,
-                    parentBranch: false
-                }
-            };
-
-            mindmap.ioManager.out.newNode(parent_id, null, null, style);
-        }
-
-        document.getElementById('in_select').onclick = function () {
-
-
-            if (mindmap.workers[2] == null || mindmap.workers[2] == 4)
-                mindmap.ioManager.in.selectNode(2, 1);
-            else
-                mindmap.ioManager.in.selectNode(2, 4);
-
-            mindmap.ioManager.in.selectNode(2, mindmap.workers[2]);
-        }
-
-        document.getElementById('in_unselect').onclick = function () {
-            mindmap.ioManager.in.unselectNode(2, mindmap.workers[2]);
-        }
-
-        document.getElementById('in_modify').onclick = function () {
-            mindmap.ioManager.in.editNode(2, {
-                id: mindmap.workers[2],
-                textContent: "Edited by other",
-                style: {font: {color: "pink"}}
-            });
-
-        }
-
-        document.getElementById('in_delete').onclick = function () {
-            mindmap.ioManager.in.deleteNode(2, 1);
-        }
-*/
 
     }
 </script>

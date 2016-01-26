@@ -233,6 +233,8 @@ MindmapFrame = function (c) {
 
             else if (100 > this.style.dx && this.style.dx > 0)
                 this.style.dx = 100;
+			
+
 
         };
 
@@ -319,6 +321,22 @@ MindmapFrame = function (c) {
             traverse(this);
 
         };
+		
+		this.viewNode = function () {
+			
+			var nx = parseInt(document.body.offsetWidth / 2) / mindmap.view.zoom  - this.position.x;
+			var ny = parseInt(document.body.offsetHeight / 2) / mindmap.view.zoom - this.position.y;
+			
+			if(mindmap.rootNode == this)
+				nx += 0;
+			else if(this.orientation == "left")
+				nx += parseFloat(this.rectElement.getAttribute("width")) /2 ;
+			else if(this.orientation == "right")
+				nx -= parseFloat(this.rectElement.getAttribute("width")) /2;
+			
+			mindmap.setView(nx, ny);
+			
+		};
 
         /**
          * Draw the node with the style attribute
@@ -338,8 +356,6 @@ MindmapFrame = function (c) {
 
             if (this == mindmap.rootNode) {
                 this.style.folded = false;				
-				// consolelog("yolo")
-				// alert(this.position.x);
 				
 			}
 
@@ -367,6 +383,9 @@ MindmapFrame = function (c) {
 				
 				this.style.container.background = '#42a5f5'; //TODO, bg selon couleur de la branche
 				tmpStyle.font.color = '#ffffff'; //TODO, selon bg
+				tmpStyle.font.weight = 'normal';
+				tmpStyle.font.style = 'normal';
+				tmpStyle.font.decoration = 'none';
 				
 
                 this.nodeElement.setAttribute("title", "Double-cliquer pour déplier");
@@ -400,19 +419,19 @@ MindmapFrame = function (c) {
             this.textElement.setAttribute('font-size', parseFloat(this.style.font.size));
             this.textElement.setAttribute('fill', tmpStyle.font.color);
 
-            if (this.style.font.weight == 'bold')
+            if (tmpStyle.font.weight == 'bold')
                 this.textElement.style.fontWeight = 'bold';
 			else
                 this.textElement.style.fontWeight = 'normal';
 			
-            if (this.style.font.style == 'italic')
+            if (tmpStyle.font.style == 'italic')
                 this.textElement.style.fontStyle = 'italic';
 			else
                 this.textElement.style.fontStyle = 'normal';
 			
-            if (this.style.font.decoration == 'underline')
+            if (tmpStyle.font.decoration == 'underline')
                 this.textElement.style.textDecoration = 'underline';
-            else if (this.style.font.decoration == 'strike')
+            else if (tmpStyle.font.decoration == 'strike')
                 this.textElement.style.textDecoration = 'line-through';
 			else
                 this.textElement.style.textDecoration = 'none';
@@ -792,7 +811,7 @@ MindmapFrame = function (c) {
         this.view.offset.x = parseInt(document.body.offsetWidth / 2);
         this.view.offset.y = parseInt(document.body.offsetHeight / 2);
 
-        this.setView(parseInt(document.body.offsetWidth / 2), parseInt(document.body.offsetHeight / 2), 1);
+        this.setView(parseInt(document.body.offsetWidth / 2), parseInt(document.body.offsetHeight / 2), 2);
 
     };
 
@@ -1214,6 +1233,187 @@ MindmapFrame = function (c) {
 
 
     /*===== MANAGERS =====*/
+	
+	this.hashManager = new function () {
+		
+		hashManager = this;
+		
+		this.fixHashValue =  false;
+		
+		this.fixHashObserver = function () {
+			
+			if(hashManager.fixHashValue != window.location.hash) {
+				
+				hashManager.fixHashValue = window.location.hash;
+				
+				hashManager.on();
+				
+			}
+			
+			setTimeout(hashManager.fixHashObserver, 250);
+			
+		};
+		
+		this.on = function () {
+			
+			var hash = window.location.hash;
+			
+			var split = hash.substr(1).split(':');
+			
+			if(split.length == 2) {
+				
+				if(split[0] == 'node' && split[1] in mindmap.nodes) {
+					
+					mindmap.nodes[split[1]].viewNode();
+					
+				}
+				
+			}
+			
+		};
+		
+		if(false && 'onhashchange' in window)
+			window.onhashchange = hashManager.on;
+
+		else
+			hashManager.fixHashObserver();
+		
+		
+	};
+	
+	this.workersListManager  = new function () {
+		
+		workersListManager = this;
+		
+		this.workersListElement = document.getElementById('workers');
+		
+		this.findWorker = function (id) {
+			
+			var allWorkers = this.workersListElement.children;
+			
+			for(var i in allWorkers) {
+				
+				if(allWorkers[i].tagName == "DIV" && allWorkers[i].getAttribute("name") == id)
+					return allWorkers[i];
+				
+			}
+			
+			return undefined;
+		};
+		
+		this.removeWorker = function (id) {
+			
+			var worker = workersListManager.findWorker(id);
+			
+			if(id != undefined) {
+				
+				workersListManager.workersListElement.removeChild(worker);
+				
+			}
+			
+		};
+		
+		this.addWorker = function (id) {
+			
+			var worker = document.createElement("DIV");
+			
+			worker.setAttribute("name", id);
+			
+			//TODO Changer selon img du worker
+			worker.setAttribute("style", 'background-image:url(https://pixabay.com/static/uploads/photo/2013/12/26/12/16/hahn-233898_960_720.jpg);');
+			
+			//TODO Changer nom du worker
+			worker.innerHTML = '<span>John Doe</span>';
+			
+			worker.onclick = function () {
+				
+
+				
+				var id = this.getAttribute("name");
+				
+				if(id in mindmap.workers) {
+					
+					var nodeId = mindmap.workers[id];
+					
+					if(nodeId != undefined) {			
+
+						window.location.hash = "#node:" + nodeId;		
+						
+					}
+
+					
+				}
+				
+			};
+			
+			workersListManager.workersListElement.appendChild(worker);
+			
+		};
+		
+		this.addWorker(1);
+		//this.removeWorker(2);
+		
+	};
+	
+	this.chatBoxManager = new function () {
+		
+		chatBoxManager = this;
+		
+		this.inputElement = document.getElementById("chatBoxInputElement");
+		this.submitElement = document.getElementById("chatBoxInputSend");
+		this.messages = document.getElementById("chatBoxMessages");
+		
+		this.postMessage = function () {
+			
+				var basePath = window.location.pathname + "/";
+				
+				console.log("$ chatBox.postMessage " + basePath + "chat/public", messageData);
+				
+				var messageData = {
+					msg : "test",
+					id : 1
+				};
+			
+                io.socket.post(basePath + "chat/public", messageData, function (data) {
+
+					chatBoxManager.inputElement.value = "";
+
+                });	
+		}
+		
+		this.submitElement.onclick = this.postMessage;
+		
+		this.inputElement.onkeyup = function (e) {
+			if (e.keyCode==13)
+				chatBoxManager.postMessage();
+		};
+		
+		this.onMessage = function (messageData) {
+			
+			console.log("$ chatBox.onMessage ", messageData);
+			
+			var message = document.createElement("tr");
+			
+			//TODO utiliser messageData pour ajouter le nouveau message à la liste
+			
+			message.innerHTML = '<td class="picture"> \
+							<div style="background-image:url(https://pixabay.com/static/uploads/photo/2013/10/27/22/45/animal-201564_960_720.jpg)"></div> \
+						</td> \
+						<td> \
+							<div class="author"> \
+								Benji Chaz <span class="time">4.13 pm</span> \
+							</div> \
+							<div class="message"> \
+								Yolo lorem ipsum la congolexciomatisatio ndes lois du marché mais oui c\'est clair \
+							</div> \
+						</td>';
+			
+			this.messages.appendChild(message);
+			
+		};
+		
+		
+	};
 	
 	this.editBoxManager = new function () {
 		
@@ -1743,8 +1943,7 @@ MindmapFrame = function (c) {
                             }
                             // if(e.target.id == 'container') {
                             else if(e.target.nodeName == "svg" || e.target.nodeName == "path") {
-								
-								// alert(e.target.nodeName);
+
 
                                 window.document.body.style.cursor = "grabbing";
 
@@ -1760,32 +1959,36 @@ MindmapFrame = function (c) {
 
                         case 'mousewheel':
                         case 'wheel' :
+						
+							if(e.target.nodeName == "svg" || e.target.nodeName == "g" || e.target.nodeName == "rect" || e.target.nodeName == "circle" || e.target.nodeName == "line" || e.target.nodeName == "text" || e.target.nodeName == "line" || e.target.nodeName == "path") {
 
-                            if ('wheelDelta' in e)
-                                var zoom = e.wheelDelta > 0;
-                            else if ('deltaY' in e)
-                                var zoom = e.deltaY < 0;
-                            else
-                                break;
+								if ('wheelDelta' in e)
+									var zoom = e.wheelDelta > 0;
+								else if ('deltaY' in e)
+									var zoom = e.deltaY < 0;
+								else
+									break;
 
-                            var zoom_coef = 1.2;
+								var zoom_coef = 2;
 
-                            if (zoom) {
-                                mindmap.view.zoom *= zoom_coef;
-                                mindmap.view.offset.x -= (zoom_coef * e.clientX - e.clientX) / mindmap.view.zoom;
-                                mindmap.view.offset.y -= (zoom_coef * e.clientY - e.clientY) / mindmap.view.zoom;
+								if (zoom) {
+									mindmap.view.zoom *= zoom_coef;
+									mindmap.view.offset.x -= (zoom_coef * e.clientX - e.clientX) / mindmap.view.zoom;
+									mindmap.view.offset.y -= (zoom_coef * e.clientY - e.clientY) / mindmap.view.zoom;
 
-                            }
-                            else {
-                                mindmap.view.zoom /= zoom_coef;
+								}
+								else {
+									mindmap.view.zoom /= zoom_coef;
 
-                                mindmap.view.offset.x += (e.clientX - e.clientX / zoom_coef ) / mindmap.view.zoom;
-                                mindmap.view.offset.y += (e.clientY - e.clientY / zoom_coef ) / mindmap.view.zoom;
+									mindmap.view.offset.x += (e.clientX - e.clientX / zoom_coef ) / mindmap.view.zoom;
+									mindmap.view.offset.y += (e.clientY - e.clientY / zoom_coef ) / mindmap.view.zoom;
 
 
-                            }
+								}
 
-                            mindmap.setView();
+								mindmap.setView();
+								
+							}
 
                             break;
 
@@ -1852,6 +2055,8 @@ MindmapFrame = function (c) {
                     }); */
 
 					mindmap.setWorker(data.user);
+					
+					mindmap.hashManager.on();
 
                 });
             };
@@ -2135,14 +2340,18 @@ MindmapFrame = function (c) {
 
             };
 
-
             this.negotiate = function (message) {
+				
+				
+				
                 switch (message.verb) {
 
                     case 'messaged':
                         switch (message.data.header) {
                             case 'Chat_public':
-                                // TODO Ajouter le message à la liste ^^
+							
+								chatBoxManager.onMessage(message.data);
+
                                 break;
                             case 'New_nodes':
                                 _.forEach(message.data.msg, function (n) {
