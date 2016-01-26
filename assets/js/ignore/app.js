@@ -1389,7 +1389,7 @@ MindmapFrame = function (c) {
 
             worker.setAttribute("name", user.id);
 
-            worker.setAttribute("style", 'background-image:url(' + user.img_url + ');');
+            worker.setAttribute("style", 'background-image:url(' + (user.img_url || '/images/icons/account_circle_white.png') + ');');
 
             worker.innerHTML = '<span>' + user.display_name + '</span>';
 
@@ -1447,7 +1447,7 @@ MindmapFrame = function (c) {
             var message = document.createElement("tr");
 
             message.innerHTML = '<td class="picture"> \
-							<div style="background-image:url(' + messageData.user.img_url + ')"></div> \
+							<div style="background-image:url(' + (messageData.user.img_url || '/images/icons/account_circle_white.png') + ')"></div> \
 						</td> \
 						<td> \
 							<div class="author"> \
