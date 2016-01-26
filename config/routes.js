@@ -76,7 +76,6 @@ module.exports.routes = {
         }
     },
     'post /mm/:id/join': 'MindMapController.join',
-    'post /mm/:id/leave': 'MindMapController.leave',
 
 
     /*===== Chat Controller =====*/
@@ -90,10 +89,12 @@ module.exports.routes = {
     'post /mm/:id/node/update/:style': 'NodeController.update',
     'post /mm/:id/node/delete': 'NodeController.delete',
     'post /mm/:id/node/getAll': 'NodeController.getAll',
+    'post /mm/:id/node/select': 'NodeController.select',
+    'post /mm/:id/node/unselect': 'NodeController.unselect',
+    'post /mm/:id/node/move': 'NodeController.move',
 
 
     /*===== Test Controller =====*/
 
-    //'/test/order': 'TestController.getOne',
-    //'/test/order': 'TestController.all',
+    //'/test/order': 'TestController.getOne'
 };

@@ -2,58 +2,23 @@ module.exports = {
     index: function (req, res) {
 
         // TODO ajouter le noeud racine pour afficher quelque chose avant le chargement
-        MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
+
+
+        // TODO Move messages load in ChatController (socket)
+        Message.find().where({mindmap: req.mindmap.id}).populate('owner').exec(function (err, messages) {
             if (err) return res.serverError();
 
-            if (!mindmap) return res.notFound(); // TODO Delete this when isAllowed done
-
-            // TODO Move messages load in ChatController (socket)
-            Message.find().where({mindmap: mindmap.id}).populate('owner').exec(function (err, messages) {
-                if (err) return res.serverError();
-
-                return res.view('mindmap/index', DataViewService.create(mindmap.name, {
-                    mindmap: mindmap,
-                    messages: messages
-                }));
-            });
+            return res.view('mindmap/index', DataViewService.create(req.mindmap.name, {
+                mindmap: req.mindmap,
+                messages: messages
+            }));
         });
     },
 
 
     create: function (req, res) {
 
-        if(!req.param('name')) return res.redirect('/');
-
-        var style = {
-            order: 1,
-            dx: 0,
-            folded: false,
-            container: {
-                kind: "rectangle",
-                borderThickness: "0",
-                borderColor: "#263238",
-                background: "white",
-                radius: "7"
-            },
-            font: {
-                family: "sans-serif",
-                size: "24",
-                color: "#006064",
-                weight: "bold ",
-                style: "italic ",
-                decoration: "none",
-                align: "right"
-            },
-            parentBranch: {
-                color: "#42a5f5"
-            },
-            unifiedChildren: {
-                dx: false,
-                container: false,
-                font: false,
-                parentBranch: false
-            }
-        };
+        if (!req.param('name')) return res.badRequest();
 
         MindMap.create({
             name: req.param('name'),
@@ -63,7 +28,6 @@ module.exports = {
                 console.log(err);
                 return res.serverError();
             }
-
             Node.create({
                 label: 'Start here !',
                 mindmap: mindmap.id,
@@ -74,9 +38,11 @@ module.exports = {
                     console.log(err);
                     return res.serverError();
                 }
+                var default_style = SerializeService.getDefaultStyle();
+                default_style.container.kind = "rectangle";
 
                 Style.create({
-                    style: style,
+                    style: default_style,
                     node: node.id,
                     owner: req.user.id
                 }, function (err, style) {
@@ -92,41 +58,43 @@ module.exports = {
 
 
     join: function (req, res) {
-        MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
+        var mindmap = req.mindmap;
 
-            MindMap.subscribe(req.socket, mindmap.id);
+        MindMap.subscribe(req.socket, mindmap.id);
 
-            // TODO Order by parent (something complicated) And take default style
-            // , {owner: req.session.user.id}
-            Node.find({where: {mindmap: req.param('id')}}).populate('styles').exec(function (err, nodes) {
-                if (err) return res.serverError();
 
-                if (nodes) {
-                    _.forEach(nodes, function (n) {
-                        // On laisse un seul style
-                        n.style = SerializeService.unserialize(n.styles[0].style);
-                        n.styles = null;
+        if (!req.session.mindmapList) return res.badRequest(); // That means that the user didn't pass by the isAllowedFirst/Index
 
-                        // Remplace 0 par null pour le parent
-                        if (n.parent_node === 0) n.parent_node = null;
-                    });
-                }
-                return res.json({
-                    nodes: nodes,
-                    user: req.user.id
-                });
+        // Search if the user is already connected in the same mindmap
+        _.forEach(req.session.mindmapList, function (mm) {
+            if (mm.id == mindmap.id) {
+                mm.sockets.push(sails.sockets.id(req.socket));
+            }
+        });
+
+
+        var user = {
+            id: req.session.user.id,
+            display_name: req.session.user.display_name,
+            img_url: req.session.user.img_url
+        };
+
+        MindMapMsgService.send('User_connect', null, user, mindmap.id); // Notify users
+
+
+        // TODO Stream data to go faster #BarryAllen
+
+        Node.find({where: {mindmap: mindmap.id}}).sort({height: 'asc'}).populate('styles').exec(function (err, nodes) {
+            if (err) return res.serverError();
+
+            nodes = SerializeService.styleLoad(nodes, req.session.user.id);
+
+            return res.json({
+                nodes: nodes,
+                user: req.user.id
             });
         });
-    },
 
-
-    leave: function (req, res) {
-
-        MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
-
-            MindMap.unsubscribe(req.socket, mindmap.id);
-
-            return res.json();
-        });
     }
 };
+        
