@@ -25,7 +25,7 @@ module.exports = {
                                         // and double/single quotes
             }
         });
-    }
+    },
 
     html: function (string) {
         var str = '' + string;
