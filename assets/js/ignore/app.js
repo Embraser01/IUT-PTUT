@@ -1234,6 +1234,81 @@ MindmapFrame = function (c) {
 
     /*===== MANAGERS =====*/
 	
+	this.keyboardManager = new function () {
+		
+		keyboardManager = this;
+		
+		this.shift = false;
+		this.ctrl = false;
+		this.alt = false;
+		
+		window.onkeydown = function (e) {
+			
+			switch(e.keyCode) {
+				
+				case 16:
+					keyboardManager.shift = true;
+					break;
+				case 17:
+					keyboardManager.ctrl = true;
+					break;
+				case 18:
+					keyboardManager.alt = true;
+					break;
+					
+			}
+
+		};
+		
+		window.onkeyup = function (e) {
+
+			switch(e.keyCode) {
+				
+				case 16:
+					keyboardManager.shift = false;
+					break;
+				case 17:
+					keyboardManager.ctrl = false;
+					break;
+				case 18:
+					keyboardManager.alt = false;
+					break;
+					
+			}
+			
+			if(keyboardManager.ctrl) {
+				
+				switch(e.keyCode) {
+					case 65: //A
+					
+						break;
+					case 67: //C
+					
+					
+						break;
+					case 68: //D
+					
+						break;
+					case 86: //V
+					
+						break;
+					case 88: //X
+					
+						break;
+					case 89: //Y
+					
+						break;
+					case 90: //Z
+					
+						break;
+				}
+			}
+		};
+		
+		
+	
+	};
+	
 	this.hashManager = new function () {
 		
 		hashManager = this;
@@ -2045,7 +2120,7 @@ MindmapFrame = function (c) {
                     // Subscribe to mindmap event and receive all the mindmap once
 
                     console.log("Parsing data ...");
-                    // console.log(data);
+                    console.log(data);
 
 					mindmap.ioManager.in.open(data.nodes);
 					/*
