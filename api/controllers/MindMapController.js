@@ -66,6 +66,12 @@ module.exports = {
             MindMap.subscribe(req.socket, mindmap.id);
             req.session.mindmapList = (req.session.mindmapList) ? req.session.mindmapList.push(mindmap.id) : [mindmap.id];
 
+            var user = {
+                id: req.session.user.id,
+                display_name: req.session.user.display_name,
+                img_url: req.session.user.img_url
+            };
+
             MindMapMsgService.send('User_connect', null, user, mindmap.id); // Notify users
 
 
@@ -84,3 +90,4 @@ module.exports = {
         });
     }
 };
+        
