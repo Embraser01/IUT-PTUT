@@ -54,6 +54,7 @@ module.exports = {
 
     new: function (req, res) {
         var nodes = req.param('nodes');
+        if(!nodes) return res.badRequest();
 
         // TODO Create more than one node at once
         //var formatted_nodes = [];
@@ -78,7 +79,7 @@ module.exports = {
             formatted_nodes.push({
                 parent_node: nodes[0].parent_node,
                 label: nodes[0].label,
-                mindmap: req.param('id'),
+                mindmap: req.mindmap.id,
                 owner: req.user.id,
                 height: pnodes[0].height + 1
             });
@@ -179,6 +180,9 @@ module.exports = {
         });
     },
 
+    move: function (req, res){
+        // TODO Height thing
+    },
 
     delete: function (req, res) {
         var nodes = req.param('nodes');
@@ -201,7 +205,7 @@ module.exports = {
 
     getAll: function (req, res) {
 
-        Node.find({where: {mindmap: req.param('id')}}).populate('style', {owner: req.user.id}).exec(function (err, nodes) {
+        Node.find({where: {mindmap: req.mindmap.id}}).populate('style', {owner: req.user.id}).exec(function (err, nodes) {
             if (err) return res.serverError();
 
             console.log(nodes);

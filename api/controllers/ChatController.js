@@ -6,7 +6,7 @@ module.exports = {
             data: req.param('msg'),
 
             owner: req.session.user.id,
-            mindmap: req.param('id')
+            mindmap: req.mindmap.id
         }).exec(function(err, message){
 
             return res.mindMapMsg('Chat_public', message);

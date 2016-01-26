@@ -5,7 +5,7 @@ module.exports = {
 
         // Send something
         data = data || {};
-        mindmap_id = mindmap_id || req.param('id');
+        mindmap_id = mindmap_id || req.mindmap.id;
 
 
         MindMap.message(mindmap_id, {

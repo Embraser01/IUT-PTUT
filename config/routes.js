@@ -91,6 +91,7 @@ module.exports.routes = {
     'post /mm/:id/node/getAll': 'NodeController.getAll',
     'post /mm/:id/node/select': 'NodeController.select',
     'post /mm/:id/node/unselect': 'NodeController.unselect',
+    'post /mm/:id/node/move': 'NodeController.move',
 
 
     /*===== Test Controller =====*/

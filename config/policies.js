@@ -36,12 +36,11 @@ module.exports.policies = {
      *                                                                          *
      ***************************************************************************/
     AuthController: {
-
         '*': 'isNotAuthenticated',
         processLogout: 'isAuthenticated'
     },
 
-    ChatController: {
+    ChatController: { // Allow only socket request to chat
         '*': ['isAuthenticated','isAllowed', 'isSocket']
     },
 
@@ -51,6 +50,9 @@ module.exports.policies = {
 
 
     MindMapController: {
-        '*': ['isAuthenticated','isAllowed']
+        '*': 'isAuthenticated',
+
+        'index': ['isAuthenticated', 'isAllowedFirst'],
+        'join': ['isAuthenticated', 'isSocket', 'isAllowed']
     }
 };

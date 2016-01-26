@@ -136,6 +136,7 @@ module.exports.sockets = {
                 })
                 && mm.sockets.length === 0) {
 
+                // TODO Remove the mindmap from the list of the user
                 // We check that that was the last socket in the mindmap
                 MindMapMsgService.send('User_disconnect', null, user, mm); // Notify users
             }
