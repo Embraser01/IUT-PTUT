@@ -64,7 +64,25 @@ module.exports = {
         MindMap.findOne(req.param('id')).exec(function (err, mindmap) {
 
             MindMap.subscribe(req.socket, mindmap.id);
-            req.session.mindmapList = (req.session.mindmapList) ? req.session.mindmapList.push(mindmap.id) : [mindmap.id];
+            req.session.mindmapList = req.session.mindmapList || [];
+
+            var found = false;
+
+            // Search if the user is already connected in the same mindmap
+            _.forEach(req.session.mindmapList, function(mm){
+                if(mm.mindmap_id == req.param('id')){
+                    mm.sockets.push(sails.sockets.id(req.socket));
+                    found = true;
+                }
+            });
+
+            // If not found, add hte mindmap to the list
+            if(!found){
+                req.session.mindmapList.push({
+                    mindmap_id: req.param('id'),
+                    sockets: [sails.sockets.id(req.socket)]
+                });
+            }
 
             var user = {
                 id: req.session.user.id,

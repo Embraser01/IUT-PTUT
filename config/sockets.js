@@ -128,10 +128,18 @@ module.exports.sockets = {
             display_name: session.user.display_name
         };
 
-        _.forEach(session.mindmapList, function (mm) {
-            MindMapMsgService.send('User_disconnect', null, user, mm); // Notify users
-        })
+        var socketId = sails.sockets.id(socket);
 
+        _.forEach(session.mindmapList, function (mm) {
+            if (_.remove(mm.sockets, function (mSocket) {
+                    return socketId === sails.sockets.id(mSocket);
+                })
+                && mm.sockets.length === 0) {
+
+                // We check that that was the last socket in the mindmap
+                MindMapMsgService.send('User_disconnect', null, user, mm); // Notify users
+            }
+        });
         return cb();
     },
 
