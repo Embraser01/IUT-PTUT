@@ -1,7 +1,7 @@
 // EscapeService.js - in api/services
 module.exports = {
 
-    escape: function (str) {
+    sql: function (str) {
 
         return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
             switch (char) {

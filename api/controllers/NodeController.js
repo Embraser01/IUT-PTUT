@@ -7,9 +7,9 @@ function queryNodesUpdate(nodes) {
     // Escape all things, we are not sure if id is an int or not
 
     _.forEach(nodes, function (n) {
-        part_req1 += "WHEN '" + EscapeService.escape(n.id.toString()) + "' THEN '" + EscapeService.escape(n.parent_node.toString()) + "' ";
-        part_req2 += "WHEN '" + EscapeService.escape(n.id.toString()) + "' THEN '" + EscapeService.escape(n.label) + "' ";
-        part_req3 += EscapeService.escape(n.id.toString()) + ",";
+        part_req1 += "WHEN '" + EscapeService.sql(n.id.toString()) + "' THEN '" + EscapeService.sql(n.parent_node.toString()) + "' ";
+        part_req2 += "WHEN '" + EscapeService.sql(n.id.toString()) + "' THEN '" + EscapeService.sql(n.label) + "' ";
+        part_req3 += EscapeService.sql(n.id.toString()) + ",";
     });
     part_req1 += "ELSE `parent_node` END), ";
     part_req2 += "ELSE `label` END) ";
@@ -25,8 +25,8 @@ function queryStylesUpdate(nodes, req) {
     var part_req2 = "WHERE `owner` = " + req.user.id + " AND `node` IN (";
 
     _.forEach(nodes, function (n) {
-        part_req1 += "WHEN '" + EscapeService.escape(n.id.toString()) + "' THEN '" + EscapeService.escape(SerializeService.serialize(n.style)) + "' ";
-        part_req2 += EscapeService.escape(n.id.toString()) + ",";
+        part_req1 += "WHEN '" + EscapeService.sql(n.id.toString()) + "' THEN '" + EscapeService.sql(SerializeService.serialize(n.style)) + "' ";
+        part_req2 += EscapeService.sql(n.id.toString()) + ",";
     });
     part_req1 += "ELSE `style` END) ";
     part_req2 = part_req2.slice(0, -1) + ");";
