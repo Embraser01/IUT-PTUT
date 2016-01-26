@@ -10,7 +10,7 @@ module.exports = {
         }).exec(function(err, message){
 
             var data = {
-                data: message.data,
+                data: EscapeService.html(message.data),
                 user : {
                     display_name: req.user.display_name,
                     img_url: req.user.img_url
