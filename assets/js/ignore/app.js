@@ -1431,7 +1431,7 @@ MindmapFrame = function (c) {
             io.socket.post(basePath + "chat/public", messageData, function (data) {
 
                 chatBoxManager.inputElement.value = "";
-                mindmap.chatBoxManager.onMessage(data);
+                mindmap.chatBoxManager.onMessage(data, true);
 
             });
         };
@@ -1443,7 +1443,7 @@ MindmapFrame = function (c) {
                 chatBoxManager.postMessage();
         };
 
-        this.onMessage = function (messageData) {
+        this.onMessage = function (messageData, addBottom) {
 
             var message = document.createElement("tr");
 
@@ -1459,13 +1459,47 @@ MindmapFrame = function (c) {
 							</div> \
 						</td>';
 
-            chatBoxManager.messages.appendChild(message);
-			
-            chatBoxManager.scroller.scrollTop = chatBoxManager.scroller.scrollHeight;
+			if(addBottom) {
+				chatBoxManager.messages.appendChild(message);
+				chatBoxManager.scroller.scrollTop = chatBoxManager.scroller.scrollHeight;				
+			}
+			else {
+				
+				chatBoxManager.messages.insertBefore(message, chatBoxManager.messages.firstChild);
+			}
 			
 			
 
         };
+		
+		this.scroller.onscroll = function () {
+			
+			if(chatBoxManager.scroller.scrollTop == 0) {
+				
+				//TODO correct messageData, je sais pas ce que tu envois
+				var messageData = {
+					msg: "top"
+				};
+					
+				//TODO change la route	
+				io.socket.post(basePath + "chat/public", messageData, function (data) {
+					
+					tab = ["enlève cette ligne"];
+
+					//TODO tab c'est ton tableau avec les messages, j'explore en DESC parce que les messages sont ajouté un à un avant les autres
+				
+					for(var i = tab.length-1;i>=0;i--)
+						
+						
+						//TODO, format data = {user.img_url : foo, messageData.user.display_name : foo, messageData.createdAt : foo, messageData.data : foo}
+					
+						mindmap.chatBoxManager.onMessage(data, false);
+
+				});
+				
+			}
+
+		};
 
 
     };
