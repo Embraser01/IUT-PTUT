@@ -29,7 +29,7 @@ module.exports = {
 
     html: function (string) {
         var str = '' + string;
-        var match = matchHtmlRegExp.exec(str);
+        var match = /["'&<>]/.exec(str);
 
         if (!match) {
             return str;
