@@ -1421,6 +1421,8 @@ MindmapFrame = function (c) {
         this.messages = document.getElementById("chatBoxMessages");
         this.scroller = document.getElementById("chatBoxScroller");
 
+        this.nb_page = 2;
+
         this.postMessage = function () {
 
             var messageData = {
@@ -1431,7 +1433,7 @@ MindmapFrame = function (c) {
             io.socket.post(basePath + "chat/public", messageData, function (data) {
 
                 chatBoxManager.inputElement.value = "";
-                mindmap.chatBoxManager.onMessage(data, true);
+                mindmap.chatBoxManager.onMessage(data);
 
             });
         };
@@ -1443,7 +1445,7 @@ MindmapFrame = function (c) {
                 chatBoxManager.postMessage();
         };
 
-        this.onMessage = function (messageData, addBottom) {
+        this.onMessage = function (messageData, addTop) {
 
             var message = document.createElement("tr");
 
@@ -1459,7 +1461,7 @@ MindmapFrame = function (c) {
 							</div> \
 						</td>';
 
-			if(addBottom) {
+			if(!addTop) {
 				chatBoxManager.messages.appendChild(message);
 				chatBoxManager.scroller.scrollTop = chatBoxManager.scroller.scrollHeight;				
 			}
@@ -1467,38 +1469,23 @@ MindmapFrame = function (c) {
 				
 				chatBoxManager.messages.insertBefore(message, chatBoxManager.messages.firstChild);
 			}
-			
-			
-
         };
 		
 		this.scroller.onscroll = function () {
 			
 			if(chatBoxManager.scroller.scrollTop == 0) {
-				
-				//TODO correct messageData, je sais pas ce que tu envois
+
 				var messageData = {
-					msg: "top"
+					page: chatBoxManager.nb_page
 				};
-					
-				//TODO change la route	
-				io.socket.post(basePath + "chat/public", messageData, function (data) {
-					
-					tab = ["enlève cette ligne"];
+                chatBoxManager.nb_page++;
 
-					//TODO tab c'est ton tableau avec les messages, j'explore en DESC parce que les messages sont ajouté un à un avant les autres
-				
-					for(var i = tab.length-1;i>=0;i--)
-						
-						
-						//TODO, format data = {user.img_url : foo, messageData.user.display_name : foo, messageData.createdAt : foo, messageData.data : foo}
-					
-						mindmap.chatBoxManager.onMessage(data, false);
-
+				io.socket.post(basePath + "chat/getAll", messageData, function (data) {
+                    _.forEach(data, function (message) {
+                        mindmap.chatBoxManager.onMessage(message, true);
+                    });
 				});
-				
 			}
-
 		};
 
 
@@ -2136,7 +2123,7 @@ MindmapFrame = function (c) {
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
                     _.forEach(data.users, function (u) {
-                        mindmap.workersListManager.addWorker(user);
+                        mindmap.workersListManager.addWorker(u);
                     });
 
                     mindmap.hashManager.on();
