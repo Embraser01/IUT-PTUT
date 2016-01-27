@@ -121,26 +121,26 @@ module.exports.sockets = {
      *                                                                          *
      ***************************************************************************/
     afterDisconnect: function (session, socket, cb) {
-        if (!session.mindmapList) return cb();
-
-        if(!session.passport || !session.passport.user) return cb();
-
-        var user = {
-            id: session.passport.user.id,
-            display_name: session.passport.user.display_name
-        };
 
         var socketId = sails.sockets.id(socket);
 
-        _.forEach(session.mindmapList, function (mm) {
-            if (_.remove(mm.sockets, function (mSocket) {
-                    return socketId === sails.sockets.id(mSocket);
-                })
-                && mm.sockets.length === 0) {
-
-                // TODO Remove the mindmap from the list of the user
-                // We check that that was the last socket in the mindmap
-                MindMapMsgService.send('User_disconnect', null, user, mm); // Notify users
+        _.forEach(sails.mindmaps, function (mm, key) {
+            _.forEach(mm.users, function (user, key) {
+                _.forEach(user.sockets, function (s, key) {
+                    if (s === socketId) {
+                        user.sockets.splice(key, 1);
+                        return false;
+                    }
+                });
+                if (user.sockets.length === 0) {
+                    mm.users.splice(key, 1);
+                    MindMapMsgService.send('User_disconnect', null, user, mm); // Notify users
+                    return false;
+                }
+            });
+            if (mm.users.length === 0) {
+                sails.mindmaps.splice(key, 1);
+                return false;
             }
         });
         return cb();
