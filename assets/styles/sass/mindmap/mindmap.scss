@@ -53,6 +53,7 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
 }
 
 #editBox {
+cursor:pointer;
 display:none;
 position:fixed;
 z-index:10;
@@ -133,6 +134,7 @@ margin:0 10px;
 }
 
 #chatBox {
+	cursor:default;
 	font-family: Roboto;
 	position:fixed;
 	top:80px;
@@ -179,10 +181,15 @@ margin:0 10px;
 
 #chatBoxMessages {
 	margin:0 2px;
+	width:100%;
 }
 
 #chatBoxMessages td{
 	border-top: 1px solid #ddd;
+}
+
+#chatBoxMessages td:nth-child(2) {
+    width: 250px;
 }
 
 .picture {
@@ -211,9 +218,11 @@ margin:0 10px;
 	float:right;
 	font-weight:normal;
 	color:#aaa;
+	padding-right:5px;
 }
 .message {
 	padding-bottom:8px;
+	word-break: break-all;
 }
 
 #chatBoxInput {

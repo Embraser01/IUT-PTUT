@@ -1419,6 +1419,7 @@ MindmapFrame = function (c) {
         this.inputElement = document.getElementById("chatBoxInputElement");
         this.submitElement = document.getElementById("chatBoxInputSend");
         this.messages = document.getElementById("chatBoxMessages");
+        this.scroller = document.getElementById("chatBoxScroller");
 
         this.postMessage = function () {
 
@@ -1451,14 +1452,18 @@ MindmapFrame = function (c) {
 						</td> \
 						<td> \
 							<div class="author"> \
-								' + messageData.user.display_name + ' <span class="time">' + messageData.createdAt + '</span> \
+								' + messageData.user.display_name + ' <span class="time">' + messageData.createdAt.substr(11, 5) + '</span> \
 							</div> \
 							<div class="message"> \
 								' + messageData.data + '\
 							</div> \
 						</td>';
 
-            this.messages.appendChild(message);
+            chatBoxManager.messages.appendChild(message);
+			
+            chatBoxManager.scroller.scrollTop = chatBoxManager.scroller.scrollHeight;
+			
+			
 
         };
 
