@@ -2135,6 +2135,9 @@ MindmapFrame = function (c) {
 
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
+                    _.forEach(data.users, function (u) {
+                        mindmap.workersListManager.addWorker(user);
+                    });
 
                     mindmap.hashManager.on();
                 });
