@@ -106,6 +106,48 @@ module.exports = {
             });
         });
 
+    },
+
+    perm: function (req, res) {
+        var perms = req.param('perm');
+
+
+        Node.findOne({where: {mindmap: req.mindmap.id, parent_node: null}}).exec(function (err, node) {
+
+            var fPerm = {
+                p_read: perms.p_read,
+                p_write: perms.p_write,
+                p_delete: perms.p_delete,
+                p_unlock: perms.p_unlock,
+                p_assign: perms.p_assign,
+                owner: req.user.id,
+                node: node.id
+            };
+
+            var data = [];
+
+            _.forEach(perm.users, function (uId) {
+                data.push(_.assign(fPerm, {
+                    user: uId
+                }));
+            });
+
+            _.forEach(perm.groups, function (gId) {
+                data.push(_.assign(fPerm, {
+                    group: gId
+                }));
+            });
+
+            Permission.create(data).exec(function (err, perms) {
+                if(err) {
+                    console.log(err);
+                    return res.serverError();
+                }
+                return res.ok();
+            });
+        });
+
+
     }
 };
         

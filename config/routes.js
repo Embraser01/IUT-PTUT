@@ -76,6 +76,7 @@ module.exports.routes = {
         }
     },
     'post /mm/:id/join': 'MindMapController.join',
+    'post /mm/:id/perm': 'MindMapController.perm',
 
 
     /*===== Chat Controller =====*/
@@ -93,6 +94,7 @@ module.exports.routes = {
     'post /mm/:id/node/select': 'NodeController.select',
     'post /mm/:id/node/unselect': 'NodeController.unselect',
     'post /mm/:id/node/move': 'NodeController.move',
+    'post /mm/:id/node/perm': 'NodeController.perm',
 
 
     /*===== Test Controller =====*/
