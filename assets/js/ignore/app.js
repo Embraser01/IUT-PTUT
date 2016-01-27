@@ -1389,7 +1389,7 @@ MindmapFrame = function (c) {
 
             worker.setAttribute("name", user.id);
 
-            worker.setAttribute("style", 'background-image:url(' + (user.img_url || '/images/icons/account_circle_white.png') + ');');
+            worker.setAttribute("style", 'background-image:url(' + (user.img_url || '/images/default/ ' + (user.display_name.charAt(0)) + '.png') + ');');
 
             worker.innerHTML = '<span>' + user.display_name + '</span>';
 
@@ -1450,7 +1450,7 @@ MindmapFrame = function (c) {
             var message = document.createElement("tr");
 
             message.innerHTML = '<td class="picture"> \
-							<div style="background-image:url(' + (messageData.user.img_url || '/images/icons/account_circle_white.png') + ')"></div> \
+							<div style="background-image:url(' + (messageData.user.img_url || '/images/default/ ' + (messageData.user.display_name.charAt(0)) + '.png') + ')"></div> \
 						</td> \
 						<td> \
 							<div class="author"> \
@@ -1461,32 +1461,32 @@ MindmapFrame = function (c) {
 							</div> \
 						</td>';
 
-			if(!addTop) {
-				chatBoxManager.messages.appendChild(message);
-				chatBoxManager.scroller.scrollTop = chatBoxManager.scroller.scrollHeight;				
-			}
-			else {
-				
-				chatBoxManager.messages.insertBefore(message, chatBoxManager.messages.firstChild);
-			}
-        };
-		
-		this.scroller.onscroll = function () {
-			
-			if(chatBoxManager.scroller.scrollTop == 0) {
+            if (!addTop) {
+                chatBoxManager.messages.appendChild(message);
+                chatBoxManager.scroller.scrollTop = chatBoxManager.scroller.scrollHeight;
+            }
+            else {
 
-				var messageData = {
-					page: chatBoxManager.nb_page
-				};
+                chatBoxManager.messages.insertBefore(message, chatBoxManager.messages.firstChild);
+            }
+        };
+
+        this.scroller.onscroll = function () {
+
+            if (chatBoxManager.scroller.scrollTop == 0) {
+
+                var messageData = {
+                    page: chatBoxManager.nb_page
+                };
                 chatBoxManager.nb_page++;
 
-				io.socket.post(basePath + "chat/getAll", messageData, function (data) {
+                io.socket.post(basePath + "chat/getAll", messageData, function (data) {
                     _.forEach(data, function (message) {
                         mindmap.chatBoxManager.onMessage(message, true);
                     });
-				});
-			}
-		};
+                });
+            }
+        };
 
 
     };
