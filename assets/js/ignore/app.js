@@ -2416,7 +2416,7 @@ MindmapFrame = function (c) {
                     case 'messaged':
                         switch (message.data.header) {
                             case 'Chat_public':
-                                mindmap.chatBoxManager.onMessage(message.data.msg);
+                                mindmap.chatBoxManager.onMessage(message.data.msg, true);
                                 break;
                             case 'New_nodes':
                                 _.forEach(message.data.msg, function (n) {
