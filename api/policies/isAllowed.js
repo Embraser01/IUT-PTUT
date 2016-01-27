@@ -6,7 +6,7 @@ module.exports = function (req, res, next) {
 
     if (!mindmapId) return res.badRequest();
 
-    var mindmap = _.find(req.session.mindmapList, function (mm) {
+    var mindmap = _.find(sails.mindmaps, function (mm) {
         return mm.id === mindmapId;
     });
 
@@ -15,5 +15,5 @@ module.exports = function (req, res, next) {
         return next();
     }
 
-    return res.notFound();
+    return res.forbidden();
 };

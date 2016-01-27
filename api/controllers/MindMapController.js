@@ -56,26 +56,42 @@ module.exports = {
         MindMap.subscribe(req.socket, mindmap.id);
 
 
-        if (!req.session.mindmapList) return res.badRequest(); // That means that the user didn't pass by the isAllowedFirst/Index
+        // Search in mindmap cache if there is already the user
 
-        // Search if the user is already connected in the same mindmap
-        _.forEach(req.session.mindmapList, function (mm) {
-            if (mm.id == mindmap.id) {
-                mm.sockets.push(sails.sockets.id(req.socket));
+        var user_socket = _.find(mindmap.users, function (u) {
+            return u.id === req.user.id;
+        });
+
+        if (!user_socket) {
+
+            mindmap.users.push({
+                id: req.user.id,
+                display_name: req.user.display_name,
+                img_url: req.user.img_url,
+                sockets: [sails.sockets.id(req.socket)]
+            });
+
+            MindMapMsgService.send('User_connect', req, {
+                id: req.user.id,
+                display_name: req.user.display_name,
+                img_url: req.user.img_url
+            });
+        } else {
+            // We just add the socket in the list but don't send msg to mindmap' subscribers
+            user_socket.sockets.push(sails.sockets.id(req.socket));
+        }
+
+        var users = [];
+        _.forEach(mindmap.users, function (u) {
+            if (u.id !== req.user.id) {
+                users.push({
+                    id: u.id,
+                    display_name: u.display_name,
+                    img_url: u.img_url
+                });
             }
         });
 
-
-        var user = {
-            id: req.user.id,
-            display_name: req.user.display_name,
-            img_url: req.user.img_url
-        };
-
-        MindMapMsgService.send('User_connect', req, user);
-
-
-        // TODO Send user already connect
         // TODO Stream data to go faster #BarryAllen
 
         Node.find({where: {mindmap: mindmap.id}}).sort({height: 'asc'}).populate('styles').exec(function (err, nodes) {
@@ -85,7 +101,8 @@ module.exports = {
 
             return res.json({
                 nodes: nodes,
-                user: req.user.id
+                user: req.user.id,
+                users: users
             });
         });
 
