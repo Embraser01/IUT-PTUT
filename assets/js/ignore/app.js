@@ -2131,7 +2131,7 @@ MindmapFrame = function (c) {
 
                 io.socket.post(basePath + "chat/getAll", function (data) {
                     _.forEach(data, function (message) {
-                        mindmap.chatBoxManager.onMessage(message);
+                        mindmap.chatBoxManager.onMessage(message, true);
                     });
                 });
             };
@@ -2416,7 +2416,7 @@ MindmapFrame = function (c) {
                     case 'messaged':
                         switch (message.data.header) {
                             case 'Chat_public':
-                                mindmap.chatBoxManager.onMessage(message.data.msg, true);
+                                mindmap.chatBoxManager.onMessage(message.data.msg);
                                 break;
                             case 'New_nodes':
                                 _.forEach(message.data.msg, function (n) {
