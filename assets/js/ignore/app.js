@@ -1531,7 +1531,7 @@ MindmapFrame = function (c) {
 
             worker.setAttribute("name", user.id);
 
-            worker.setAttribute("style", 'background-image:url(' + (user.img_url || '/images/icons/account_circle_white.png') + ');');
+            worker.setAttribute("style", 'background-image:url(' + (user.img_url || '/images/default/' + (user.display_name.charAt(0).toLowerCase()) + '.png') + ');');
 
             worker.innerHTML = '<span>' + user.display_name + '</span>';
 
@@ -1563,6 +1563,8 @@ MindmapFrame = function (c) {
         this.messages = document.getElementById("chatBoxMessages");
         this.scroller = document.getElementById("chatBoxScroller");
 
+        this.nb_page = 2;
+
         this.postMessage = function () {
 
             var messageData = {
@@ -1573,7 +1575,7 @@ MindmapFrame = function (c) {
             io.socket.post(basePath + "chat/public", messageData, function (data) {
 
                 chatBoxManager.inputElement.value = "";
-                mindmap.chatBoxManager.onMessage(data, true);
+                mindmap.chatBoxManager.onMessage(data);
 
             });
         };
@@ -1585,12 +1587,12 @@ MindmapFrame = function (c) {
                 chatBoxManager.postMessage();
         };
 
-        this.onMessage = function (messageData, addBottom) {
+        this.onMessage = function (messageData, addTop) {
 
             var message = document.createElement("tr");
 
             message.innerHTML = '<td class="picture"> \
-							<div style="background-image:url(' + (messageData.user.img_url || '/images/icons/account_circle_white.png') + ')"></div> \
+							<div style="background-image:url(' + (messageData.user.img_url || '/images/default/' + (messageData.user.display_name.charAt(0).toLowerCase()) + '.png') + ')"></div> \
 						</td> \
 						<td> \
 							<div class="author"> \
@@ -1601,47 +1603,32 @@ MindmapFrame = function (c) {
 							</div> \
 						</td>';
 
-			if(addBottom) {
-				chatBoxManager.messages.appendChild(message);
-				chatBoxManager.scroller.scrollTop = chatBoxManager.scroller.scrollHeight;				
-			}
-			else {
-				
-				chatBoxManager.messages.insertBefore(message, chatBoxManager.messages.firstChild);
-			}
-			
-			
+            if (!addTop) {
+                chatBoxManager.messages.appendChild(message);
+                chatBoxManager.scroller.scrollTop = chatBoxManager.scroller.scrollHeight;
+            }
+            else {
 
+                chatBoxManager.messages.insertBefore(message, chatBoxManager.messages.firstChild);
+            }
         };
-		
-		this.scroller.onscroll = function () {
-			
-			if(chatBoxManager.scroller.scrollTop == 0) {
-				
-				//TODO correct messageData, je sais pas ce que tu envois
-				var messageData = {
-					msg: "top"
-				};
-					
-				//TODO change la route	
-				io.socket.post(basePath + "chat/public", messageData, function (data) {
-					
-					tab = ["enlève cette ligne"];
 
-					//TODO tab c'est ton tableau avec les messages, j'explore en DESC parce que les messages sont ajouté un à un avant les autres
-				
-					for(var i = tab.length-1;i>=0;i--)
-						
-						
-						//TODO, format data = {user.img_url : foo, messageData.user.display_name : foo, messageData.createdAt : foo, messageData.data : foo}
-					
-						mindmap.chatBoxManager.onMessage(data, false);
+        this.scroller.onscroll = function () {
 
-				});
-				
-			}
+            if (chatBoxManager.scroller.scrollTop == 0) {
 
-		};
+                var messageData = {
+                    page: chatBoxManager.nb_page
+                };
+                chatBoxManager.nb_page++;
+
+                io.socket.post(basePath + "chat/getAll", messageData, function (data) {
+                    _.forEach(data, function (message) {
+                        mindmap.chatBoxManager.onMessage(message, true);
+                    });
+                });
+            }
+        };
 
 
     };
@@ -2269,21 +2256,24 @@ MindmapFrame = function (c) {
 
             this.join = function () {
 
-                io.socket.post(basePath + "join", function (data) {
+                io.socket.post(basePath + "join", function (data, jwr) {
                     // Subscribe to mindmap event and receive all the mindmap once
 
-                    // console.log("Parsing data ...");
-                    // console.log(data);
+                    console.log("Parsing data ...");
+                    console.log(jwr);
 
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
+                    _.forEach(data.users, function (u) {
+                        mindmap.workersListManager.addWorker(u);
+                    });
 
                     mindmap.hashManager.on();
                 });
 
                 io.socket.post(basePath + "chat/getAll", function (data) {
                     _.forEach(data, function (message) {
-                        mindmap.chatBoxManager.onMessage(message);
+                        mindmap.chatBoxManager.onMessage(message, true);
                     });
                 });
             };
@@ -2710,5 +2700,18 @@ MindmapFrame = function (c) {
 };
 
 
-//dbg
-// setTimeout(function (){console.clear();document.title = new Date().getTime()%100;}, 2000);
+/*===== WINDOWS STARTUP =====*/
+
+window.onload = initMindmap();
+
+function initMindmap() {
+
+    var Mindmap = new MindmapFrame(document.getElementById('container'));
+
+    window.onmousedown = Mindmap.eventManager.on;
+    window.onmouseup = Mindmap.eventManager.on;
+    window.onmousemove = Mindmap.eventManager.on;
+    window.onwheel = Mindmap.eventManager.on;
+    window.onmousewheel = Mindmap.eventManager.on;
+    window.ondblclick = Mindmap.eventManager.on;
+}
