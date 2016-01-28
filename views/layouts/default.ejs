@@ -11,7 +11,7 @@
 </head>
 <body>
 
-    <nav class="light-blue">
+    <nav class="blue">
         <div class="container nav-wrapper">
             <a href="/" class="brand-logo"><%= AppName %></a>
             <a href="#" data-activates="mobile-demo" class="button-collapse">
@@ -61,22 +61,23 @@
         </div>
     </nav>
 
-
-    <main class="mdl-layout__content">
-    <div class="page-content">
+    <main class="section">
         <div class="container">
             <%- body %>
         </div>
-    </div>
-
-        <footer class="page-footer">
-            <div class="container">
-            <div class="mdl-mega-footer__bottom-section">
-                <div class="mdl-logo">&copy; 2016 <%= AppName %></div>
-            </div>
-            </div>
-        </footer>
     </main>
+
+
+    <footer class="page-footer blue">
+        <div class="container">
+
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                &copy; 2016 <%= AppName %>
+            </div>
+        </div>
+    </footer>
 
 
     <script src="/js/dependencies/sails.io.js"></script>
