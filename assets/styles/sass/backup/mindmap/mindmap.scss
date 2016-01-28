@@ -1,12 +1,12 @@
 /**
  * La mindmap !!!
  */
- 
+
 #mindmap_wrapper {
     position: fixed;
-    top: 0;	
-    left: 0;	
-    right: 0;	
+    top: 0;
+    left: 0;
+    right: 0;
 	bottom: 0;
 }
 
@@ -96,13 +96,13 @@ margin:0 10px;
 	overflow:hidden;
 }
 
-#workers div:first-child { 
-	margin-top:0; 
+#workers div:first-child {
+	margin-top:0;
 	width:48px;
 	height:48px;
 }
 
-#workers div span { 
+#workers div span {
     background: #263238;
     bottom: 40px;
     color: white;
@@ -112,7 +112,7 @@ margin:0 10px;
 	display:none;
 }
 
-#workers div:hover span { 
+#workers div:hover span {
     display:inline-block;
 }
 
@@ -125,7 +125,7 @@ margin:0 10px;
 }
 
 
-#chatBoxStatut {
+#chatBoxStatut {<
 	display:none;
 }
 #chatBoxStatut:checked + #chatBox {
@@ -145,12 +145,12 @@ margin:0 10px;
 	z-index:9;
 	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 	width:300px;
-	
+
 	display:none;
 	}
 
 #chatBoxTitle {
-	position:absolute;	
+	position:absolute;
 	left:0;
 	right:0;
 }
@@ -248,7 +248,7 @@ margin:0 10px;
 	cursor:pointer;
 }
 
-.simpleTextfield { 
+.simpleTextfield {
 	border:0;
 	height:24px;
 	width:100%;
@@ -256,7 +256,7 @@ margin:0 10px;
 	transition: border 0.3s;
 }
 
-.simpleTextfield:focus { 
+.simpleTextfield:focus {
 	border-bottom: 2px solid rgb(63, 81, 181);
 }
 

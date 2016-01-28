@@ -21,13 +21,6 @@
             <% if(req.isAuthenticated()) { %>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     <li>
-                        <% // Uniquement à des fins de tests
-//                            req.user = {
-//                                display_name: 'John Smith',
-//                                img_url: 'https://pbs.twimg.com/profile_images/536497683892940800/4XJCbl0-_bigger.jpeg'
-//                            };
-                        %>
-
                         <a class="dropdown-button" data-activates="dropdown-user" data-beloworigin="true">
                             <% if(req.user.img_url) { %>
                                 <img class="avatar left" src="<%- req.user.img_url %>">
