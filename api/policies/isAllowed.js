@@ -11,16 +11,16 @@ module.exports = function (req, res, next) {
     });
 
     if (mindmap) {
-
         var user = _.find(mindmap.users, function (user) {
             return user.id === req.user.id;
         });
 
-        if(!user) return res.forbidden();
+        if (!user) return res.forbidden();
 
         req.mindmap = mindmap;
+        req.mindmapSocket = user.sockets; // List of the user's sockets
         return next();
+    } else {
+        return res.forbidden();
     }
-
-    return res.forbidden();
 };

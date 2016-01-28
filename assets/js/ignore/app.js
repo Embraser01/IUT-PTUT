@@ -2099,8 +2099,6 @@ MindmapFrame = function (c) {
 
                 io.socket.on('connect', function socketConnected() {
 
-                    console.log("Socket : connexion reussie !");
-
                     // On s'annonce au serveur
                     mindmap.ioManager.out.join();
 
@@ -2114,11 +2112,11 @@ MindmapFrame = function (c) {
 
             this.join = function () {
 
-                io.socket.post(basePath + "join", function (data) {
+                io.socket.post(basePath + "join", function (data, jwr) {
                     // Subscribe to mindmap event and receive all the mindmap once
 
                     console.log("Parsing data ...");
-                    console.log(data);
+                    console.log(jwr);
 
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
@@ -2462,5 +2460,18 @@ MindmapFrame = function (c) {
 };
 
 
-//dbg
-// setTimeout(function (){console.clear();document.title = new Date().getTime()%100;}, 2000);
+/*===== WINDOWS STARTUP =====*/
+
+window.onload = initMindmap();
+
+function initMindmap() {
+
+    var Mindmap = new MindmapFrame(document.getElementById('container'));
+
+    window.onmousedown = Mindmap.eventManager.on;
+    window.onmouseup = Mindmap.eventManager.on;
+    window.onmousemove = Mindmap.eventManager.on;
+    window.onwheel = Mindmap.eventManager.on;
+    window.onmousewheel = Mindmap.eventManager.on;
+    window.ondblclick = Mindmap.eventManager.on;
+}

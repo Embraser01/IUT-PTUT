@@ -124,25 +124,33 @@ module.exports.sockets = {
 
         var socketId = sails.sockets.id(socket);
 
+        // Prevent delete if not necessary (between to page)
+
+        var socket_remove = false;
+        var user_remove = false;
+
         _.forEach(sails.mindmaps, function (mm, key) {
             _.forEach(mm.users, function (user, key) {
                 _.forEach(user.sockets, function (s, key) {
                     if (s === socketId) {
                         user.sockets.splice(key, 1);
+                        socket_remove = true;
                         return false;
                     }
                 });
-                if (user.sockets.length === 0) {
+                if (user.sockets.length === 0 && socket_remove) {
                     mm.users.splice(key, 1);
+                    user_remove = true;
                     MindMapMsgService.send('User_disconnect', null, user, mm); // Notify users
                     return false;
                 }
             });
-            if (mm.users.length === 0) {
+            if (mm.users.length === 0 && user_remove) {
                 sails.mindmaps.splice(key, 1);
                 return false;
             }
         });
+
         return cb();
     },
 

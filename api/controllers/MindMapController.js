@@ -55,21 +55,8 @@ module.exports = {
 
         MindMap.subscribe(req.socket, mindmap.id);
 
-
-        // Search in mindmap cache if there is already the user
-
-        var user_socket = _.find(mindmap.users, function (u) {
-            return u.id === req.user.id;
-        });
-
-        if (!user_socket) {
-
-            mindmap.users.push({
-                id: req.user.id,
-                display_name: req.user.display_name,
-                img_url: req.user.img_url,
-                sockets: [sails.sockets.id(req.socket)]
-            });
+        if(req.mindmapSocket.length === 0){
+            // Means that the user is not connected
 
             MindMapMsgService.send('User_connect', req, {
                 id: req.user.id,
@@ -78,7 +65,7 @@ module.exports = {
             });
         } else {
             // We just add the socket in the list but don't send msg to mindmap' subscribers
-            user_socket.sockets.push(sails.sockets.id(req.socket));
+            req.mindmapSocket.push(sails.sockets.id(req.socket));
         }
 
         var users = [];
