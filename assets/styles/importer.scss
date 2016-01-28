@@ -17,16 +17,19 @@
 //@import "../../node_modules/material-design-lite/src/material-design-lite";
 
 @import "../../node_modules/materialize-css/sass/materialize.scss";
-@import "flaticon.css";
 
-@import "sass/base/header";
-@import "sass/base/content";
-@import "sass/base/footer";
-@import "sass/base/panel";
-@import "sass/base/buttons";
-@import "sass/base/typography";
-@import "sass/misc/misc";
-@import "sass/misc/icons";
-@import "sass/mindmap/mindmap";
-@import "sass/mindmap/toolbar";
-@import "sass/mindmap/window";
+@import "sass/misc/flaticon.css";
+@import "sass/misc/materialize_fixes";
+@import "sass/base/navigation";
+
+//@import "sass/base/header";
+//@import "sass/base/content";
+//@import "sass/base/footer";
+//@import "sass/base/panel";
+//@import "sass/base/buttons";
+//@import "sass/base/typography";
+//@import "sass/misc/misc";
+//@import "sass/misc/icons";
+//@import "sass/mindmap/mindmap";
+//@import "sass/mindmap/toolbar";
+//@import "sass/mindmap/window";
