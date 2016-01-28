@@ -20,7 +20,11 @@
 
 @import "sass/misc/flaticon.css";
 @import "sass/misc/materialize_fixes";
+
+@import "sass/base/base";
 @import "sass/base/navigation";
+@import "sass/base/buttons";
+@import "sass/base/card";
 
 //@import "sass/base/header";
 //@import "sass/base/content";

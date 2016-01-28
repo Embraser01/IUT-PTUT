@@ -1,0 +1,24 @@
+$socials : (
+  /* bg, fg */
+  googleplus: (#db4437, #fff),
+  twitter: (#55acee, #fff),
+  facebook: (#3a5795, #fff)
+);
+
+.btn-social {
+  margin: 5px 5px 10px;
+}
+
+@each $social, $key in $socials {
+  $bg: nth($key, 1);
+  $fg: nth($key, 2);
+
+  .btn-social-#{$social} {
+    background: $bg;
+    color: $fg;
+
+    &:hover {
+      background: darken($bg, 5%);
+    }
+  }
+}
