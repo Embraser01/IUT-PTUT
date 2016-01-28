@@ -1290,6 +1290,8 @@ MindmapFrame = function (c) {
 
             }
 			
+			
+			
 			if(keyboardManager.ctrl) {
 				
 				switch (e.keyCode) {
@@ -1336,7 +1338,33 @@ MindmapFrame = function (c) {
 
                         break;
                     case 67: //C
+					
+					
+						var node = mindmap.getSelectedNode();
 						
+						if(node != undefined && node != mindmap.rootNode) {
+							
+							
+							var nodesStack = [];
+							
+							var traverse = function (node) {
+								nodesStack.push({id : node.id, parentNodeId : node.parentNode.id, data : {label : node.label, style : node.style}});
+								_.forEach(node.childNodes, function (n) {
+									traverse(n);
+								});
+							};
+							traverse(node);
+					
+							mindmap.action.type = "copy";
+							mindmap.action.src = nodesStack;									
+							mindmap.action.dest = null;	
+							
+							//TODO notification copier
+							
+						}
+						
+						
+
 						/*
 						var node = mindmap.getSelectedNode();
 						
@@ -2271,7 +2299,11 @@ MindmapFrame = function (c) {
 				console.log(destParentNode);
 				if(srcNode != undefined && destParentNode != undefined  && destParentNode.cutAction == false) {
 					
-					alert("cuted");
+					
+					
+					// alert("cuted");
+					
+
 					//srcNode, destParentNode for io.socket.post
 					
 					//after
@@ -2285,17 +2317,68 @@ MindmapFrame = function (c) {
 			};
 			
 			this.copyPaste = function () {
-				return;//dbg
+				
 				if(mindmap.action.type != "copy") return;
 				
-				var srcNode = mindmap.action;
+				var nodesStack = JSON.parse(JSON.stringify(mindmap.action.src));
 				
 				var destParentNode = mindmap.getSelectedNode();
-				
-				if(srcNode != undefined && destParentNode != undefined) {
+
+				if(nodesStack != undefined && destParentNode != undefined && nodesStack.length > 0) {
+
+				var idTranslationTable = {};
 					
-					alert("copy");
-					//srcNode, destParentNode for io.socket.post
+					idTranslationTable[nodesStack[0].parentNodeId] = destParentNode.id;
+					
+					var copyNextNode = function () {
+						
+						if(nodesStack.length > 0 && nodesStack[0].parentNodeId in idTranslationTable) {
+							
+							var _parentNodeId = idTranslationTable[nodesStack[0].parentNodeId];
+							
+							var newNode = {
+								'parent_node' : _parentNodeId,
+								'style' : nodesStack[0].data.style,
+								'label' : nodesStack[0].data.label,
+								'permission' : null
+							};
+							
+							io.socket.post(basePath + "node/new", {
+								nodes: [newNode]
+							}, function (nodes) {							
+								
+
+								_.forEach(nodes, function (n) {
+									mindmap.ioManager.in.createdNode(n);
+									
+									idTranslationTable[nodesStack[0].id] = n.id;
+									
+									//TODO user progress notification
+									
+									return;
+									
+								});
+								
+								nodesStack.splice(0, 1);
+								
+								copyNextNode();
+								
+
+								
+							});
+							
+						}
+						else {
+							
+							//TODO user progress notification
+							
+						}
+						
+						
+					};
+					
+					copyNextNode();
+
 					
 				}
 				
