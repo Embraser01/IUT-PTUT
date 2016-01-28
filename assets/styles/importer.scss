@@ -14,7 +14,9 @@
  * or any other Grunt tasks you like.)
  */
 
-@import "../../node_modules/material-design-lite/src/material-design-lite";
+//@import "../../node_modules/material-design-lite/src/material-design-lite";
+
+@import "../../node_modules/materialize-css/sass/materialize.scss";
 @import "flaticon.css";
 
 @import "sass/base/header";

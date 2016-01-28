@@ -9,7 +9,7 @@
  */
 
 .page-bar {
-  @extend .mdl-layout__header-row;
+  //@extend .mdl-layout__header-row;
 
   padding: 0;
 }
@@ -34,11 +34,11 @@
 }
 
 .page-bar-title {
-  @extend .mdl-layout-title;
+  //@extend .mdl-layout-title;
 }
 
 .page-bar-navigation {
-  @extend .mdl-navigation, .mdl-layout--large-screen-only;
+  //@extend .mdl-navigation, .mdl-layout--large-screen-only;
 }
 
 .page-bar .avatar {
