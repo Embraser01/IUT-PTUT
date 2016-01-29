@@ -1,0 +1,63 @@
+.explorer-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  padding-top: 8px;
+}
+
+.explorer-navigation {
+  @extend .white;
+
+  .col {
+    .breadcrumb:nth-child(2)::before {
+      display: none
+    }
+  }
+
+  .breadcrumb {
+    cursor: pointer;
+
+    &, &:before {
+      @extend .blue-text;
+    }
+
+    &:last-child {
+      font-weight: 500;
+    }
+  }
+
+  .previous {
+    padding: 0 16px;
+    height: 100%;
+  }
+}
+
+.explorer-item__directory {
+  text-align: left;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.explorer-item__file {
+  .card-image {
+    height: 125px;
+  }
+
+  .card-content {
+    padding: 8px;
+  }
+
+  .card-title {
+    font-size: 15px;
+    line-height: 1.4em !important;
+  }
+}
+
+.explorer-empty {
+  justify-content: center;
+  background: url('/images/icons/island.svg') no-repeat 50% calc(50% - 150px / 2);
+  background-size: 150px;
+
+  flex: 1;
+}

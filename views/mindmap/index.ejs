@@ -1,185 +1,162 @@
-<div id="mindmap">
+<svg xmlns="http://www.w3.org/2000/svg" id="container"
+     style="background-color: #eceff1;"></svg>
 
-    <div id="workerArea">
+<div id="workerArea">
 
-
-        <input type="checkbox" id="chatBoxStatut"/>
-        <div id="chatBox">
-
-
-            <div id="chatBoxTitle" class="boxTitle">
-                Conversation
-                <label for="chatBoxStatut"><i class="closer material-icons">close</i></label>
-            </div>
-            <div id="chatBoxScroller">
-
-                <table cellspacing="0" cellpadding="0" id="chatBoxMessages">
+    <input type="checkbox" id="chatBoxStatut"/>
+    <div id="chatBox">
 
 
-                </table>
-            </div>
-
-            <div id="chatBoxInput">
-
-
-                <div id="chatBoxInputField">
-                    <input id="chatBoxInputElement" type="text" placeholder="Message" class="simpleTextfield"/>
-                </div>
-                <div id="chatBoxInputSend">
-                    <i class="material-icons">send</i>
-                </div>
-
-
-            </div>
-
+        <div id="chatBoxTitle" class="boxTitle">
+            Conversation
+            <label for="chatBoxStatut"><i class="closer material-icons">close</i></label>
         </div>
+        <div id="chatBoxScroller">
 
-        <div id="workers">
-
-            <label id="chatBoxOpenerContainer" for="chatBoxStatut">
-                <div id="chatBoxOpener">
-                    <i style="margin-top:12px;" class="material-icons">chat_bubble</i>
-                </div>
-            </label>
+            <table cellspacing="0" cellpadding="0" id="chatBoxMessages">
 
 
-        </div>
-
-    </div>
-
-    <div id="editBox">
-
-        <div class="boxTitle">
-            Édition d'un noeud
-        </div>
-
-        <form id="editBoxForm">
-
-
-            <input id="editBox_label" type="text" placeholder="Message" class="simpleTextfield"/>
-
-
-            <table style="width:100%;">
-                <tr>
-                    <td><b>Format</b></td>
-                    <td>
-
-                        <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_bold">
-                            <input type="checkbox" id="editBox_bold" class="mdl-icon-toggle__input" name="font_bold"
-                                   value="enable">
-                            <i class="mdl-icon-toggle__label material-icons">format_bold</i>
-                        </label>
-                        <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_italic">
-                            <input type="checkbox" id="editBox_italic" class="mdl-icon-toggle__input" name="font_italic"
-                                   value="enable">
-                            <i class="mdl-icon-toggle__label material-icons">format_italic</i>
-                        </label>
-                        <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_underline">
-                            <input type="checkbox" id="editBox_underline" class="mdl-icon-toggle__input"
-                                   name="font_underline" value="enable">
-                            <i class="mdl-icon-toggle__label material-icons">format_underlined</i>
-                        </label>
-                        <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_strike">
-                            <input type="checkbox" id="editBox_strike" class="mdl-icon-toggle__input"
-                                   name="font_underline" value="enable">
-                            <i class="mdl-icon-toggle__label material-icons">format_strikethrough</i>
-                        </label>
-
-                    </td>
-                </tr>
-
-                <tr>
-
-                    <td><b>Police</b></td>
-
-                    <td>
-
-                        <input name="editBox_family" type="button" value="Verdana" id="editBox_family"
-                               class="mdl-button mdl-js-button">
-
-                        <ul id="font_family_list"
-                            class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
-                            for="editBox_family">
-                            <li name="Open Sans" style="font-family:Open Sans;" class="mdl-menu__item">Open Sans</li>
-                            <li name="Roboto" style="font-family:Roboto;" class="mdl-menu__item">Roboto</li>
-                            <li name="Verdana" style="font-family:Verdana;" class="mdl-menu__item">Verdana</li>
-                            <li name="comic sans ms" style="font-family:comic sans ms;" class="mdl-menu__item">Comic
-                                Sans Ms
-                            </li>
-                        </ul>
-
-
-                    </td>
-
-                </tr>
-                <tr>
-
-                    <td><b>Couleur</b></td>
-
-                    <td>
-
-                        <input name="editBox_color" type="button" value="#000000" id="editBox_color"
-                               class="mdl-button mdl-js-button">
-
-                        <ul id="font_color_list" class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
-                            for="editBox_color">
-
-                            <li name="#000000" style="font-weight:bold;color:#000000" class="mdl-menu__item"><i
-                                        style=";vertical-align: middle;" class="material-icons">palette</i>Noir
-                            </li>
-                            <li name="#f44336" style="font-weight:bold;color:#f44336;" class="mdl-menu__item"><i
-                                        style="vertical-align: middle;" class="material-icons">palette</i>Rouge
-                            </li>
-                            <li name="#8bc34a" style="font-weight:bold;color:#8bc34a;" class="mdl-menu__item"><i
-                                        style="vertical-align: middle;" class="material-icons">palette</i>Vert
-                            </li>
-                            <li name="#2196f3" style="font-weight:bold;color:#2196f3;" class="mdl-menu__item"><i
-                                        style="vertical-align: middle;" class="material-icons">palette</i>Bleu
-                            </li>
-                            <li name="other" style="font-weight:bold;color:#000;" class="mdl-menu__item">
-                                <input onchange="document.getElementById('editBox_color').value = this.value;document.getElementById('editBox_color').onchange();"
-                                       id="colorpicker" style="display:none;" type="color"/>
-                                Autre
-                            </li>
-
-                        </ul>
-
-                    </td>
-
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align:center;">
-                        <input name="editBox_delete" type="button" value="Supprimer"
-                               class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"/>
-                    </td>
-                </tr>
             </table>
+        </div>
+
+        <div id="chatBoxInput">
 
 
-        </form>
+            <div id="chatBoxInputField">
+                <input id="chatBoxInputElement" type="text" placeholder="Message" class="simpleTextfield"/>
+            </div>
+            <div id="chatBoxInputSend">
+                <i class="material-icons">send</i>
+            </div>
+
+
+        </div>
+
     </div>
 
-    <svg xmlns="http://www.w3.org/2000/svg" id="container" width="100%" height="100%"
-         style="background-color: #eceff1;">
+    <div id="workers">
 
-    </svg>
+        <label id="chatBoxOpenerContainer" for="chatBoxStatut">
+            <div id="chatBoxOpener">
+                <i style="margin-top:12px;" class="material-icons">chat_bubble</i>
+            </div>
+        </label>
+
+
+    </div>
 
 </div>
 
-<script src="/js/ignore/app.js"></script>
-<script>
-    window.onload = initMindmap();
+<div id="editBox">
+
+    <div class="boxTitle">
+        Édition d'un noeud
+    </div>
+
+    <form id="editBoxForm">
 
 
-    function initMindmap() {
+        <input id="editBox_label" type="text" placeholder="Message" class="simpleTextfield"/>
 
-        var Mindmap = new MindmapFrame(document.getElementById('container'));
 
-        window.onmousedown = Mindmap.eventManager.on;
-        window.onmouseup = Mindmap.eventManager.on;
-        window.onmousemove = Mindmap.eventManager.on;
-        window.onwheel = Mindmap.eventManager.on;
-        window.onmousewheel = Mindmap.eventManager.on;
-        window.ondblclick = Mindmap.eventManager.on;
-    }
-</script>
+        <table style="width:100%;">
+            <tr>
+                <td><b>Format</b></td>
+                <td>
+
+                    <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_bold">
+                        <input type="checkbox" id="editBox_bold" class="mdl-icon-toggle__input" name="font_bold"
+                               value="enable">
+                        <i class="mdl-icon-toggle__label material-icons">format_bold</i>
+                    </label>
+                    <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_italic">
+                        <input type="checkbox" id="editBox_italic" class="mdl-icon-toggle__input" name="font_italic"
+                               value="enable">
+                        <i class="mdl-icon-toggle__label material-icons">format_italic</i>
+                    </label>
+                    <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_underline">
+                        <input type="checkbox" id="editBox_underline" class="mdl-icon-toggle__input"
+                               name="font_underline" value="enable">
+                        <i class="mdl-icon-toggle__label material-icons">format_underlined</i>
+                    </label>
+                    <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_strike">
+                        <input type="checkbox" id="editBox_strike" class="mdl-icon-toggle__input" name="font_underline"
+                               value="enable">
+                        <i class="mdl-icon-toggle__label material-icons">format_strikethrough</i>
+                    </label>
+
+                </td>
+            </tr>
+
+            <tr>
+
+                <td><b>Police</b></td>
+
+                <td>
+
+                    <input name="editBox_family" type="button" value="Verdana" id="editBox_family"
+                           class="mdl-button mdl-js-button">
+
+                    <ul id="font_family_list" class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
+                        for="editBox_family">
+                        <li name="Open Sans" style="font-family:Open Sans;" class="mdl-menu__item">Open Sans</li>
+                        <li name="Roboto" style="font-family:Roboto;" class="mdl-menu__item">Roboto</li>
+                        <li name="Verdana" style="font-family:Verdana;" class="mdl-menu__item">Verdana</li>
+                        <li name="comic sans ms" style="font-family:comic sans ms;" class="mdl-menu__item">Comic
+                            Sans Ms
+                        </li>
+                    </ul>
+
+
+                </td>
+
+            </tr>
+            <tr>
+
+                <td><b>Couleur</b></td>
+
+                <td>
+
+                    <input name="editBox_color" type="button" value="#000000" id="editBox_color"
+                           class="mdl-button mdl-js-button">
+
+                    <ul id="font_color_list" class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
+                        for="editBox_color">
+
+                        <li name="#000000" style="font-weight:bold;color:#000000" class="mdl-menu__item"><i
+                                    style=";vertical-align: middle;" class="material-icons">palette</i>Noir
+                        </li>
+                        <li name="#f44336" style="font-weight:bold;color:#f44336;" class="mdl-menu__item"><i
+                                    style="vertical-align: middle;" class="material-icons">palette</i>Rouge
+                        </li>
+                        <li name="#8bc34a" style="font-weight:bold;color:#8bc34a;" class="mdl-menu__item"><i
+                                    style="vertical-align: middle;" class="material-icons">palette</i>Vert
+                        </li>
+                        <li name="#2196f3" style="font-weight:bold;color:#2196f3;" class="mdl-menu__item"><i
+                                    style="vertical-align: middle;" class="material-icons">palette</i>Bleu
+                        </li>
+                        <li name="other" style="font-weight:bold;color:#000;" class="mdl-menu__item">
+                            <input onchange="document.getElementById('editBox_color').value = this.value;document.getElementById('editBox_color').onchange();"
+                                   id="colorpicker" style="display:none;" type="color"/>
+                            Autre
+                        </li>
+
+                    </ul>
+
+                </td>
+
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:center;">
+                    <input name="editBox_delete" type="button" value="Supprimer"
+                           class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"/>
+                </td>
+            </tr>
+        </table>
+
+
+    </form>
+</div>
+
+<% script('/js/ignore/app.js') %>
+<% script('/js/ignore/initMindmapEditor.js') %>

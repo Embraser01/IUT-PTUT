@@ -95,6 +95,16 @@ module.exports.routes = {
     'post /mm/:id/node/move': 'NodeController.move',
 
 
+    /*===== Explorer Controller =====*/
+    'get /explorer': {
+        controller: 'ExplorerController',
+        action: 'index',
+        locals: {
+            layout: 'layouts/explorer'
+        }
+    },
+
+
     /*===== Test Controller =====*/
 
     //'/test/order': 'TestController.getOne'

@@ -1,0 +1,36 @@
+<% if(req.isAuthenticated()) { %>
+<ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li><a href="/explorer">Mes cartes</a></li>
+    <li>
+        <a class="dropdown-button" data-activates="dropdown-user" data-beloworigin="true">
+            <% if(req.user.img_url) { %>
+            <img class="avatar left" src="<%- req.user.img_url %>">
+            <% } else  { %>
+            <i class="material-icons left">account_circle</i>
+            <% } %>
+
+            <%= req.user.display_name %>
+            <i class="material-icons right">arrow_drop_down</i>
+        </a>
+        <ul id='dropdown-user' class='dropdown-content'>
+            <li><a href='/auth/process/logout'>Se déconnecter</a></li>
+        </ul>
+    </li>
+</ul>
+
+<ul class="side-nav" id="mobile-demo">
+    <li><a href="/explorer">Mes cartes</a></li>
+    <li><a href='/auth/process/logout'>Se déconnecter</a></li>
+</ul>
+
+<% } else { %>
+<ul id="nav-mobile" class="right hide-on-med-and-down">
+    <li><a href="/auth/login">Connexion</a></li>
+    <li><a href="/auth/signup">Inscription</a></li>
+</ul>
+
+<ul class="side-nav" id="mobile-demo">
+    <li><a href="/auth/login">Connexion</a></li>
+    <li><a href="/auth/signup">Inscription</a></li>
+</ul>
+<% } %>

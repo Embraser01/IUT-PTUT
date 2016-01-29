@@ -1,0 +1,277 @@
+/**
+ * La mindmap !!!
+ */
+
+#mindmap_wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+	bottom: 0;
+}
+
+#mindmap_wrapper .page-content {
+    padding: 0;
+}
+
+#mindmap {
+  width: 100%;
+  height: 100%;
+}
+
+svg {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transform: translate3d(0, 0, 0);
+
+}
+
+path, rect, line {
+  transition: filter 0.3s ease-in-out;
+}
+
+rect, text {
+  cursor:pointer;
+}
+
+g:not([id=""]) > circle[name=folder] {
+  fill: red;
+  transition: fill 0.5s;
+}
+
+g:not([id=""]) > circle[name=lx], g:not([id=""]) > circle[name=rx] {
+  fill: transparent;
+  transition: fill 0.5s;
+}
+
+g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
+  fill:#64b5f6;
+}
+
+#editBox {
+cursor:pointer;
+display:none;
+position:fixed;
+z-index:10;
+top:80px;
+right:10px;
+background:white;
+width:300px;
+box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+#editBox h3 {
+border-bottom:1px solid #ddd;
+font-size: 16px;
+font-weight: 500;
+margin:0;
+text-transform: uppercase;
+}
+
+#editBoxForm {
+margin:0 10px;
+}
+
+#workers {
+	position:fixed;
+	left:0;
+	bottom:10px;
+	z-index:8;
+}
+
+#workers div {
+	width:36px;
+	height:36px;
+	aborder-top-left-radius:24px;
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+	float:left;
+	background-size:cover;
+	margin-left:10px;
+	margin-top:12px;
+	cursor:pointer;
+	overflow:hidden;
+}
+
+#workers div:first-child {
+	margin-top:0;
+	width:48px;
+	height:48px;
+}
+
+#workers div span {
+    background: #263238;
+    bottom: 40px;
+    color: white;
+    padding: 2px 5px;
+    position: absolute;
+    white-space: nowrap;
+	display:none;
+}
+
+#workers div:hover span {
+    display:inline-block;
+}
+
+.tooltip {
+    background: #263238;
+    color: white;
+    padding: 2px 5px;
+    position: absolute;
+    top: -16px;
+}
+
+
+#chatBoxStatut {<
+	display:none;
+}
+#chatBoxStatut:checked + #chatBox {
+
+	display:block;
+}
+
+#chatBox {
+	cursor:default;
+	font-family: Roboto;
+	position:fixed;
+	top:80px;
+	left:10px;
+
+	bottom: 10px;
+	background:white;
+	z-index:9;
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+	width:300px;
+
+	display:none;
+	}
+
+#chatBoxTitle {
+	position:absolute;
+	left:0;
+	right:0;
+}
+
+.boxTitle {
+	text-align:center;
+	padding:5px 5px;
+	line-height:26px;
+	height:26px;
+	font-weight:bold;
+	color:#fff;
+	background-color:rgb(63, 81, 181);
+}
+
+.closer {
+	position:absolute;
+	right:5px;
+}
+#chatBoxScroller {
+	position:absolute;
+	top:36px;
+	bottom:38px;
+	left:0;
+	right:0;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
+
+#chatBoxMessages {
+	margin:0 2px;
+	width:100%;
+}
+
+#chatBoxMessages td{
+	border-top: 1px solid #ddd;
+}
+
+#chatBoxMessages td:nth-child(2) {
+    width: 250px;
+}
+
+.picture {
+    display: inline-block;
+	width:50px;
+}
+
+.picture div {
+	width:36px;
+	height:36px;
+	margin:10px 0 0;
+	aborder-radius: 18px;
+	background-size:cover;
+	margin-left:7px;
+}
+
+
+
+.author {
+	font-weight:bold;
+	margin:8px 0 0;
+	color:#222;
+}
+
+.time {
+	float:right;
+	font-weight:normal;
+	color:#aaa;
+	padding-right:5px;
+}
+.message {
+	padding-bottom:8px;
+	word-break: break-all;
+}
+
+#chatBoxInput {
+	height:28px;
+	padding-top: 5px;
+	margin:0 5px 5px;
+	position:absolute;
+	bottom:0;
+	left:0;
+	right:0;
+	border-top: 1px solid #ddd;
+}
+
+#chatBoxInputField {
+	width:260px;
+	display: inline-block;
+}
+
+#chatBoxInputSend {
+	display: inline-block;
+	vertical-align:top;
+	color:rgb(63, 81, 181);
+	cursor:pointer;
+}
+
+.simpleTextfield {
+	border:0;
+	height:24px;
+	width:100%;
+	border-bottom: 2px solid #ddd;
+	transition: border 0.3s;
+}
+
+.simpleTextfield:focus {
+	border-bottom: 2px solid rgb(63, 81, 181);
+}
+
+
+
+#chatBoxStatut:checked + #chatBox + #workers > #chatBoxOpenerContainer > #chatBoxOpener {
+	width:300px;
+	opacity:0;
+}
+
+#chatBoxOpener {
+
+	background-color:rgb(63, 81, 181);
+	color:#fff;
+	text-align:center;
+	font-size:24px;
+	overflow:hidden;
+}
