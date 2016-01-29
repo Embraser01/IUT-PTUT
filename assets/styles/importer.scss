@@ -14,28 +14,17 @@
  * or any other Grunt tasks you like.)
  */
 
-//@import "../../node_modules/material-design-lite/src/material-design-lite";
+@import "../../node_modules/material-design-lite/src/material-design-lite";
+@import "flaticon.css";
 
-@import "../../node_modules/materialize-css/sass/materialize.scss";
-
-@import "sass/misc/flaticon.css";
-@import "sass/misc/materialize_fixes";
-
-@import "sass/base/base";
-@import "sass/base/navigation";
+@import "sass/base/header";
+@import "sass/base/content";
+@import "sass/base/footer";
+@import "sass/base/panel";
 @import "sass/base/buttons";
-@import "sass/base/card";
-
+@import "sass/base/typography";
+@import "sass/misc/misc";
+@import "sass/misc/icons";
 @import "sass/mindmap/mindmap";
-
-//@import "sass/base/header";
-//@import "sass/base/content";
-//@import "sass/base/footer";
-//@import "sass/base/panel";
-//@import "sass/base/buttons";
-//@import "sass/base/typography";
-//@import "sass/misc/misc";
-//@import "sass/misc/icons";
-//@import "sass/mindmap/mindmap";
-//@import "sass/mindmap/toolbar";
-//@import "sass/mindmap/window";
+@import "sass/mindmap/toolbar";
+@import "sass/mindmap/window";

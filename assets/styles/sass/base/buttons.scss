@@ -1,11 +1,16 @@
 $socials : (
-  /* bg, fg */
+          /* bg, fg */
+  github: (#f5f5f5, #333),
   googleplus: (#db4437, #fff),
   twitter: (#55acee, #fff),
+  dropbox: (#fff, #3398ea),
   facebook: (#3a5795, #fff)
+
 );
 
-.btn-social {
+.button-social {
+  @extend .mdl-button, .mdl-button--raised;
+
   margin: 5px 5px 10px;
 }
 
@@ -13,7 +18,7 @@ $socials : (
   $bg: nth($key, 1);
   $fg: nth($key, 2);
 
-  .btn-social-#{$social} {
+  .button-social-#{$social} {
     background: $bg;
     color: $fg;
 

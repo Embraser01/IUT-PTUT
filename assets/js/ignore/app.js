@@ -165,13 +165,16 @@ MindmapFrame = function (c) {
          */
         this.orientation = null; //left, right, none
 
-
+		this.cutAction = null;
+		
         /*===== FUNCTIONS =====*/
 
         /**
          * Initialisation function
          */
         this.init = function () {
+			
+			this.cutAction = false;
 
             //Create DOM Elements and Nodes
             this.nodeElement = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -306,7 +309,7 @@ MindmapFrame = function (c) {
                     this.parentNode.childNodes[i].style.order = parseInt(i);
                 }
 
-                console.log(this.label, this.parentNode.childNodes);
+                // console.log(this.label, this.parentNode.childNodes);
             }
         };
 
@@ -342,7 +345,11 @@ MindmapFrame = function (c) {
          * Draw the node with the style attribute
          */
         this.drawNode = function () {
-
+			
+			this.cutAction = "type" in mindmap.action && "src" in mindmap.action && mindmap.action.type == "cut" && (mindmap.action.src == this || (this.parentNode != undefined && this.parentNode.cutAction));
+			
+			// // console.log(this.cutAction);
+			
             var nodePosition = {
                 x: this.position.x,
                 y: this.position.y
@@ -489,6 +496,17 @@ MindmapFrame = function (c) {
                 this.lineElement.setAttribute('stroke', this.style.parentBranch.color);
                 this.lineElement.setAttribute('stroke-width', 4);
                 this.lineElement.setAttribute('stroke-linecap', 'butt');
+				
+				if(this.cutAction) {
+					
+					this.lineElement.setAttribute('stroke-dasharray', "5,5");
+					
+				}
+				else {
+					
+					this.lineElement.setAttribute('stroke-dasharray', "");
+					
+				}
 
                 this.textElement.setAttribute('y', textTop + rectHeight / 2 - textHeight - 4);
 
@@ -592,6 +610,19 @@ MindmapFrame = function (c) {
                 this.branchElement.setAttribute('fill', 'none');
                 this.branchElement.setAttribute('stroke', '#42a5f5');
                 this.branchElement.setAttribute('stroke-width', '4');
+               
+				
+				if(mindmap.action.src != this && this.cutAction == true) {
+					
+					this.branchElement.setAttribute('stroke-dasharray', "5,5");
+					
+				}
+				else {
+					
+					this.branchElement.setAttribute('stroke-dasharray', "");
+					
+				}
+				
 
                 //node.branchElement.style.filter = selection ? 'drop-shadow(5px 5px 7px #888)' : '';
             }
@@ -615,7 +646,7 @@ MindmapFrame = function (c) {
             if (text != null)
                 this.label = text;
 
-            // console.log(this.label, style)
+            // // console.log(this.label, style)
 
             if (style) {
 
@@ -778,6 +809,8 @@ MindmapFrame = function (c) {
      * @type {{MindmapNode}}
      */
     this.nodes = {};
+	
+	this.action = {type : null, src : null, dest : null};
 
 
     /*===== FUNCTIONS =====*/
@@ -1196,7 +1229,7 @@ MindmapFrame = function (c) {
         if (this.syncDraw)
             this.syncDraw = false;
         else {
-            console.log("abort");
+            // console.log("abort");
             return false;
         }
 
@@ -1241,20 +1274,45 @@ MindmapFrame = function (c) {
 
         window.onkeydown = function (e) {
 
+			// if(e.keyCode == 116) return true;
+		
             switch (e.keyCode) {
 
                 case 16:
                     keyboardManager.shift = true;
-                    break;
+                    return false;
                 case 17:
                     keyboardManager.ctrl = true;
-                    break;
+                    return false;
                 case 18:
                     keyboardManager.alt = true;
-                    break;
+                    return false;
 
             }
+			
+			
+			
+			if(keyboardManager.ctrl) {
+				
+				switch (e.keyCode) {
+                    case 67: //C
+					
+						break;
+					case 68: //D
+						return false;
+						
+                    case 86: //V
+						
+					
+						return false;
+					case 88: //X
+						return false;
 
+				}
+				
+			}
+			
+			// return false;
         };
 
         window.onkeyup = function (e) {
@@ -1269,7 +1327,7 @@ MindmapFrame = function (c) {
                     break;
                 case 18:
                     keyboardManager.alt = false;
-                    break;
+                    break;			
 
             }
 
@@ -1280,16 +1338,92 @@ MindmapFrame = function (c) {
 
                         break;
                     case 67: //C
+					
+					
+						var node = mindmap.getSelectedNode();
+						
+						if(node != undefined && node != mindmap.rootNode) {
+							
+							
+							var nodesStack = [];
+							
+							var traverse = function (node) {
+								nodesStack.push({id : node.id, parentNodeId : node.parentNode.id, data : {label : node.label, style : node.style}});
+								_.forEach(node.childNodes, function (n) {
+									traverse(n);
+								});
+							};
+							traverse(node);
+					
+							mindmap.action.type = "copy";
+							mindmap.action.src = nodesStack;									
+							mindmap.action.dest = null;	
+							
+							//TODO notification copier
+							
+						}
+						
+						
 
+						/*
+						var node = mindmap.getSelectedNode();
+						
+						if(node != undefined && node != mindmap.rootNode) {
+							
+							if(mindmap.action == undefined || mindmap.action != node) {
+								mindmap.action.type = "copy";
+								mindmap.action = node;									
+							}
+							else {
+								mindmap.action = null;								
+								mindmap.action.type = null;
+							}
+						}*/
+							
+						mindmap.drawMap();
 
                         break;
                     case 68: //D
+					
+						mindmap.action.type = null;
+						mindmap.action.src = null;
+						mindmap.action.dest = null;
+					
+						
+						mindmap.drawMap();
 
                         break;
                     case 86: //V
+					
+						mindmap.ioManager.out.cutPaste();
+						
+						mindmap.ioManager.out.copyPaste();
+
+						
+						mindmap.drawMap();
 
                         break;
                     case 88: //X
+					
+						var node = mindmap.getSelectedNode();
+						
+						if(node != undefined && node != mindmap.rootNode) {
+							
+							if(mindmap.action == undefined || mindmap.action.src != node) {
+								mindmap.action.type = "cut";
+								mindmap.action.src = node;									
+								mindmap.action.dest = null;									
+							}
+							else {
+								mindmap.action.dest = null;								
+								mindmap.action.src = null;								
+								mindmap.action.type = null;
+							}
+
+							
+							mindmap.drawMap();
+							
+						}
 
                         break;
                     case 89: //Y
@@ -1298,8 +1432,16 @@ MindmapFrame = function (c) {
                     case 90: //Z
 
                         break;
+
                 }
+				
+				return false;
             }
+			else {
+				return true;
+			}
+			
+			
         };
 
 
@@ -1383,7 +1525,7 @@ MindmapFrame = function (c) {
         };
 
         this.addWorker = function (user) {
-            console.log(user);
+            // console.log(user);
 
             var worker = document.createElement("DIV");
 
@@ -1739,7 +1881,7 @@ MindmapFrame = function (c) {
                             var orientation = (eventManager.eventData.attach.getAttribute("name") == "lx") ? "left" : "right";
 
                             var nearBrothers = mindmap.nearBrothersVerticalPosition(eventManager.eventData.parentNode.childNodes, e.clientY, eventManager.eventData.parentNode, orientation);
-                            // console.log(nearBrothers)
+                            // // console.log(nearBrothers)
 
                             if (nearBrothers.prevY_i == undefined)
                                 style.order = -1;
@@ -2099,7 +2241,7 @@ MindmapFrame = function (c) {
 
                 io.socket.on('connect', function socketConnected() {
 
-                    console.log("Socket : connexion reussie !");
+                    // console.log("Socket : connexion reussie !");
 
                     // On s'annonce au serveur
                     mindmap.ioManager.out.join();
@@ -2114,11 +2256,11 @@ MindmapFrame = function (c) {
 
             this.join = function () {
 
-                io.socket.post(basePath + "join", function (data) {
+                io.socket.post(basePath + "join", function (data, jwr) {
                     // Subscribe to mindmap event and receive all the mindmap once
 
                     console.log("Parsing data ...");
-                    console.log(data);
+                    console.log(jwr);
 
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
@@ -2135,11 +2277,107 @@ MindmapFrame = function (c) {
                     });
                 });
             };
+			
+			
+			this.cutPaste = function () {
+				
+				if(mindmap.action.type != "cut") return;
+				
+				var srcNode = mindmap.action.src;
+				
+				var destParentNode = mindmap.getSelectedNode();
+				console.log(destParentNode);
+				if(srcNode != undefined && destParentNode != undefined  && destParentNode.cutAction == false) {
+					
+					
+					
+					// alert("cuted");
+					
+
+					//srcNode, destParentNode for io.socket.post
+					
+					//after
+						mindmap.action.type = null;
+						mindmap.action.src = null;
+						mindmap.action.dest = null;
+						
+						mindmap.drawMap();
+				}
+				
+			};
+			
+			this.copyPaste = function () {
+				
+				if(mindmap.action.type != "copy") return;
+				
+				var nodesStack = JSON.parse(JSON.stringify(mindmap.action.src));
+				
+				var destParentNode = mindmap.getSelectedNode();
+
+				if(nodesStack != undefined && destParentNode != undefined && nodesStack.length > 0) {
+
+				var idTranslationTable = {};
+					
+					idTranslationTable[nodesStack[0].parentNodeId] = destParentNode.id;
+					
+					var copyNextNode = function () {
+						
+						if(nodesStack.length > 0 && nodesStack[0].parentNodeId in idTranslationTable) {
+							
+							var _parentNodeId = idTranslationTable[nodesStack[0].parentNodeId];
+							
+							var newNode = {
+								'parent_node' : _parentNodeId,
+								'style' : nodesStack[0].data.style,
+								'label' : nodesStack[0].data.label,
+								'permission' : null
+							};
+							
+							io.socket.post(basePath + "node/new", {
+								nodes: [newNode]
+							}, function (nodes) {							
+								
+
+								_.forEach(nodes, function (n) {
+									mindmap.ioManager.in.createdNode(n);
+									
+									idTranslationTable[nodesStack[0].id] = n.id;
+									
+									//TODO user progress notification
+									
+									return;
+									
+								});
+								
+								nodesStack.splice(0, 1);
+								
+								copyNextNode();
+								
+
+								
+							});
+							
+						}
+						else {
+							
+							//TODO user progress notification
+							
+						}
+						
+						
+					};
+					
+					copyNextNode();
+
+					
+				}
+				
+			};
 
             ////When user query server to get the id of a new node
             this.newNode = function (parentNodeId, worker, permission, style) {
 
-                console.log("Out : demande création noeud");
+                // console.log("Out : demande création noeud");
 
                 io.socket.post(basePath + "node/new", {
                     nodes: [{
@@ -2160,7 +2398,7 @@ MindmapFrame = function (c) {
             //When user edit node
             this.editNode = function (node, updateStyle) {
 
-                console.log("Out : edit Node", node);
+                // console.log("Out : edit Node", node);
 
                 var path = basePath + "node/update/" + (updateStyle ? 'yes' : 'no');
 
@@ -2185,7 +2423,7 @@ MindmapFrame = function (c) {
             //When user edit several nodes
             this.editNodes = function (nodes) {
 
-                console.log("Out : edit several Nodes", nodes);
+                // console.log("Out : edit several Nodes", nodes);
 
                 var path = basePath + "node/update/yes";
 
@@ -2212,7 +2450,7 @@ MindmapFrame = function (c) {
             //When user unselect a node
             this.unselectNode = function (node) {
 
-                console.log("Out : unselect Node", node);
+                // console.log("Out : unselect Node", node);
 
                 editBoxManager.load();
 
@@ -2223,7 +2461,7 @@ MindmapFrame = function (c) {
             //When user select a node
             this.selectNode = function (node) {
 
-                console.log("Out : select Node", node);
+                // console.log("Out : select Node", node);
 
                 editBoxManager.load();
 
@@ -2234,7 +2472,7 @@ MindmapFrame = function (c) {
             //When user delete nodes
             this.deleteNodes = function (ids) {
 
-                console.log("Out : delete Node", ids);
+                // console.log("Out : delete Node", ids);
 
                 //TODO: Notification de suppression de noeud - Émission
                 //Données utiles : id
@@ -2282,7 +2520,7 @@ MindmapFrame = function (c) {
 
             this.createdNode = function (node) {
 
-                // console.log(node.label, node.style.order);
+                // // console.log(node.label, node.style.order);
 
                 // node.style.order = parseFloat(node.style.order);
 
@@ -2292,11 +2530,11 @@ MindmapFrame = function (c) {
                     }
                     mindmap.workers[node.worker] = node.id; //On séléctionne le nouveau noeud
                 }
-                // console.log(node.style.order, node.style.order_bis);
-                // console.log(node);
+                // // console.log(node.style.order, node.style.order_bis);
+                // // console.log(node);
                 // node.style.order = node.style.order_bis;
 
-                // console.log(node);
+                // // console.log(node);
                 mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
                 node = mindmap.nodes[node.id];
 
@@ -2316,7 +2554,7 @@ MindmapFrame = function (c) {
 
                 mindmap.drawMap();
 
-                //console.log("In : Node created");
+                //// console.log("In : Node created");
             };
 
 
@@ -2348,7 +2586,7 @@ MindmapFrame = function (c) {
 
                 mindmap.nodes[nodeId].drawNode();
 
-                //console.log("In : Node selected");
+                //// console.log("In : Node selected");
 
             };
 
@@ -2359,7 +2597,7 @@ MindmapFrame = function (c) {
                 mindmap.nodes[nodeId].worker = null;
                 mindmap.nodes[nodeId].drawNode();
 
-                //console.log("In : Node unselected");
+                //// console.log("In : Node unselected");
 
             };
 
@@ -2367,7 +2605,7 @@ MindmapFrame = function (c) {
              //When a collaborator force me to unselect a node
              this.looseNode = function (workerId, nodeId) {
 
-             //console.log("In : loose Node selection");
+             //// console.log("In : loose Node selection");
 
              };*/
 
@@ -2376,9 +2614,9 @@ MindmapFrame = function (c) {
 
                 mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
 
-                // console.log("When a collaborator edit a node", node.label, node.style.order)
+                // // console.log("When a collaborator edit a node", node.label, node.style.order)
 
-                console.log("In : Node edited");
+                // console.log("In : Node edited");
 
             };
 
@@ -2404,7 +2642,7 @@ MindmapFrame = function (c) {
 
                 mindmap.drawMap();
 
-                //console.log("In : Node deleted");
+                //// console.log("In : Node deleted");
 
             };
 
@@ -2462,5 +2700,18 @@ MindmapFrame = function (c) {
 };
 
 
-//dbg
-// setTimeout(function (){console.clear();document.title = new Date().getTime()%100;}, 2000);
+/*===== WINDOWS STARTUP =====*/
+
+window.onload = initMindmap();
+
+function initMindmap() {
+
+    var Mindmap = new MindmapFrame(document.getElementById('container'));
+
+    window.onmousedown = Mindmap.eventManager.on;
+    window.onmouseup = Mindmap.eventManager.on;
+    window.onmousemove = Mindmap.eventManager.on;
+    window.onwheel = Mindmap.eventManager.on;
+    window.onmousewheel = Mindmap.eventManager.on;
+    window.ondblclick = Mindmap.eventManager.on;
+}

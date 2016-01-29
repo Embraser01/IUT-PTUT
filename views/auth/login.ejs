@@ -1,47 +1,62 @@
-<h2 class="center-align">Connexion</h2>
+<h2>Connexion</h2>
 
-<div class="row">
-    <div class="col s12 m8 l6">
-        <div class="card-panel">
-            <h5 class="center-align">Connexion via un compte <%= AppName %></h5>
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--6-col">
 
-            <form action="/auth/process/login" method="post">
-                <div class="row">
-                    <div class="input-field col s12">
-                        <input id="email" type="email" class="validate" name="mail">
-                        <label for="email">Adresse e-mail</label>
+        <div class="panel panel-auth">
+            <header class="panel__header">
+                <h4>Connexion via compte Mindmap</h4>
+            </header>
+            <section class="panel__content">
+                <form action="/auth/process/login" method="post">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" name="mail" type="email" id="sample1">
+                        <label class="mdl-textfield__label" for="sample1">Adresse e-mail</label>
+                        <span class="mdl-textfield__error">L'adresse e-mail n'est pas valide</span>
                     </div>
-                    <div class="input-field col s12">
-                        <input id="password" type="password" class="validate" name="password">
-                        <label for="password">Mot de passe</label>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" name="password" type="password" id="sample2">
+                        <label class="mdl-textfield__label" for="sample2">Mot de passe</label>
                     </div>
-                </div>
-                <div class="row center-align">
-                    <button class="btn blue waves-effect waves-light" type="submit" name="action">Se connecter
-                        <i class="material-icons right">send</i>
-                    </button>
-                </div>
-            </form>
+                    <div>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
+                            Se connecter
+                        </button>
+                    </div>
+                </form>
+                <br>
+                <hr>
 
-            <div class="divider"></div>
+                <h4>Connexion via réseau social</h4>
 
-            <h5 class="center-align">Connexion via un réseau social</h5>
+                <button class="mdl-js-button mdl-js-ripple-effect button-social button-social-googleplus"
+                        onclick="location.href='http://mindmap.finch4.xyz/auth/google';">
+                    <i class="flaticon-google116"></i>
+                    Google+
+                </button>
 
-            <div class="row center-align" style="margin-bottom: 0">
-                <a href="http://mindmap.finch4.xyz/auth/google" class="btn btn-social btn-social-googleplus waves-effect waves-light">
-                    <i class="flaticon-google116 left"></i>&nbsp;Google+</a>
-                <a href="http://mindmap.finch4.xyz/auth/twitter" class="btn btn-social btn-social-twitter waves-effect waves-light">
-                    <i class="flaticon-twitter20 left"></i>&nbsp;Twitter</a>
-                <a href="http://mindmap.finch4.xyz/auth/facebook" class="btn btn-social btn-social-facebook waves-effect waves-light">
-                    <i class="flaticon-facebook31 left"></i>&nbsp;Facebook</a>
-            </div>
+                <button class="mdl-js-button mdl-js-ripple-effect button-social button-social-twitter"
+                        onclick="location.href='http://mindmap.finch4.xyz/auth/twitter';">
+                    <i class="flaticon-twitter20"></i>
+                    Twitter
+                </button>
 
+                <button class="mdl-js-button mdl-js-ripple-effect button-social button-social-facebook"
+                        onclick="location.href='http://mindmap.finch4.xyz/auth/facebook';">
+                    <i class="flaticon-facebook31"></i>
+                    Facebook
+                </button>
+            </section>
         </div>
+
     </div>
-    <div class="col s12 m4 l6 fill-height">
-        <div class="card card-auth-illustration">
-            <span class="card-title">TODO: A fix
-                <br>Une carte mentale sans réfléchir</span>
+    <div class="mdl-cell mdl-cell--6-col panel-fill">
+
+        <div class="panel panel-auth-illustration panel-expand-header">
+            <header class="panel__header">
+                <h3>Une carte mentale sans réfléchir.</h3>
+            </header>
         </div>
+
     </div>
 </div>

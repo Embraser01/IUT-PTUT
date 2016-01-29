@@ -2,93 +2,17 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+
     <title><%= (title) ? title + '|' + AppName : AppName %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&lang=fr">-->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&lang=fr">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="/styles/importer.css">
-
-</head>
-<body>
-
-    <nav class="blue">
-        <div class="container nav-wrapper">
-            <a href="/" class="brand-logo"><%= AppName %></a>
-            <a href="#" data-activates="mobile-demo" class="button-collapse">
-                <i class="material-icons">menu</i>
-            </a>
-
-            <% if(req.isAuthenticated()) { %>
-                <ul id="nav-mobile" class="right hide-on-med-and-down">
-                    <li>
-                        <a class="dropdown-button" data-activates="dropdown-user" data-beloworigin="true">
-                            <% if(req.user.img_url) { %>
-                                <img class="avatar left" src="<%- req.user.img_url %>">
-                            <% } else  { %>
-                                <i class="material-icons left">account_circle</i>
-                            <% } %>
-
-                            <%= req.user.display_name %>
-                            <i class="material-icons right">arrow_drop_down</i>
-                        </a>
-                        <ul id='dropdown-user' class='dropdown-content'>
-                            <li><a href='/auth/process/logout'>Se déconnecter</a></li>
-                        </ul>
-                    </li>
-                </ul>
-
-                <ul class="side-nav" id="mobile-demo">
-                    <li><a href='/auth/process/logout'>Se déconnecter</a></li>
-                </ul>
-            <% } else { %>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="/auth/login">Connexion</a></li>
-                <li><a href="/auth/signup">Inscription</a></li>
-            </ul>
-
-            <ul class="side-nav" id="mobile-demo">
-                <li><a href="/auth/login">Connexion</a></li>
-                <li><a href="/auth/signup">Inscription</a></li>
-            </ul>
-            <% } %>
-        </div>
-    </nav>
-
-    <main class="section">
-        <div class="container">
-            <%- body %>
-        </div>
-    </main>
-
-
-    <footer class="page-footer blue">
-        <div class="container">
-
-        </div>
-        <div class="footer-copyright">
-            <div class="container">
-                &copy; 2016 <%= AppName %>
-            </div>
-        </div>
-    </footer>
-
-
-    <script src="/js/dependencies/sails.io.js"></script>
-    <script src="/js/dependencies/lodash.min.js"></script>
-    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-    <script src="/js/materialize.min.js"></script>
-
-    <script>
-        $(".button-collapse").sideNav();
-        $('.dropdown-button').dropdown();
-    </script>
 
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
             i[r] = i[r] || function () {
-                        (
-                                i[r].q = i[r].q || []).push(arguments)
+                        (i[r].q = i[r].q || []).push(arguments)
                     }, i[r].l = 1 * new Date();
             a = s.createElement(o),
                     m = s.getElementsByTagName(o)[0];
@@ -100,5 +24,77 @@
         ga('create', 'UA-71343349-1', 'auto');
         ga('send', 'pageview');
     </script>
+
+
+    <!--STYLES-->
+    <link rel="stylesheet" href="/styles/importer.css">
+    <!--STYLES END-->
+
+    <!--SCRIPTS-->
+    <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/js/dependencies/lodash.min.js"></script>
+    <script src="/js/material.min.js"></script>
+    <!--SCRIPTS END-->
+
+</head>
+<body class="mdl-color-text--grey-700 mdl-color--grey-100">
+
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+
+    <header class="mdl-layout__header">
+        <div class="container">
+            <div class="page-bar">
+
+                <span class="page-bar-title"><a href="/"><%= AppName %></a></span>
+                <div class="mdl-layout-spacer"></div>
+
+                <nav class="page-bar-navigation">
+                    <% if(req.isAuthenticated()) { %>
+                    <a id="menu-user"
+                       class="mdl-navigation__link mdl-navigation__link--icon">
+                        <% if(req.user.img_url) { %>
+                        <img class="avatar" src="<%- req.user.img_url %>">
+                        <% } else  { %>
+                        <i class="material-icons">account_circle</i>
+                        <% } %>
+
+                        <span><%= req.user.display_name %></span>
+                        <i class="material-icons">keyboard_arrow_down</i>
+                    </a>
+
+                    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                        for="menu-user">
+                        <li class="mdl-menu__item"><a class="mdl-navigation__link"
+                                                      href="/auth/process/logout">Logout</a></li>
+
+                    </ul>
+                    <% } else { %>
+                    <a href="/auth/login" class="mdl-navigation__link">Connexion</a>
+                    <a href="/auth/signup" class="mdl-navigation__link">Inscription</a>
+                    <% } %>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="mdl-layout__content">
+        <div class="page-content">
+            <div class="container">
+                <%- body %>
+            </div>
+        </div>
+
+        <footer class="page-footer">
+            <div class="container">
+                <div class="mdl-mega-footer__bottom-section">
+                    <div class="mdl-logo">&copy; 2016 <%= AppName %></div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+</div>
+
+
 </body>
 </html>

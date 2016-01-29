@@ -53,7 +53,6 @@ module.exports.policies = {
         '*': 'isAuthenticated',
 
         'index': ['isAuthenticated', 'isAllowedFirst'],
-        'join': ['isAuthenticated', 'isSocket', 'isAllowed'],
-        'perm': ['isAuthenticated', 'isSocket', 'isAllowed'],
+        'join': ['isAuthenticated', 'isSocket', 'isAllowed']
     }
 };

@@ -9,27 +9,27 @@ module.exports = {
 
         p_read: {
             type: 'boolean',
-            defaultsTo: true
+            defaultTo: true
         },
 
         p_write: {
             type: 'boolean',
-            defaultsTo: false
+            defaultTo: false
         },
 
         p_delete: {
             type: 'boolean',
-            defaultsTo: false
+            defaultTo: false
         },
 
         p_unlock: {
             type: 'boolean',
-            defaultsTo: false
+            defaultTo: false
         },
 
         p_assign: {
             type: 'boolean',
-            defaultsTo: false
+            defaultTo: false
         },
 
 
@@ -41,11 +41,6 @@ module.exports = {
 
         user: {
             model: 'user'
-        },
-
-        owner: {
-            model: 'user',
-            required: true
         },
 
         group: {

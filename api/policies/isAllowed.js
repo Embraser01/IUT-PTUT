@@ -11,13 +11,6 @@ module.exports = function (req, res, next) {
     });
 
     if (mindmap) {
-
-        var user = _.find(mindmap.users, function (user) {
-            return user.id === req.user.id;
-        });
-
-        if(!user) return res.forbidden();
-
         req.mindmap = mindmap;
         return next();
     }

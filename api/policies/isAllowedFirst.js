@@ -23,10 +23,7 @@ module.exports = function (req, res, next) {
             }
 
             if (!mindmap) return res.notFound();
-/*
-            Node.findOne({where: {mindmap: mindmap.id, parent_node: null}}).populate('permission').exec(function (err, node) {
-
-            });*/
+            
 
             var data = {
                 id: mindmap.id,

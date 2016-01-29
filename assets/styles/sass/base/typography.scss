@@ -1,0 +1,19 @@
+h1, h2, h3, h4 {
+  @extend .mdl-typography--text-center;
+}
+
+h1 {
+  @extend .mdl-typography--display-3;
+}
+
+h2 {
+  @extend .mdl-typography--display-2;
+}
+
+h3 {
+  @extend .mdl-typography--display-1;
+}
+
+h4 {
+  @extend .mdl-typography--headline;
+}
