@@ -44,10 +44,13 @@ module.exports.policies = {
         '*': ['isAuthenticated','isAllowed', 'isSocket']
     },
 
+    ExplorerController: {
+        '*': ['isAuthenticated']
+    },
+
     NodeController: {
         '*': ['isAuthenticated','isAllowed', 'isSocket']
     },
-
 
     MindMapController: {
         '*': 'isAuthenticated',
