@@ -25,6 +25,10 @@ module.exports.http = {
 
         passportInit: require('passport').initialize(),
         passportSession: require('passport').session(),
+        flash: function(req, res, next) {
+            res.locals.messages = require('express-messages')(req, res);
+            next();
+        },
 
 
         /***************************************************************************
@@ -40,6 +44,7 @@ module.exports.http = {
             'session',
             'passportInit',            // <==== passport HTTP middleware should run after "session"
             'passportSession',         // <==== (see https://github.com/jaredhanson/passport#middleware)
+            'flash',
             'bodyParser',
             'compress',               // <==== we can put this stuff wherever we want
             'methodOverride',
