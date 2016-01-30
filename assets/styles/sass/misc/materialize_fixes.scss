@@ -5,3 +5,20 @@
 .divider {
   margin: 1em 0;
 }
+
+label[data-error]:after {
+  white-space: nowrap;
+}
+
+label {
+  width: 100%;
+}
+
+form.validate .row {
+  margin-bottom: 20px;
+
+  &:nth-last-child(2),
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
