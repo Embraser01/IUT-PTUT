@@ -5,19 +5,20 @@ module.exports = {
     //===== VIEWS =====//
 
     signup: function (req, res) {
+        var errors = req.session.signup_errors || null;
+        var inputs = req.session.signup_inputs || {};
 
-        if (req.session.signup_error) {
-            var error = req.session.signup_error;
+        req.session.signup_errors = null;
+        req.session.signup_inputs = null;
 
-            req.session.signup_error = null;
-            // TODO Erreurs
-            return res.view('auth/signup', DataViewService.create('Inscription', {}));
-        }
-
-        return res.view('auth/signup', DataViewService.create('Inscription'));
+        return res.view('auth/signup', DataViewService.create('Inscription', {
+            errors: errors,
+            inputs: inputs
+        }));
     },
 
     login: function (req, res) {
+
         if (req.session['login_error']) {
             var error = req.session.login_error;
 
@@ -33,15 +34,18 @@ module.exports = {
 
     processSignup: function (req, res) {
 
-        User.signup({
-            display_name: req.param('firstname') + ' ' + req.param('name'),
+        var inputs = {
+            firstname: req.param('firstname'),
+            lastname: req.param('lastname'),
             mail: req.param('mail'),
             password: req.param('password'),
-            passwordConfirmation: req.param('passwordConfirmation')
-        }, function (err, user) {
+            password_confirmation: req.param('password_confirmation')
+        };
+
+        User.signup(inputs, function (err, user) {
             if (err) {
-                req.session.signup_error = {message: err.message};
-                console.log(err);
+                req.session.signup_errors = err;
+                req.session.signup_inputs = inputs;
                 return res.redirect('/auth/signup');
             }
 
