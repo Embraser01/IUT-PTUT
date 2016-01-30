@@ -1,14 +1,11 @@
 var crypto = require('crypto');
-
-var pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+var Validator = require('validatorjs');
 
 module.exports = {
 
     tableName: 'User',
 
     attributes: {
-
-
         //===== ATTRIBUTES =====//
 
         display_name: {
@@ -74,15 +71,25 @@ module.exports = {
 
 
     signup: function (inputs, cb) {
-        // Create a user
-        if (inputs.password !== inputs.passwordConfirmation) return cb(new Error("Password and Password confirmation are different !"));
-        if (!pwdRegex.test(inputs.password)) return cb(new Error("Password is not secure !"));
+
+        var validator = new Validator(inputs, {
+            firstname: 'required|min:3',
+            lastname: 'required|min:3',
+            mail: 'required|email',
+            password: 'required|min:6',
+            password_confirmation: 'required|same:password'
+        });
+
+        if(validator.fails()) {
+            return cb(validator.errors.errors);
+        }
 
         // TODO Add image profile link
         User.create({
-                display_name: inputs.display_name,
-                mail: inputs.mail,
-                password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(inputs.password).digest('hex')).digest('hex')
+                display_name: inputs.firstname.trim() + ' ' + inputs.lastname.trim(),
+                mail: inputs.mail.trim(),
+                password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256')
+                        .update(inputs.password).digest('hex')).digest('hex')
         })
         .exec(cb);
 
