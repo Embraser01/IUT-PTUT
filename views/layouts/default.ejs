@@ -18,12 +18,13 @@
                 <i class="material-icons">menu</i>
             </a>
 
-            <%- include ../user_navigation %>
+            <%- include ../partials/user_navigation.ejs %>
         </div>
     </nav>
 
     <main class="section">
         <div class="container">
+            <%- include ../partials/flash.ejs %>
             <%- body %>
         </div>
     </main>

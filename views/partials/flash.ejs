@@ -1,0 +1,11 @@
+<% flash = req.flash(); %>
+<% Object.keys(flash).forEach(function(type) { %>
+
+<div class="alert alert-<%- type %>">
+    <ul>
+        <% flash[type].forEach(function(message) { %>
+        <li><%= message %></li>
+        <% }); %>
+    </ul>
+</div>
+<% }); %>
