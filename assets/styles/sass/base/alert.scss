@@ -1,0 +1,25 @@
+.alert {
+  @extend .card-panel;
+
+  padding: 8px;
+
+  ul {
+    margin: 0 0 0 16px;
+  }
+
+  li {
+    list-style-type: initial;
+  }
+}
+
+.alert-error {
+  @extend .red.lighten-4, .red-text.text-darken-2;
+}
+
+.alert-warning {
+  @extend .yellow.lighten-4, .orange-text.text-darken-3;
+}
+
+.alert-success {
+  @extend .green.lighten-4, .green-text.text-darken-2;
+}
