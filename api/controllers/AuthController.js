@@ -44,15 +44,22 @@ module.exports = {
 
         User.signup(inputs, function (err, user) {
             if (err) {
+                req.flash('error', "Merci d'apporter les modifications nécessaires afin de valider votre inscription");
                 req.session.signup_errors = err;
                 req.session.signup_inputs = inputs;
                 return res.redirect('/auth/signup');
             }
 
             req.logIn(user, function (err) {
-                if (err) return res.serverError();
+                if (err) {
+                    req.flash('error', "Il y a eu un soucis interne durant votre inscription");
+                    return res.serverError();
+                }
 
-                if (req.wantsJSON) return res.ok('Signup successful !');
+                if (req.wantsJSON)
+                    return res.ok('Signup successful !');
+
+                req.flash('success', "Votre inscription s'est correctement terminée");
                 return res.redirect('/');
             });
         });
