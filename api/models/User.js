@@ -80,7 +80,7 @@ module.exports = {
             password_confirmation: 'required|same:password'
         });
 
-        if(validator.fails()) {
+        if (validator.fails()) {
             return cb(validator.errors.errors);
         }
 
@@ -90,8 +90,21 @@ module.exports = {
                 mail: inputs.mail.trim(),
                 password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256')
                         .update(inputs.password).digest('hex')).digest('hex')
-        })
-        .exec(cb);
+            })
+            .exec(cb);
+    },
 
+    login: function (inputs, cb) {
+
+        var validator = new Validator(inputs, {
+            mail: 'required|email',
+            password: 'required|min:6'
+        });
+
+        if (validator.fails()) {
+            return cb(validator.errors.errors);
+        }
+
+        return cb(null);
     }
 }

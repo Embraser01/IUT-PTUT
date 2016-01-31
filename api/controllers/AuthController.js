@@ -18,15 +18,16 @@ module.exports = {
     },
 
     login: function (req, res) {
+        var errors = req.session.login_errors || null;
+        var inputs = req.session.login_inputs || {};
 
-        if (req.session['login_error']) {
-            var error = req.session.login_error;
+        req.session.login_errors = null;
+        req.session.login_inputs = null;
 
-            req.session.login_error = null;
-            return res.view('auth/login', DataViewService.create('Connexion', {}));
-        }
-
-        return res.view('auth/login', DataViewService.create('Connexion'));
+        return res.view('auth/login', DataViewService.create('Connexion', {
+            errors: errors,
+            inputs: inputs
+        }));
     },
 
 
@@ -43,10 +44,11 @@ module.exports = {
         };
 
         User.signup(inputs, function (err, user) {
+            req.session.signup_inputs = inputs;
+
             if (err) {
                 req.flash('error', "Merci d'apporter les modifications nécessaires afin de valider votre inscription");
                 req.session.signup_errors = err;
-                req.session.signup_inputs = inputs;
                 return res.redirect('/auth/signup');
             }
 
@@ -56,10 +58,13 @@ module.exports = {
                     return res.serverError();
                 }
 
-                if (req.wantsJSON)
-                    return res.ok('Signup successful !');
+                req.session.signup_inputs = null;
 
-                req.flash('success', "Votre inscription s'est correctement terminée");
+                if (req.wantsJSON) {
+                    return res.ok('Signup successful !');
+                }
+
+                req.flash('success', "Votre inscription s'est correctement effectuée");
                 return res.redirect('/');
             });
         });
@@ -67,23 +72,45 @@ module.exports = {
 
     processLogin: function (req, res) {
 
-        passport.authenticate('local', function (err, user, info) {
+        var inputs = {
+            mail: req.param('mail'),
+            password: req.param('password')
+        };
+
+        req.session.login_inputs = inputs;
+
+        User.login(inputs, function (err) {
             if (err) {
-                req.session.login_error = {message: err.message};
+                req.flash('error', "Merci d'apporter les modifications nécessaires afin de valider votre connexion");
+                req.session.login_errors = err;
                 return res.redirect('/auth/login');
             }
-            if (!user) { // Not found in database
-                req.session.login_error = {message: 'User not found'};
-                return res.redirect('/auth/login');
-            }
-            req.logIn(user, function (err) {
-                if (err) res.send(err);
 
-                // TODO rememeber me : req.session.cookie.maxAge = 1000 * 60 * 3;
+            passport.authenticate('local', function (err, user, info) {
+                if (err) {
+                    req.flash('error', err.message);
+                    return res.redirect('/auth/login');
+                }
 
-                return res.redirect('/');
-            })
-        })(req, res);
+                if (!user) { // Not found in database
+                    req.flash('error', "Il n'existe pas d'utilisateur ayant ces identifiants");
+                    return res.redirect('/auth/login');
+                }
+
+                req.logIn(user, function (err) {
+                    if (err) {
+                        req.flash('error', err.message);
+                        return res.redirect('/auth/login');
+                    }
+
+                    // TODO rememeber me : req.session.cookie.maxAge = 1000 * 60 * 3;
+
+                    req.flash('success', "Votre connexion s'est correctement effectuée");
+                    req.session.login_inputs = null;
+                    return res.redirect('/');
+                });
+            })(req, res);
+        });
     },
 
 
@@ -93,7 +120,9 @@ module.exports = {
         passport.authenticate('facebook', {
             failureRedirect: '/auth/login'
         }, function (err, user) {
-            if (err) return console.log(err);
+            if (err) {
+                return console.log(err);
+            }
             req.logIn(user, function (err) {
                 if (err) {
                     console.log(err);
@@ -113,7 +142,9 @@ module.exports = {
             failureRedirect: '/auth/login',
             scope: ['https://www.googleapis.com/auth/plus.login']
         }, function (err, user) {
-            if (err) return console.log(err);
+            if (err) {
+                return console.log(err);
+            }
 
             req.logIn(user, function (err) {
                 if (err) {
@@ -130,8 +161,10 @@ module.exports = {
     // https://apps.twitter.com/
     // https://apps.twitter.com/app/new
     twitter: function (req, res) {
-        passport.authenticate('twitter', {failureRedirect: '/auth/login'}, function (err, user) {
-            if(err) return console.log(err);
+        passport.authenticate('twitter', { failureRedirect: '/auth/login' }, function (err, user) {
+            if (err) {
+                return console.log(err);
+            }
             req.logIn(user, function (err) {
                 if (err) {
                     console.log(err);
