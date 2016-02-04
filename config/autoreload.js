@@ -2,7 +2,7 @@
  * Created by kocal on 28/01/16.
  */
 module.exports.autoreload = {
-    active: true,
+    active: false,
     usePolling: false,
     dirs: [
         "api/models",

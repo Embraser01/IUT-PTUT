@@ -3,11 +3,7 @@
     <li><a href="/explorer">Mes cartes</a></li>
     <li>
         <a class="dropdown-button" data-activates="dropdown-user" data-beloworigin="true">
-            <% if(req.user.img_url) { %>
-            <img class="avatar left" src="<%- req.user.img_url %>">
-            <% } else  { %>
-            <i class="material-icons left">account_circle</i>
-            <% } %>
+            <img class="avatar left" src="<%- req.user.img_url || ('/images/default/' + (req.user.display_name.charAt(0).toLowerCase()) + '.png') %>">
 
             <%= req.user.display_name %>
             <i class="material-icons right">arrow_drop_down</i>

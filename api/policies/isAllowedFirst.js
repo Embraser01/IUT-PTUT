@@ -11,6 +11,19 @@ module.exports = function (req, res, next) {
     });
 
     if (mindmap) {
+
+        var user = _.find(mindmap.users, function (user) {
+            return user.id === req.user.id;
+        });
+
+        if(!user) {
+            mindmap.users.push({
+                id: req.user.id,
+                display_name: req.user.display_name,
+                img_url: req.user.img_url,
+                sockets: []
+            });
+        }
         req.mindmap = mindmap;
 
         return next();
@@ -22,13 +35,21 @@ module.exports = function (req, res, next) {
                 return res.serverError();
             }
 
-            if (!mindmap) return res.notFound();
-            
+            if (!mindmap) return res.forbidden();
+            /*
+             Node.findOne({where: {mindmap: mindmap.id, parent_node: null}}).populate('permission').exec(function (err, node) {
+
+             });*/
 
             var data = {
                 id: mindmap.id,
                 name: mindmap.name,
-                users: []
+                users: [{
+                    id: req.user.id,
+                    display_name: req.user.display_name,
+                    img_url: req.user.img_url,
+                    sockets: []
+                }]
             };
 
             sails.mindmaps.push(data);
