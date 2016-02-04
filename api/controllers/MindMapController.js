@@ -55,18 +55,18 @@ module.exports = {
 
         MindMap.subscribe(req.socket, mindmap.id);
 
-        if(req.mindmapSocket.length === 0){
-            // Means that the user is not connected
+        if (req.mindmapSocket.length === 0) {
+            // Means that the user is not yet connected to the mindmap
 
             MindMapMsgService.send('User_connect', req, {
                 id: req.user.id,
                 display_name: req.user.display_name,
                 img_url: req.user.img_url
             });
-        } else {
-            // We just add the socket in the list but don't send msg to mindmap' subscribers
-            req.mindmapSocket.push(sails.sockets.id(req.socket));
         }
+        // We just add the socket in the list
+        req.mindmapSocket.push(sails.sockets.id(req.socket));
+
 
         var users = [];
         _.forEach(mindmap.users, function (u) {
@@ -125,7 +125,7 @@ module.exports = {
             });
 
             Permission.create(data).exec(function (err, perms) {
-                if(err) {
+                if (err) {
                     console.log(err);
                     return res.serverError();
                 }
