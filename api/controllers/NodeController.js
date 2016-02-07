@@ -229,5 +229,9 @@ module.exports = {
             console.log(nodes);
             res.jsonx(nodes);
         });
+    },
+
+    perm: function (req, res) {
+
     }
 }
