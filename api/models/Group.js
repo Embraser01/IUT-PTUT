@@ -22,6 +22,10 @@ module.exports = {
 
         //===== FOREIGN KEYS =====//
 
+        owner: {
+          model: 'user'
+        },
+
         permissions: {
             collection: 'permission',
             via: 'group'
