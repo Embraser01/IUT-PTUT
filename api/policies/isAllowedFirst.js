@@ -4,7 +4,12 @@ module.exports = function (req, res, next) {
 
     var mindmapId = parseInt(req.param('id'));
 
-    if(!mindmapId) return res.badRequest();
+    if (!mindmapId) return res.badRequest();
+
+    PermissionService.isAllowed(req, mindmapId, function (perm) {
+        console.log(perm);
+    });
+
 
     var mindmap = _.find(sails.mindmaps, function (mm) {
         return mm.id === mindmapId;
@@ -16,7 +21,7 @@ module.exports = function (req, res, next) {
             return user.id === req.user.id;
         });
 
-        if(!user) {
+        if (!user) {
             mindmap.users.push({
                 id: req.user.id,
                 display_name: req.user.display_name,

@@ -112,19 +112,19 @@ module.exports = {
 
             var data = [];
 
-            _.forEach(perm.users, function (uId) {
+            _.forEach(perms.users, function (uId) {
                 data.push(_.assign(fPerm, {
                     user: uId
                 }));
             });
 
-            _.forEach(perm.groups, function (gId) {
+            _.forEach(perms.groups, function (gId) {
                 data.push(_.assign(fPerm, {
                     group: gId
                 }));
             });
 
-            Permission.create(data).exec(function (err, perms) {
+            Permission.findOrCreate(data).exec(function (err, perms) {
                 if (err) {
                     console.log(err);
                     return res.serverError();
