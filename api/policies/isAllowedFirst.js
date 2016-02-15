@@ -6,7 +6,7 @@ module.exports = function (req, res, next) {
 
     if (!mindmapId) return res.badRequest();
 
-    PermissionService.isAllowed(req, mindmapId, function (perm) {
+    PermissionService.get(req, mindmapId, function (perm) {
         console.log(perm);
     });
 
