@@ -69,7 +69,7 @@ function nodeIsAllowed(req, nodes, cb) {
     });
 }
 
-function nodeIsAllowed2(req, node, mindmap_id, cb) {
+function nodeIsAllowed2(req, mindmap_id, node , cb) {
 
     Node.findOne(node).exec(function (err, _node) {
 
@@ -108,12 +108,19 @@ function nodeIsAllowed2(req, node, mindmap_id, cb) {
 
 module.exports = {
 
-    get: function (req, data, cb) {
+    get_old: function (req, data, cb) {
         if (typeof data === 'number') return mindMapIsAllowed(req, data, cb);
 
         if (typeof data === 'object') return nodeIsAllowed(req, data, cb);
 
         throw new Error("Second argument is not valid");
 
+    },
+
+    get: function (req, mindmap_id, data, cb) {
+
+        if(!cb) return mindMapIsAllowed(req, mindmap_id, data);
+
+        return nodeIsAllowed2(req, mindmap_id, data, cb);
     }
 }

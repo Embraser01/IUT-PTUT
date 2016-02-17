@@ -6,10 +6,15 @@ module.exports = function (req, res, next) {
 
     if (!mindmapId) return res.badRequest();
 
+
     PermissionService.get(req, mindmapId, function (perm) {
         console.log(perm);
     });
 
+    var time_start = Date.now();
+    PermissionService.get(req, mindmapId, 83, function (perm) {
+            console.log("Perm node n 3 en " + (Date.now() - time_start) + "ms : ", perm);
+        });
 
     var mindmap = _.find(sails.mindmaps, function (mm) {
         return mm.id === mindmapId;
