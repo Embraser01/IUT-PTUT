@@ -56,33 +56,32 @@
     <form id="editBoxForm">
 
 
-        <input id="editBox_label" type="text" placeholder="Message" class="simpleTextfield"/>
-
-
         <table style="width:100%;">
+            <tr>
+                <td><b>Label</b></td>
+                <td>
+					<input name="editBox_label" type="text" placeholder="Label" class="simpleTextfield"/>					
+				</td>
+			</tr>
             <tr>
                 <td><b>Format</b></td>
                 <td>
 
-                    <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_bold">
-                        <input type="checkbox" id="editBox_bold" class="mdl-icon-toggle__input" name="font_bold"
-                               value="enable">
-                        <i class="mdl-icon-toggle__label material-icons">format_bold</i>
+                    <label>
+                        <input type="checkbox" name="editBox_bold" value="enable">
+                        <i class="material-icons">format_bold</i>
                     </label>
-                    <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_italic">
-                        <input type="checkbox" id="editBox_italic" class="mdl-icon-toggle__input" name="font_italic"
-                               value="enable">
-                        <i class="mdl-icon-toggle__label material-icons">format_italic</i>
+                    <label>
+                        <input type="checkbox" name="editBox_italic" value="enable">
+                        <i class="material-icons">format_italic</i>
                     </label>
-                    <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_underline">
-                        <input type="checkbox" id="editBox_underline" class="mdl-icon-toggle__input"
-                               name="font_underline" value="enable">
-                        <i class="mdl-icon-toggle__label material-icons">format_underlined</i>
+                    <label>
+                        <input type="checkbox" name="editBox_underline" value="enable">
+                        <i class="material-icons">format_underlined</i>
                     </label>
-                    <label class="mdl-icon-toggle mdl-js-icon-toggle mdl-js-ripple-effect" for="editBox_strike">
-                        <input type="checkbox" id="editBox_strike" class="mdl-icon-toggle__input" name="font_underline"
-                               value="enable">
-                        <i class="mdl-icon-toggle__label material-icons">format_strikethrough</i>
+                    <label>
+                        <input type="checkbox" name="editBox_strike" value="enable">
+                        <i class="material-icons">format_strikethrough</i>
                     </label>
 
                 </td>
@@ -93,20 +92,16 @@
                 <td><b>Police</b></td>
 
                 <td>
+				
+				
+					<select class="browser-default" name="editBox_family">
+						<option style="display:none;"></option>
+						<option name="Open Sans" style="font-family:Open Sans;">Open Sans</option>
+						<option name="Roboto" style="font-family:Roboto;">Roboto</option>
+						<option name="Verdana" style="font-family:Verdana;">Verdana</option>
 
-                    <input name="editBox_family" type="button" value="Verdana" id="editBox_family"
-                           class="mdl-button mdl-js-button">
-
-                    <ul id="font_family_list" class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
-                        for="editBox_family">
-                        <li name="Open Sans" style="font-family:Open Sans;" class="mdl-menu__item">Open Sans</li>
-                        <li name="Roboto" style="font-family:Roboto;" class="mdl-menu__item">Roboto</li>
-                        <li name="Verdana" style="font-family:Verdana;" class="mdl-menu__item">Verdana</li>
-                        <li name="comic sans ms" style="font-family:comic sans ms;" class="mdl-menu__item">Comic
-                            Sans Ms
-                        </li>
-                    </ul>
-
+						<option style="font-family: sans-serif;" onclick="var p = this.parentNode.children.item(0);var f = prompt('Entrer le nom d\'une police');p.innerHTML = f;p.style.fontFamily = f;p.setAttribute('name',f);p.style.display='';p.selected=true;p.parentNode.onchange();" >Autre</option>
+					</select>				
 
                 </td>
 
@@ -116,32 +111,21 @@
                 <td><b>Couleur</b></td>
 
                 <td>
+				
+					<input onchange="var c = document.getElementById('editBox_color');var f= c.selectedOptions[0].getAttribute('name');if(f == null)return; c.value = this.value; var p = c.children.item(0);p.innerHTML = '&#x1F532; ' + this.value;p.style.color = this.value;p.setAttribute('name',this.value);p.style.display='';p.selected=true;c.onchange();"
+						id="colorpicker" style="display:none;" type="color" />
+								   
+					<select id="editBox_color" class="browser-default" name="editBox_color">
+						<option style="display:none;"></option>
+						<option name="#607d8b" style="color:#607d8b;">&#x1F532; Gris</option>
+						<option name="#f44336" style="color:#f44336;">&#x1F532; Rouge</option>
+						<option name="#8bc34a" style="color:#8bc34a;">&#x1F532; Vert</option>
+						<option name="#2196f3" style="color:#2196f3;">&#x1F532; Bleu</option>
 
-                    <input name="editBox_color" type="button" value="#000000" id="editBox_color"
-                           class="mdl-button mdl-js-button">
+						<option style="color:black;" onclick="document.getElementById('colorpicker').click();"> Autre</option>
 
-                    <ul id="font_color_list" class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
-                        for="editBox_color">
+					</select>	
 
-                        <li name="#000000" style="font-weight:bold;color:#000000" class="mdl-menu__item"><i
-                                    style=";vertical-align: middle;" class="material-icons">palette</i>Noir
-                        </li>
-                        <li name="#f44336" style="font-weight:bold;color:#f44336;" class="mdl-menu__item"><i
-                                    style="vertical-align: middle;" class="material-icons">palette</i>Rouge
-                        </li>
-                        <li name="#8bc34a" style="font-weight:bold;color:#8bc34a;" class="mdl-menu__item"><i
-                                    style="vertical-align: middle;" class="material-icons">palette</i>Vert
-                        </li>
-                        <li name="#2196f3" style="font-weight:bold;color:#2196f3;" class="mdl-menu__item"><i
-                                    style="vertical-align: middle;" class="material-icons">palette</i>Bleu
-                        </li>
-                        <li name="other" style="font-weight:bold;color:#000;" class="mdl-menu__item">
-                            <input onchange="document.getElementById('editBox_color').value = this.value;document.getElementById('editBox_color').onchange();"
-                                   id="colorpicker" style="display:none;" type="color"/>
-                            Autre
-                        </li>
-
-                    </ul>
 
                 </td>
 

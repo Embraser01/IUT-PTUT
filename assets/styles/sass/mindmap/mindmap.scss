@@ -87,6 +87,13 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
   text-transform: uppercase;
 }
 
+#editBox td {
+    padding: 5px;
+}
+
+.is-checked {
+color:#2196f3;
+}
 #editBoxForm {
   margin: 0 10px;
 }
@@ -177,12 +184,13 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
   height: 32px;
   font-weight: bold;
   color: #fff;
-  background-color: rgb(63, 81, 181);
+  background-color: #2196f3;
 }
 
 .closer {
   position: absolute;
   right: 5px;
+  color:white;
 }
 
 #chatBoxScroller {
@@ -196,16 +204,23 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
 }
 
 #chatBoxMessages {
-  margin: 0 2px;
   width: 100%;
 }
 
-#chatBoxMessages td {
-  border-top: 1px solid #ddd;
+#chatBoxMessages tr {
+  border-bottom: 1px solid #ddd;
+}
+
+#chatBoxMessages tr:last-child {
+  border-bottom: none;
 }
 
 #chatBoxMessages td:nth-child(2) {
   width: 250px;
+}
+
+#chatBoxMessages td {
+	padding: 0 5px;
 }
 
 .picture {
@@ -241,7 +256,7 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
 }
 
 #chatBoxInput {
-  height: 28px;
+  height: 35px;
   padding-top: 5px;
   margin: 0 5px 5px;
   position: absolute;
@@ -263,20 +278,23 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
 #chatBoxInputSend {
   display: inline-block;
   vertical-align: top;
-  color: rgb(63, 81, 181);
+  color: #2196f3 ;
   cursor: pointer;
 }
 
 .simpleTextfield {
-  border: 0;
-  height: 24px;
-  width: 100%;
-  border-bottom: 2px solid #ddd;
-  transition: border 0.3s;
+  border: 0 !important;
+  height: 24px !important;
+  width: 100% !important;
+  border-bottom: 2px solid #ddd !important;
+  transition: border 0.3s !important;
+  margin: 5px 0 !important;
 }
 
 .simpleTextfield:focus {
-  border-bottom: 2px solid rgb(63, 81, 181);
+  border-bottom: 1px solid #2196f3 !important;
+  outline:0 !important;
+  box-shaddow: 0  !important;
 }
 
 #chatBoxStatut:checked + #chatBox + #workers > #chatBoxOpenerContainer > #chatBoxOpener {
@@ -286,7 +304,7 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
 
 #chatBoxOpener {
 
-  background-color: rgb(63, 81, 181);
+  background-color: #2196f3;
   color: #fff;
   text-align: center;
   font-size: 24px;

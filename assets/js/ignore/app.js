@@ -1673,7 +1673,6 @@ MindmapFrame = function (c) {
                 this.styleLoad();
                 this.updateView();
 
-
             }
             else {
 
@@ -1697,46 +1696,31 @@ MindmapFrame = function (c) {
             }
         };
 
-        var fonts = document.getElementById("font_family_list").children;
-
-        for (var i in fonts) {
-            fonts[i].onclick = function () {
-                editBoxManager.editBox.elements["editBox_family"].value = this.getAttribute("name");
-                editBoxManager.editBox.elements["editBox_family"].onchange();
-            }
-        }
 
         this.editBox.elements["editBox_family"].onchange = function () {
             if (editBoxManager.styleLoad()) {
+
+				this.style.fontFamily = this.value;
                 editBoxManager.style.font.family = this.value;
                 editBoxManager.sync();
             }
         };
-
-        var colors = document.getElementById("font_color_list").children;
-
-        for (var i in colors) {
-            colors[i].onclick = function () {
-                if (this.getAttribute("name") != "other") {
-
-                    editBoxManager.editBox.elements["editBox_color"].value = this.getAttribute("name");
-                    editBoxManager.editBox.elements["editBox_color"].onchange();
-
-                }
-                else {
-
-                    document.getElementById('colorpicker').click();
-
-                }
-            }
-        }
-
+		
         this.editBox.elements["editBox_color"].onchange = function () {
             if (editBoxManager.styleLoad()) {
-                editBoxManager.style.font.color = this.value;
+				
+				if(this.selectedOptions[0].getAttribute('name') != null) {
+				
+				this.style.color = this.selectedOptions[0].getAttribute('name');
+                editBoxManager.style.font.color = this.selectedOptions[0].getAttribute('name');
+				document.getElementById('colorpicker').value = this.style.color;
+				
+				}
+				
                 editBoxManager.sync();
             }
         };
+
 
         this.editBox.elements["editBox_delete"].onclick = function () {
             if (mindmap.getSelectedNode() != null)
@@ -1773,37 +1757,63 @@ MindmapFrame = function (c) {
             }
         };
 
-        this.__labelUpdate = function (input, value) {
-            input.value = value;
-            if (value.length > 0) {
-                input.parentNode.classList.add("is-focused");
-            }
-            else {
-                input.parentNode.classList.remove("is-focused");
-            }
-        };
+
 
         this.__checkBoxUpdate = function (checkbox, checked) {
 
             if (checked) {
-                checkbox.parentNode.classList.add("is-checked");
+				checkbox.nextElementSibling.classList.add("is-checked")
                 checkbox.checked = true;
             }
             else {
-                checkbox.parentNode.classList.remove("is-checked");
+                checkbox.nextElementSibling.classList.remove("is-checked");
                 checkbox.checked = false;
             }
         };
 
         this.updateView = function () {
+			
 
-            this.__labelUpdate(editBoxManager.editBox.elements["editBox_label"], this.label);
+			editBoxManager.editBox.elements["editBox_label"].value = this.label;
+			
+			editBoxManager.editBox.elements["editBox_family"].value = this.style.font.family;
+			
+			if(editBoxManager.editBox.elements["editBox_family"].selectedOptions[0].getAttribute('name') != this.style.font.family) {
+				
+				var p = editBoxManager.editBox.elements["editBox_family"].children.item(0);
+				p.style.display = '';
+				p.innerHTML = this.style.font.family;
+				p.style.fontFamily = this.style.font.family;
+				p.setAttribute('name', this.style.font.family);
+				p.selected = true;
+				
+			}
+			
+			
+			editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
 
-            this.__labelUpdate(editBoxManager.editBox.elements["editBox_family"], this.style.font.family);
-            editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
+			editBoxManager.editBox.elements["editBox_color"].value = "&#x1F532; " + this.style.font.color;
+			
+			if(this.style.font.color in editBoxManager.editBox.elements["editBox_color"].children) {
+				editBoxManager.editBox.elements["editBox_color"].children[this.style.font.color].selected = true;
+			}
+			else if(this.style.font.color != null) {
+				
+				var p = editBoxManager.editBox.elements["editBox_color"].children.item(0);
+				p.style.display = '';
+				p.innerHTML = "&#x1F532; " + this.style.font.color;
+				p.style.color = this.style.font.color;
+				p.setAttribute('name', this.style.font.color);
+				
+				
+				p.selected = true;
+				
 
-            this.__labelUpdate(editBoxManager.editBox.elements["editBox_color"], this.style.font.color);
-            editBoxManager.editBox.elements["editBox_color"].style.color = this.style.font.color;
+			}
+
+			editBoxManager.editBox.elements["editBox_color"].style.color = this.style.font.color;
+
+			document.getElementById('colorpicker').value = this.style.font.color;
 
             this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_bold"], editBoxManager.style.font.weight == "bold");
             this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_italic"], editBoxManager.style.font.style == "italic");
