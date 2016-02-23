@@ -1699,10 +1699,14 @@ MindmapFrame = function (c) {
 
         this.editBox.elements["editBox_family"].onchange = function () {
             if (editBoxManager.styleLoad()) {
+				
+				if(this.selectedOptions[0].getAttribute('name') != null) {
 
-				this.style.fontFamily = this.value;
-                editBoxManager.style.font.family = this.value;
-                editBoxManager.sync();
+					this.style.fontFamily = this.value;
+					editBoxManager.style.font.family = this.value;
+					editBoxManager.sync();
+				
+				}
             }
         };
 		
@@ -1711,9 +1715,9 @@ MindmapFrame = function (c) {
 				
 				if(this.selectedOptions[0].getAttribute('name') != null) {
 				
-				this.style.color = this.selectedOptions[0].getAttribute('name');
-                editBoxManager.style.font.color = this.selectedOptions[0].getAttribute('name');
-				document.getElementById('colorpicker').value = this.style.color;
+					this.style.color = this.selectedOptions[0].getAttribute('name');
+					editBoxManager.style.font.color = this.selectedOptions[0].getAttribute('name');
+					document.getElementById('colorpicker').value = this.style.color;
 				
 				}
 				
@@ -2197,8 +2201,7 @@ MindmapFrame = function (c) {
                                     break;
 
                                 var zoom_coef = 1.5;
-								
-								console.log(mindmap.view.zoom, zoom);
+
 
                                 if (zoom) {
 									if(mindmap.view.zoom < 5.0625) {
@@ -2220,10 +2223,6 @@ MindmapFrame = function (c) {
 									}
                                 }
 								
-								console.log(mindmap.view.zoom, zoom);
-								
-								console.log("---");
-
                                 mindmap.setView();
 
                             }
