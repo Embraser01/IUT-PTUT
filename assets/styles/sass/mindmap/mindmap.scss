@@ -24,6 +24,15 @@ html#page-mindmap {
 /**
  * La mindmap !!!
  */
+ 
+.top-attached {
+	position:fixed;
+	top:0;
+}
+
+nav {
+	z-index: 10;
+}
 
 svg {
   -webkit-touch-callout: none;
