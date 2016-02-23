@@ -2196,22 +2196,33 @@ MindmapFrame = function (c) {
                                 else
                                     break;
 
-                                var zoom_coef = 2;
+                                var zoom_coef = 1.5;
+								
+								console.log(mindmap.view.zoom, zoom);
 
                                 if (zoom) {
-                                    mindmap.view.zoom *= zoom_coef;
-                                    mindmap.view.offset.x -= (zoom_coef * e.clientX - e.clientX) / mindmap.view.zoom;
-                                    mindmap.view.offset.y -= (zoom_coef * e.clientY - e.clientY) / mindmap.view.zoom;
-
+									if(mindmap.view.zoom < 5.0625) {
+										
+										mindmap.view.zoom *= zoom_coef;
+										mindmap.view.offset.x -= (zoom_coef * e.clientX - e.clientX) / mindmap.view.zoom;
+										mindmap.view.offset.y -= (zoom_coef * e.clientY - e.clientY) / mindmap.view.zoom;
+										
+									}
                                 }
                                 else {
-                                    mindmap.view.zoom /= zoom_coef;
-
-                                    mindmap.view.offset.x += (e.clientX - e.clientX / zoom_coef ) / mindmap.view.zoom;
-                                    mindmap.view.offset.y += (e.clientY - e.clientY / zoom_coef ) / mindmap.view.zoom;
-
-
+									
+									if(mindmap.view.zoom > 0.43){
+									
+										mindmap.view.zoom /= zoom_coef;
+										mindmap.view.offset.x += (e.clientX - e.clientX / zoom_coef ) / mindmap.view.zoom;
+										mindmap.view.offset.y += (e.clientY - e.clientY / zoom_coef ) / mindmap.view.zoom;
+										
+									}
                                 }
+								
+								console.log(mindmap.view.zoom, zoom);
+								
+								console.log("---");
 
                                 mindmap.setView();
 
