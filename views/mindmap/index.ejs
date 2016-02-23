@@ -1,8 +1,109 @@
 <svg xmlns="http://www.w3.org/2000/svg" id="container"
      style="background-color: #eceff1;"></svg>
+	 
+<div id="workside">
 
-<div id="workerArea">
 
+
+	<div id="editBox">
+
+		<div class="boxTitle">
+			Édition d'un noeud
+		</div>
+
+		<form id="editBoxForm">
+
+
+			<table style="width:100%;">
+				<tr>
+					<td><b>Label</b></td>
+					<td>
+						<input name="editBox_label" type="text" placeholder="Label" class="simpleTextfield" />					
+					</td>
+				</tr>
+				<tr>
+					<td><b>Format</b></td>
+					<td>
+
+						<label>
+							<input type="checkbox" name="editBox_bold" value="enable">
+							<i class="material-icons">format_bold</i>
+						</label>
+						<label>
+							<input type="checkbox" name="editBox_italic" value="enable">
+							<i class="material-icons">format_italic</i>
+						</label>
+						<label>
+							<input type="checkbox" name="editBox_underline" value="enable">
+							<i class="material-icons">format_underlined</i>
+						</label>
+						<label>
+							<input type="checkbox" name="editBox_strike" value="enable">
+							<i class="material-icons">format_strikethrough</i>
+						</label>
+
+					</td>
+				</tr>
+
+				<tr>
+
+					<td><b>Police</b></td>
+
+					<td>
+					
+					
+						<select class="browser-default" name="editBox_family">
+							<option style="display:none;"></option>
+							<option name="Open Sans" style="font-family:Open Sans;">Open Sans</option>
+							<option name="Roboto" style="font-family:Roboto;">Roboto</option>
+							<option name="Verdana" style="font-family:Verdana;">Verdana</option>
+
+							<option style="font-family: sans-serif;" onclick="var p = this.parentNode.children.item(0);var f = prompt('Entrer le nom d\'une police');p.innerHTML = f;p.style.fontFamily = f;p.setAttribute('name',f);p.style.display='';p.selected=true;p.parentNode.onchange();" >Autre</option>
+						</select>				
+
+					</td>
+
+				</tr>
+				<tr>
+
+					<td><b>Couleur</b></td>
+
+					<td>
+					
+						<input onchange="var c = document.getElementById('editBox_color');var f= c.selectedOptions[0].getAttribute('name');if(f == null)return; c.value = this.value; var p = c.children.item(0);p.innerHTML = '&#x1F532; ' + this.value;p.style.color = this.value;p.setAttribute('name',this.value);p.style.display='';p.selected=true;c.onchange();"
+							id="colorpicker" style="display:none;" type="color" />
+									   
+						<select id="editBox_color" class="browser-default" name="editBox_color">
+							<option style="display:none;"></option>
+							<option name="#607d8b" style="color:#607d8b;">&#x1F532; Gris</option>
+							<option name="#f44336" style="color:#f44336;">&#x1F532; Rouge</option>
+							<option name="#8bc34a" style="color:#8bc34a;">&#x1F532; Vert</option>
+							<option name="#2196f3" style="color:#2196f3;">&#x1F532; Bleu</option>
+
+							<option style="color:black;" onclick="document.getElementById('colorpicker').click();"> Autre</option>
+
+						</select>	
+
+
+					</td>
+
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align:center;">
+						<input name="editBox_delete" type="button" value="Supprimer"
+							   class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"/>
+					</td>
+				</tr>
+			</table>
+
+
+		</form>
+		
+	</div>
+
+
+	<div id="chatSection">
+	
     <input type="checkbox" id="chatBoxStatut"/>
     <div id="chatBox">
 
@@ -45,101 +146,11 @@
 
     </div>
 
-</div>
-
-<div id="editBox">
-
-    <div class="boxTitle">
-        Édition d'un noeud
-    </div>
-
-    <form id="editBoxForm">
+	</div>
 
 
-        <table style="width:100%;">
-            <tr>
-                <td><b>Label</b></td>
-                <td>
-					<input name="editBox_label" type="text" placeholder="Label" class="simpleTextfield"/>					
-				</td>
-			</tr>
-            <tr>
-                <td><b>Format</b></td>
-                <td>
-
-                    <label>
-                        <input type="checkbox" name="editBox_bold" value="enable">
-                        <i class="material-icons">format_bold</i>
-                    </label>
-                    <label>
-                        <input type="checkbox" name="editBox_italic" value="enable">
-                        <i class="material-icons">format_italic</i>
-                    </label>
-                    <label>
-                        <input type="checkbox" name="editBox_underline" value="enable">
-                        <i class="material-icons">format_underlined</i>
-                    </label>
-                    <label>
-                        <input type="checkbox" name="editBox_strike" value="enable">
-                        <i class="material-icons">format_strikethrough</i>
-                    </label>
-
-                </td>
-            </tr>
-
-            <tr>
-
-                <td><b>Police</b></td>
-
-                <td>
-				
-				
-					<select class="browser-default" name="editBox_family">
-						<option style="display:none;"></option>
-						<option name="Open Sans" style="font-family:Open Sans;">Open Sans</option>
-						<option name="Roboto" style="font-family:Roboto;">Roboto</option>
-						<option name="Verdana" style="font-family:Verdana;">Verdana</option>
-
-						<option style="font-family: sans-serif;" onclick="var p = this.parentNode.children.item(0);var f = prompt('Entrer le nom d\'une police');p.innerHTML = f;p.style.fontFamily = f;p.setAttribute('name',f);p.style.display='';p.selected=true;p.parentNode.onchange();" >Autre</option>
-					</select>				
-
-                </td>
-
-            </tr>
-            <tr>
-
-                <td><b>Couleur</b></td>
-
-                <td>
-				
-					<input onchange="var c = document.getElementById('editBox_color');var f= c.selectedOptions[0].getAttribute('name');if(f == null)return; c.value = this.value; var p = c.children.item(0);p.innerHTML = '&#x1F532; ' + this.value;p.style.color = this.value;p.setAttribute('name',this.value);p.style.display='';p.selected=true;c.onchange();"
-						id="colorpicker" style="display:none;" type="color" />
-								   
-					<select id="editBox_color" class="browser-default" name="editBox_color">
-						<option style="display:none;"></option>
-						<option name="#607d8b" style="color:#607d8b;">&#x1F532; Gris</option>
-						<option name="#f44336" style="color:#f44336;">&#x1F532; Rouge</option>
-						<option name="#8bc34a" style="color:#8bc34a;">&#x1F532; Vert</option>
-						<option name="#2196f3" style="color:#2196f3;">&#x1F532; Bleu</option>
-
-						<option style="color:black;" onclick="document.getElementById('colorpicker').click();"> Autre</option>
-
-					</select>	
 
 
-                </td>
-
-            </tr>
-            <tr>
-                <td colspan="2" style="text-align:center;">
-                    <input name="editBox_delete" type="button" value="Supprimer"
-                           class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"/>
-                </td>
-            </tr>
-        </table>
-
-
-    </form>
 </div>
 
 <% script('/js/ignore/app.js') %>
