@@ -67,7 +67,36 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
   fill: #64b5f6;
 }
 
-#editBox {
+
+#workselecter > li {
+    padding: 10px 15px;
+	cursor:pointer;
+}
+
+#workselecter > li:hover {
+    background: #f5f5f5;
+}
+
+.boxSelecter {
+    cursor: pointer;
+    display: block;
+    position: absolute;
+}
+
+#workselecter {
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 2px 2px gray;
+    left: 8px;
+    margin: 0;
+    position: absolute;
+    top: 8px;
+    z-index: 15;
+	width: 220px;
+	display:none;
+}
+
+
+.box {
   cursor: default;
   display: none;
   z-index: 10;
@@ -77,6 +106,9 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
   margin-bottom:10px;
 }
 
+#editBox label {
+	cursor:pointer;
+}
 #editBox h3 {
   border-bottom: 1px solid #ddd;
   font-size: 16px;
@@ -299,9 +331,9 @@ color:#2196f3;
 }
 
 .simpleTextfield:focus {
-  border-bottom: 1px solid #2196f3 !important;
+  border-bottom-color: #2196f3 !important;
   outline:0 !important;
-  box-shaddow: 0  !important;
+  box-shadow: 0 0 0 0 transparent !important;
 }
 
 #chatBoxStatut:checked + #chatBox + #workers > #chatBoxOpenerContainer > #chatBoxOpener {

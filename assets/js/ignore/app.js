@@ -1845,6 +1845,57 @@ MindmapFrame = function (c) {
 
 
     };
+	
+    this.selecterBoxManager = new function () {
+		
+		selecterBoxManager = this;
+		
+		this.boxs = document.getElementsByClassName("box");
+		
+		var selecters = document.getElementsByClassName("boxSelecter");
+		
+		//Open menu 
+		for(var i = 0;i < selecters.length; i++) {
+			
+			selecters.item(i).onclick = function () {
+				
+				document.getElementById("workselecter").style.display = 'block';
+				
+			};
+			
+			
+		}
+
+		//Close menu
+		document.getElementById("workselecter").onmouseleave = function () {
+		
+			this.style.display = 'none';
+		
+			};
+			
+		//Change box
+		var boxRefs = document.getElementById("workselecter").children;
+		
+		for(var i=0; i < boxRefs.length; i++) {
+			
+			boxRefs.item(i).onclick = function () {
+				
+				var id = this.getAttribute("name");
+				
+				for(var j=0;j<selecterBoxManager.boxs.length;j++) {
+					
+					var box = selecterBoxManager.boxs.item(j);
+					
+					box.style.display = (id == box.id) ? 'block' : 'none';
+					
+				}
+				
+				document.getElementById("workselecter").style.display = 'none';
+
+			};
+		}
+		
+	};
 
 
     /**
