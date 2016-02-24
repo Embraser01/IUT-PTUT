@@ -67,6 +67,93 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
   fill: #64b5f6;
 }
 
+#permBoxSearch {
+    display: flex;
+    height: 40px;
+    padding: 0 5px;
+}
+#permBoxSearch > span {
+    color: #2196f3;
+    font-family: sans-serif;
+    font-size: 20px;
+    line-height: 40px;
+    padding: 0 5px;
+}
+#permBoxSearchElement {
+    padding: 2.5px 0;
+}
+
+#permBoxResult {
+    min-height: 200px;
+    overflow-y: auto;
+    padding: 0 5px;
+}
+#permBoxResult > span {
+    font-size: 15px;
+}
+
+.perms label {
+	display:flex;
+}
+
+.rightpicker[disabled] + span {
+    border-color: #263238 !important;
+}
+
+.rightpicker[disabled]:checked + span {
+    background-color: #263238 !important;
+}
+
+.rightpicker:checked + span {
+    background-color: #2196f3;
+    color: white;
+}
+
+.entity {
+	vertical-align:top;
+    color: #263238;
+}
+
+.perms label span {
+    background-color: transparent;
+    border: 2px solid #2196f3;
+    border-radius: 3px;
+    color: transparent;
+    display: block;
+    font-weight: bold;
+    height: 20px;
+    line-height: 16px;
+    margin: 2.5px;
+    text-align: center;
+    transition: background-color 0.3s ease 0s;
+    width: 20px;
+}
+.perms:last-child {
+    border: medium none;
+    margin: 0;
+}
+.perms {
+    display: flex;
+    border-bottom: 1px solid #cfd8dc;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+}
+
+.perms div {
+    flex: 1 1 0;
+}
+.perms i {
+    color: #263238;
+    height: 24px;
+    overflow: hidden;
+    width: 24px;
+	line-height: 26px;
+}/*
+.perms input {
+    left:auto !important;
+    position:static !important;
+    visibility:visible !important;
+}*/
 
 #workselecter > li {
     padding: 10px 15px;
