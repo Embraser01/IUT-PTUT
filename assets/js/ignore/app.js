@@ -53,12 +53,12 @@ MindmapFrame = function (c) {
      * @param id {Integer} Node unique identifiant
      * @param parentNode {MindmapNode}Parent node
      * @param worker id of the user who work on this node
-     * @param permission ?? Permission of the user for this node
+     * @param permissions ?? permissions of the user for this node
      * @param style {Object} Style of the node
      * @param label {String} Label of the node
      * @constructor
      */
-    MindmapNode = function (id, parentNode, worker, permission, style, label) {
+    MindmapNode = function (id, parentNode, worker, permissions, style, label) {
 
 
         /*====== VARIABLES =====*/
@@ -94,7 +94,17 @@ MindmapFrame = function (c) {
          * Permissions for the user on this node
          * @type {Object}
          */
-        this.permission = permission;
+        this.permissions = permissions;
+		
+		if(permissions == null) {
+			this.permissions = {
+								"p_read" : false,
+								"p_write" : false,
+								"p_delete" : false,
+								"p_unlock" : false,
+								"p_assign" : false
+								};
+		}
 
 
         // Node data for drawing and other purpose
@@ -728,6 +738,12 @@ MindmapFrame = function (c) {
             delete mindmap.nodes[this.id];
 
         };
+		
+		this.hasPerm = function (permKey) {
+			
+			return (permKey in this.permissions && this.permissions[permKey]);
+			
+		};
 
 
         /*===== INITIALISATION =====*/
@@ -895,6 +911,9 @@ MindmapFrame = function (c) {
      */
     this.selectNode = function (node) {
 
+		if(node == null)
+			return;
+	
         if (node.worker == null) { //If the node isn't currently selected by the user or a contributor
 
             if (this.getSelectedNode() != null) //If user has already selected a node
@@ -908,7 +927,14 @@ MindmapFrame = function (c) {
             // TODO Wait for confirmation before select
             mindmap.ioManager.out.selectNode(node);
         } else {
-            // TODO Message the user that he can't edit now
+			
+			if(node.hasPerm('p_unlock')) {
+				
+			}
+			else {
+				            // TODO Message the user that he can't edit now
+
+			}
         }
 
     };
@@ -1395,10 +1421,14 @@ MindmapFrame = function (c) {
                         break;
                     case 86: //V
 					
-						mindmap.ioManager.out.cutPaste();
+						var node = mindmap.getSelectedNode();
 						
-						mindmap.ioManager.out.copyPaste();
-
+						if(node != null && node.hasPerm("p_write")) {
+						
+							mindmap.ioManager.out.cutPaste();
+							
+							mindmap.ioManager.out.copyPaste();
+							}
 						
 						mindmap.drawMap();
 
@@ -1438,7 +1468,19 @@ MindmapFrame = function (c) {
 				return false;
             }
 			else {
-				return true;
+				
+				if(e.keyCode == 46) {//SUPPR
+				
+					var node = mindmap.getSelectedNode();
+					if(node != null && node.hasPerm("p_delete"))
+						document.getElementById('editBox_deleteButton').click();
+				
+					return false;
+				}
+				else {
+					return true;
+				}
+				
 			}
 			
 			
@@ -1647,7 +1689,9 @@ MindmapFrame = function (c) {
 			
 			var node = mindmap.getSelectedNode();
 			
-			var canIAssignPerm = true;
+			
+			
+			var canIAssignPerm = (node != null) ? node.hasPerm('p_assign') : false;
 			
 			var p = {
 				"p_read" : 'visibility',
@@ -1977,7 +2021,35 @@ MindmapFrame = function (c) {
 
         this.updateView = function () {
 			
-
+			var node = mindmap.getSelectedNode();
+			
+			if(node == null || !node.hasPerm("p_write")) {
+				
+				editBoxManager.editBox.elements["editBox_label"].disabled = true;
+				editBoxManager.editBox.elements["editBox_strike"].disabled = true;
+				editBoxManager.editBox.elements["editBox_underline"].disabled = true;
+				editBoxManager.editBox.elements["editBox_italic"].disabled = true;
+				editBoxManager.editBox.elements["editBox_bold"].disabled = true;
+				editBoxManager.editBox.elements["editBox_color"].disabled = true;
+				editBoxManager.editBox.elements["editBox_family"].disabled = true;
+			}
+			else {
+				editBoxManager.editBox.elements["editBox_label"].disabled = false;
+				editBoxManager.editBox.elements["editBox_strike"].disabled = false;
+				editBoxManager.editBox.elements["editBox_underline"].disabled = false;
+				editBoxManager.editBox.elements["editBox_italic"].disabled = false;
+				editBoxManager.editBox.elements["editBox_bold"].disabled = false;
+				editBoxManager.editBox.elements["editBox_color"].disabled = false;
+				editBoxManager.editBox.elements["editBox_family"].disabled = false;				
+			}
+			
+			if(node == null || !node.hasPerm("p_delete")) {
+				editBoxManager.editBox.elements["editBox_delete"].disabled = true;		
+			}
+			else {
+				editBoxManager.editBox.elements["editBox_delete"].disabled = false;		
+			}
+			
 			editBoxManager.editBox.elements["editBox_label"].value = this.label;
 			
 			editBoxManager.editBox.elements["editBox_family"].value = this.style.font.family;
@@ -2093,6 +2165,12 @@ MindmapFrame = function (c) {
 		};
 			
 		this.reloadBoxs = function () {
+			//dbg
+			//var node = mindmap.getSelectedNode();
+			
+			
+			
+			//alert(mindmap.getSelectedNode().permissions);
 			
 			var already_open = false;
 			
@@ -2647,7 +2725,13 @@ MindmapFrame = function (c) {
 								'parent_node' : _parentNodeId,
 								'style' : nodesStack[0].data.style,
 								'label' : nodesStack[0].data.label,
-								'permission' : null
+								'permissions' : {
+												"p_read" : true,
+												"p_write" : true,
+												"p_delete" : true,
+												"p_unlock" : true,
+												"p_assign" : true
+												}
 							};
 							
 							io.socket.post(basePath + "node/new", {
@@ -2692,7 +2776,7 @@ MindmapFrame = function (c) {
 			};
 
             ////When user query server to get the id of a new node
-            this.newNode = function (parentNodeId, worker, permission, style) {
+            this.newNode = function (parentNodeId, worker, permissions, style) {
 
                 // console.log("Out : demande création noeud");
 
@@ -2701,7 +2785,7 @@ MindmapFrame = function (c) {
                         parent_node: parentNodeId,
                         style: style,
                         label: 'New node',
-                        permission: permission
+                        permissions: permissions
                     }]
                 }, function (nodes) {
                     // Request creation of a new node (receive nodes newly created)
@@ -2820,7 +2904,21 @@ MindmapFrame = function (c) {
                 for (var i in nodes) {
 
                     var node = nodes[i];
-                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
+					console.log(node)
+					//TODO: Envoyer les bonnes permissions, remove ce qui suit
+					node.permissions = {
+										"p_read" : true,
+										"p_write" : false,
+										"p_delete" : true,
+										"p_unlock" : true,
+										"p_assign" : false
+										};
+										
+					////TODO: Envoyer le worker actuel, remove ce qui suit
+					if(node.id == 2)
+						node.worker = 2;
+					
+                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label);
 
                     if (nodes[i].parentNode == undefined) {
                         this.rootNode = nodes[i];		
@@ -2854,7 +2952,7 @@ MindmapFrame = function (c) {
                 // node.style.order = node.style.order_bis;
 
                 // // console.log(node);
-                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
+                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label);
                 node = mindmap.nodes[node.id];
 
 
