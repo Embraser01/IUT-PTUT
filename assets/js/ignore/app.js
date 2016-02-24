@@ -1657,11 +1657,13 @@ MindmapFrame = function (c) {
 				"p_assign" : 'assignment_ind'
 				};
 			
-			if(node != undefined) {
+			if(node != undefined || entities.length == 0) {
 				
 				for(var i in entities) {
+					
+					var id = entities[i].isUser ? 'u' + entities[i].id : 'g' + entities[i].id;
 			
-					out += '<span><i class="material-icons entity">';
+					out += '<span name="'+id+'"><i class="material-icons entity">';
 					if(entities[i].isUser)
 						out += 'account_circle';
 					else
@@ -1680,7 +1682,7 @@ MindmapFrame = function (c) {
 						
 						out+= '<div>';
 							out+= '<label>';
-								out+= '<input type="checkbox" class="rightpicker" '+disabled+' '+checked+' />';
+								out+= '<input name="'+j+'" type="checkbox" class="rightpicker" '+disabled+' '+checked+' />';
 								out+= '<span>&#x2713;</span>';
 								out+= '<i class="material-icons">'+p[j]+'</i>';
 							out+= '</label>';
@@ -1703,11 +1705,59 @@ MindmapFrame = function (c) {
 		
 
 		
+		this.updateModel = function () {
+			
+			var search = document.getElementById("permBoxSearchElement").value;
+			
+			//TODO: Retour de la recherche d'un utilisateur ou d'un groupe dans le menu des permissions
+			/*io.socket.post(basePath + ".../...", function (data) {
+				
+				data au format :
+				
+					[	
+						{
+						"id" : 42,
+						"name" : "Benji Chaz",
+						"isOwner" : true,
+						"isUser" : true,
+						"perms" : {
+							"p_read" : true,
+							"p_write" : true,
+							"p_delete" : true,
+							"p_unlock" : true,
+							"p_assign" : true
+							}
+						},
+						...
+					]
+					
+					
+					
+				permBoxManager.updateView(data); // On oublie pas de mettre à jour le modèle ensuite
+			});*/
+			
+		};
+		
+		document.getElementById("permBoxSearchElement").onkeyup = function () {
+			
+			if(this.searchDelay != null)
+				clearTimeout(this.searchDelay);
+			
+			this.searchDelay = setTimeout(permBoxManager.updateModel, 400);
+			
+		};
+		
 		this.permBoxManagerContainer.onload = function () {
+			
+			
+			document.getElementById("permBoxSearchElement").value = "";
+			
+			// permBoxManager.updateModel();
 			
 		entities_test = [
 		
 			{
+			"id" : 1,
 			"name" : "Benji Chaz",
 			"isOwner" : true,
 			"isUser" : true,
@@ -1720,6 +1770,7 @@ MindmapFrame = function (c) {
 				}
 			},
 			{
+			"id" : 1,
 			"name" : "Administrateurs",
 			"isOwner" : false,
 			"isUser" : false,
@@ -1732,6 +1783,7 @@ MindmapFrame = function (c) {
 				}
 			},
 			{
+			"id": 2,
 			"name" : "Boris Bo",
 			"isOwner" : false,
 			"isUser" : false,
@@ -1748,6 +1800,7 @@ MindmapFrame = function (c) {
 		];
 		
 			permBoxManager.updateView(entities_test);
+			
 		};
 		
 	};
