@@ -1675,6 +1675,49 @@ MindmapFrame = function (c) {
 
     };
 	
+	this.notificationManager = new function () {
+		
+		notificationManager = this;
+		
+        this.notificationElement = document.getElementById("notification");
+		this.delay = null;
+		this.transition = null;
+		
+		this.pop = function (callback) {
+			
+			notificationManager.notificationElement.classList.add('hidden');
+			notificationManager.transition = setTimeout(function (callback) {
+				notificationManager.notificationElement.classList.add('displaynone');
+				if(typeof(callback) == "function")
+					callback();
+				
+			}, 500, callback);
+			
+		};
+		
+		this.push = function (message, action, callback) {
+			
+			this.notificationElement.classList.remove('displaynone');
+			
+			clearTimeout(notificationManager.transition);
+			notificationManager.transition = setTimeout(function (message, action, callback) {
+				
+				notificationManager.notificationElement.classList.remove('hidden');
+				
+				notificationManager.notificationElement.innerHTML = message + " <a>"+action+"</a>";
+				notificationManager.notificationElement.children[0].onclick = function () {
+					notificationManager.pop();
+					if(typeof(callback) == "function")
+						callback();
+				};
+				
+				clearTimeout(notificationManager.delay);
+				notificationManager.delay = setTimeout(notificationManager.pop, 5000);
+			
+			}, 300, message, action, callback);
+		};
+	};
+	
     this.permBoxManager = new function () {
 
         permBoxManager = this;
