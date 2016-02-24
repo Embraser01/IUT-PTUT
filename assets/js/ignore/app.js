@@ -1661,9 +1661,10 @@ MindmapFrame = function (c) {
 				
 				for(var i in entities) {
 					
-					var id = entities[i].isUser ? 'u' + entities[i].id : 'g' + entities[i].id;
+					var id = entities[i].id;
+					var kind = entities[i].isUser ? 'u' : 'g';
 			
-					out += '<span name="'+id+'"><i class="material-icons entity">';
+					out += '<span name="'+id+'"><i name="'+kind+'" class="material-icons entity">';
 					if(entities[i].isUser)
 						out += 'account_circle';
 					else
@@ -1698,8 +1699,40 @@ MindmapFrame = function (c) {
 			else {
 				out = "Aucun résultat";
 			}
+
 			
 			document.getElementById("permBoxResult").innerHTML = out;
+			
+			
+			var checkboxs = document.getElementById("permBoxResult").getElementsByTagName("input");
+			
+			for(var i = 0; i < checkboxs.length; i++) {
+				
+				checkboxs.item(i).onchange = function () {
+					
+					var id = this.parentNode.parentNode.parentNode.previousElementSibling.getAttribute("name");
+					var isUser = (this.parentNode.parentNode.parentNode.previousElementSibling.children["0"].getAttribute("name") == 'u')
+					
+					var permKey = this.getAttribute("name");
+					var permValue = this.checked;
+					
+					//TODO: Fixer une permission en fonction de id, isUser, permKey et permValue
+					/*io.socket.post(basePath + ".../...", function (data) {
+						
+						rien à faire en retour
+						
+					});*/
+					
+					if(permKey == "p_write" && permValue) {
+						var checkboxRead = this.parentNode.parentNode.parentNode.children["0"].children["0"].children["0"];
+						checkboxRead.checked = true;
+						checkboxRead.onchange();
+					}
+					
+					
+				};
+				
+			}
 			
 		};
 		
