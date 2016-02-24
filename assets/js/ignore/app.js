@@ -1632,6 +1632,125 @@ MindmapFrame = function (c) {
 
 
     };
+	
+    this.permBoxManager = new function () {
+
+        permBoxManager = this;
+
+        this.permBoxManagerContainer = document.getElementById("permBox");
+
+        this.searchDelay = null;
+
+		this.updateView = function (entities) {
+			
+			var out = "";
+			
+			var node = mindmap.getSelectedNode();
+			
+			var canIAssignPerm = true;
+			
+			var p = {
+				"p_read" : 'visibility',
+				"p_write" : 'create',
+				"p_delete" : 'delete',
+				"p_unlock" : 'lock_open',
+				"p_assign" : 'assignment_ind'
+				};
+			
+			if(node != undefined) {
+				
+				for(var i in entities) {
+			
+					out += '<span><i class="material-icons entity">';
+					if(entities[i].isUser)
+						out += 'account_circle';
+					else
+						out += 'group_work';
+					out += '</i> ';
+					out += entities[i].name;
+					if(entities[i].isOwner)
+						out += ' (propriétaire)';
+					out += '</span>';
+					out += '<div class="perms">';
+					
+					for(var j in p) {
+						
+						var checked = entities[i].perms[j] ? 'checked="checked"' : '';
+						var disabled = (!canIAssignPerm || entities[i].isOwner) ? 'disabled' : '';
+						
+						out+= '<div>';
+							out+= '<label>';
+								out+= '<input type="checkbox" class="rightpicker" '+disabled+' '+checked+' />';
+								out+= '<span>&#x2713;</span>';
+								out+= '<i class="material-icons">'+p[j]+'</i>';
+							out+= '</label>';
+						out+= '</div>';
+						
+					}
+					
+					out += '</div>';
+					
+				}
+				
+			}
+			else {
+				out = "Aucun résultat";
+			}
+			
+			document.getElementById("permBoxResult").innerHTML = out;
+			
+		};
+		
+
+		
+		this.permBoxManagerContainer.onload = function () {
+			
+		entities_test = [
+		
+			{
+			"name" : "Benji Chaz",
+			"isOwner" : true,
+			"isUser" : true,
+			"perms" : {
+				"p_read" : true,
+				"p_write" : true,
+				"p_delete" : true,
+				"p_unlock" : true,
+				"p_assign" : true
+				}
+			},
+			{
+			"name" : "Administrateurs",
+			"isOwner" : false,
+			"isUser" : false,
+			"perms" : {
+				"p_read" : false,
+				"p_write" : false,
+				"p_delete" : false,
+				"p_unlock" : false,
+				"p_assign" : true
+				}
+			},
+			{
+			"name" : "Boris Bo",
+			"isOwner" : false,
+			"isUser" : false,
+			"perms" : {
+				"p_read" : true,
+				"p_write" : true,
+				"p_delete" : false,
+				"p_unlock" : false,
+				"p_assign" : true
+				}
+			}
+			
+		
+		];
+		
+			permBoxManager.updateView(entities_test);
+		};
+		
+	};
 
     this.editBoxManager = new function () {
 
@@ -1660,23 +1779,18 @@ MindmapFrame = function (c) {
             }
             return false;
         };
+		
+		this.focus = function () {
+                this.editBox.elements["editBox_label"].focus();			
+		};
 
         this.load = function () {
 
             if (mindmap.getSelectedNode() != undefined) {
 
-                this.editBoxContainer.style.display = "block";
-
-                this.editBox.elements["editBox_label"].focus();
-
                 this.labelLoad();
                 this.styleLoad();
                 this.updateView();
-
-            }
-            else {
-
-                this.editBoxContainer.style.display = "none";
 
             }
         };
@@ -1842,6 +1956,14 @@ MindmapFrame = function (c) {
 
             }
         }
+		
+		this.editBoxContainer.onload = function () {
+			editBoxManager.load();
+		};
+
+		this.editBoxContainer.onfocus = function () {
+			editBoxManager.focus();
+		};
 
 
     };
@@ -1873,6 +1995,50 @@ MindmapFrame = function (c) {
 		
 			};
 			
+		this.close = function () {
+			
+			for(var j=0;j<this.boxs.length;j++) {
+				
+				this.boxs.item(j).style.display = 'none';
+				this.boxs.item(j).onload();
+			}
+			
+			
+		};
+			
+		this.reloadBoxs = function () {
+			
+			var already_open = false;
+			
+			for(var j=0;j<this.boxs.length;j++) {
+				this.boxs[j].onload();
+				if(!already_open && this.boxs[j].style.display == 'block')
+					already_open = true;
+			}
+			
+			if(!already_open)
+				this.changeBox("editBox");
+			
+		};
+			
+		this.changeBox = function (id) {
+			
+			for(var j=0;j<this.boxs.length;j++) {
+				
+				var box = this.boxs.item(j);
+				
+				if(id == box.id) {
+					box.style.display = 'block';
+					box.onload();
+				}
+				else {
+					box.style.display = 'none';
+				}
+				
+			}
+			
+		};
+			
 		//Change box
 		var boxRefs = document.getElementById("workselecter").children;
 		
@@ -1882,13 +2048,7 @@ MindmapFrame = function (c) {
 				
 				var id = this.getAttribute("name");
 				
-				for(var j=0;j<selecterBoxManager.boxs.length;j++) {
-					
-					var box = selecterBoxManager.boxs.item(j);
-					
-					box.style.display = (id == box.id) ? 'block' : 'none';
-					
-				}
+				selecterBoxManager.changeBox(id);
 				
 				document.getElementById("workselecter").style.display = 'none';
 
@@ -2523,7 +2683,7 @@ MindmapFrame = function (c) {
 
                 // console.log("Out : unselect Node", node);
 
-                editBoxManager.load();
+				selecterBoxManager.reloadBoxs();
 
                 //TODO: Notification de déséléction - Émission
                 //Données utiles : node.id
@@ -2534,7 +2694,7 @@ MindmapFrame = function (c) {
 
                 // console.log("Out : select Node", node);
 
-                editBoxManager.load();
+				selecterBoxManager.reloadBoxs();
 
                 //TODO: Notification de séléction - Émission
                 //Données utiles : node.id
@@ -2576,8 +2736,10 @@ MindmapFrame = function (c) {
                     var node = nodes[i];
                     mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label);
 
-                    if (nodes[i].parentNode == undefined)
-                        this.rootNode = nodes[i];
+                    if (nodes[i].parentNode == undefined) {
+                        this.rootNode = nodes[i];		
+					}
+
 
                     if (node.id in mindmap.workers && mindmap.workers[node.id].worker != null)
                         mindmap.workers[mindmap.workers[node.id].worker] = node.id;
