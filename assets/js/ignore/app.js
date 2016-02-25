@@ -741,15 +741,17 @@ MindmapFrame = function (c) {
 		
 		this.hasPerm = function (permKey) {
 			
-			return (permKey in this.permissions && this.permissions[permKey]);
+			return (typeof(this.permissions) == "object" && permKey in this.permissions && this.permissions[permKey]);
 			
 		};
 
 
         /*===== INITIALISATION =====*/
 
-        if (parentNode != null) parentNode.childNodes.push(this);
-        else mindmap.rootNode = this;
+        if (parentNode != null)
+			parentNode.childNodes.push(this);
+       // else
+		//	mindmap.rootNode = this;
 
         this.init();
     };
@@ -914,7 +916,10 @@ MindmapFrame = function (c) {
 		if(node == null)
 			return;
 	
-        if (node.worker == null) { //If the node isn't currently selected by the user or a contributor
+		if (node.worker == mindmap.worker) {
+			//nothing
+		}
+        else if (node.worker == null) { //If the node isn't currently selected by the user or a contributor
 
             if (this.getSelectedNode() != null) //If user has already selected a node
                 this.unselectNode(false);
@@ -930,10 +935,15 @@ MindmapFrame = function (c) {
 			
 			if(node.hasPerm('p_unlock')) {
 				
+				notificationManager.push("Ce noeud est verrouillé", "Le dévérouiller", function () {
+					mindmap.ioManager.out.unselectNode(node);
+				});
+				
 			}
 			else {
-				            // TODO Message the user that he can't edit now
-
+				
+				notificationManager.push("Vous n'avez pas le droit de déverouiller ce noeud", "", null);
+				
 			}
         }
 
@@ -1062,7 +1072,7 @@ MindmapFrame = function (c) {
 
             traverseDelete(this.getSelectedNode());
 
-            if (ids_to_delete) mindmap.ioManager.out.deleteNodes(ids_to_delete);
+            if (ids_to_delete) mindmap.ioManager.out.deleteNodes(ids_to_delete, true);
 
             this.drawMap();
 
@@ -1803,7 +1813,7 @@ MindmapFrame = function (c) {
 					var permKey = this.getAttribute("name");
 					var permValue = this.checked;
 					
-					//TODO: Fixer une permission en fonction de id, isUser, permKey et permValue
+					//TODO 2: Fixer une permission en fonction de id, isUser, permKey et permValue
 					/*io.socket.post(basePath + ".../...", function (data) {
 						
 						rien à faire en retour
@@ -1829,7 +1839,7 @@ MindmapFrame = function (c) {
 			
 			var search = document.getElementById("permBoxSearchElement").value;
 			
-			//TODO: Retour de la recherche d'un utilisateur ou d'un groupe dans le menu des permissions
+			//TODO 3: Retour de la recherche d'un utilisateur ou d'un groupe dans le menu des permissions
 			/*io.socket.post(basePath + ".../...", function (data) {
 				
 				data au format :
@@ -1872,7 +1882,7 @@ MindmapFrame = function (c) {
 			
 			document.getElementById("permBoxSearchElement").value = "";
 			
-			// permBoxManager.updateModel();
+			// permBoxManager.updateModel(); //TODO prod, décommenter cette ligne et osef des deux suivantes
 			
 		entities_test = [
 		
@@ -1919,7 +1929,7 @@ MindmapFrame = function (c) {
 		
 		];
 		
-			permBoxManager.updateView(entities_test);
+			permBoxManager.updateView(entities_test);//commenter cette ligne
 			
 		};
 		
@@ -2718,26 +2728,66 @@ MindmapFrame = function (c) {
 			
 			
 			this.cutPaste = function () {
-				
+			
 				if(mindmap.action.type != "cut") return;
 				
 				var srcNode = mindmap.action.src;
 				
 				var destParentNode = mindmap.getSelectedNode();
-				console.log(destParentNode);
+
 				if(srcNode != undefined && destParentNode != undefined  && destParentNode.cutAction == false) {
 					
+					/*client cutPaste implementation, not stable*/
+					var nodesStack = [];
 					
+					var traverse = function (node) {
+						console.log("$", node);
+						nodesStack.push({id : node.id, parentNodeId : node.parentNode.id, data : {label : node.label, style : node.style}});
+						_.forEach(node.childNodes, function (n) {
+							traverse(n);
+						});
+					};
+					traverse(srcNode);
 					
-					// alert("cuted");
-					
+					var ids_to_delete = [];
 
-					//srcNode, destParentNode for io.socket.post
+					var traverseDelete = function (node) {
+
+						var nodeId = node.id;
+
+						var childNodesId = [];
+
+						for (var i in node.childNodes)
+							childNodesId.push(node.childNodes[i].id);
+
+						for (var j = 0; j < childNodesId.length; j++) {
+							traverseDelete(mindmap.nodes[childNodesId[j]]);
+
+						}
+
+						node.destroyNode();
+
+						ids_to_delete.push(nodeId);
+
+					};
 					
-					//after
-						mindmap.action.type = null;
-						mindmap.action.src = null;
-						mindmap.action.dest = null;
+					traverseDelete(srcNode);
+					
+					mindmap.ioManager.out.deleteNodes(ids_to_delete, false);	
+					mindmap.drawMap();
+					mindmap.action.type = "copy";
+					mindmap.action.src = nodesStack;
+					mindmap.action.dest = null;
+					
+					// mindmap.ioManager.out.copyPaste();
+					
+					//TODO 5: cutPaste opti côté serveur, variables utiles : srcNode, destParentNode for io.socket.post
+					
+					//dans le callback, si nécessaire, on peut détruire le tampon 
+
+						// mindmap.action.type = null;
+						// mindmap.action.src = null;
+						// mindmap.action.dest = null;
 						
 						mindmap.drawMap();
 				}
@@ -2754,6 +2804,10 @@ MindmapFrame = function (c) {
 
 				if(nodesStack != undefined && destParentNode != undefined && nodesStack.length > 0) {
 
+				//TODO 6: Implementer le copyPaste côté serveur, variables utile : mindmap.action.src, destParentNode
+				
+				//client implementation dans ce if
+				
 				var idTranslationTable = {};
 					
 					idTranslationTable[nodesStack[0].parentNodeId] = destParentNode.id;
@@ -2896,6 +2950,7 @@ MindmapFrame = function (c) {
 
                 // console.log("Out : unselect Node", node);
 
+				//TODO 4: a placer dans le ioManager.in quand le vérrouillage sera implenté
 				selecterBoxManager.reloadBoxs();
 
                 //TODO: Notification de déséléction - Émission
@@ -2907,6 +2962,7 @@ MindmapFrame = function (c) {
 
                 // console.log("Out : select Node", node);
 
+				//TODO 4:a placer dans le ioManager.in  quand le vérrouillage sera implenté (bis)
 				selecterBoxManager.reloadBoxs();
 
                 //TODO: Notification de séléction - Émission
@@ -2914,11 +2970,19 @@ MindmapFrame = function (c) {
             };
 
             //When user delete nodes
-            this.deleteNodes = function (ids) {
-
+            this.deleteNodes = function (ids, notif) {
+console.log(ids);
                 // console.log("Out : delete Node", ids);
 
-                //TODO: Notification de suppression de noeud - Émission
+				if(ids.length == 0)
+					return;
+				
+				if(notif) {
+					if(ids.length == 1)
+						notificationManager.push("Le noeud a été supprimé", "");
+					else
+						notificationManager.push("Les noeuds ont été supprimés", "");
+				}
                 //Données utiles : id
 
                 var data = {nodes: []};
@@ -2928,9 +2992,11 @@ MindmapFrame = function (c) {
                         id: n
                     });
                 });
+				
+			
 
                 io.socket.post(basePath + "node/delete", data, function (ids) {
-
+	
                     _.forEach(ids, function (n) {
                         mindmap.ioManager.in.deleteNode(n.id);
                     });
@@ -2947,24 +3013,26 @@ MindmapFrame = function (c) {
                 for (var i in nodes) {
 
                     var node = nodes[i];
-					console.log(node)
-					//TODO: Envoyer les bonnes permissions, remove ce qui suit
-					node.permissions = {
+					
+					//TODO 1: Envoyer les permissions dans node, comme ce qui suit
+					/*node.permissions = {
 										"p_read" : true,
-										"p_write" : false,
+										"p_write" : true,
 										"p_delete" : true,
 										"p_unlock" : true,
-										"p_assign" : false
+										"p_assign" : true
 										};
-										
-					////TODO: Envoyer le worker actuel, remove ce qui suit
-					if(node.id == 2)
-						node.worker = 2;
+					*/
+					
+					////TODO 4: Envoyer le worker actuel (vérouillage) dans node, comme ce qui suit
+					//if(node.id == 2) //pour les test sans implementation
+					//	node.worker = 2;
 					
                     mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label);
 
-                    if (nodes[i].parentNode == undefined) {
-                        this.rootNode = nodes[i];		
+                    if (mindmap.rootNode == undefined && nodes[i].parentNode == undefined && nodes[i] != undefined) {
+						
+                        mindmap.rootNode = mindmap.nodes[node.id];
 					}
 
 
@@ -2972,6 +3040,7 @@ MindmapFrame = function (c) {
                         mindmap.workers[mindmap.workers[node.id].worker] = node.id;
                 }
 
+				
                 mindmap.rootNode.orderizeDescendance();
 
                 mindmap.drawMap();
