@@ -2709,7 +2709,7 @@ MindmapFrame = function (c) {
                     // Subscribe to mindmap event and receive all the mindmap once
 
                     console.log("Parsing data ...");
-                    console.log(jwr);
+                    // console.log(jwr);
 
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
@@ -2742,7 +2742,7 @@ MindmapFrame = function (c) {
 					var nodesStack = [];
 					
 					var traverse = function (node) {
-						console.log("$", node);
+						
 						nodesStack.push({id : node.id, parentNodeId : node.parentNode.id, data : {label : node.label, style : node.style}});
 						_.forEach(node.childNodes, function (n) {
 							traverse(n);
@@ -2972,7 +2972,7 @@ MindmapFrame = function (c) {
 
             //When user delete nodes
             this.deleteNodes = function (ids, notif) {
-console.log(ids);
+
                 // console.log("Out : delete Node", ids);
 
 				if(ids.length == 0)
