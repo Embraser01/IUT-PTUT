@@ -58,7 +58,7 @@ MindmapFrame = function (c) {
      * @param label {String} Label of the node
      * @constructor
      */
-    MindmapNode = function (id, parentNode, worker, permissions, style, label) {
+    MindmapNode = function (id, parentNode, worker, permissions, style, label, owner) {
 
 
         /*====== VARIABLES =====*/
@@ -84,6 +84,7 @@ MindmapFrame = function (c) {
          */
         this.label = label;
 
+		this.owner = owner;
         /**
          * Style of the node
          * @type {Object}
@@ -740,8 +741,8 @@ MindmapFrame = function (c) {
         };
 		
 		this.hasPerm = function (permKey) {
-			
-			return (typeof(this.permissions) == "object" && permKey in this.permissions && this.permissions[permKey]);
+
+			return (mindmap.worker == this.owner || (typeof(this.permissions) == "object" && permKey in this.permissions && this.permissions[permKey]));
 			
 		};
 
@@ -3028,7 +3029,7 @@ console.log(ids);
 					//if(node.id == 2) //pour les test sans implementation
 					//	node.worker = 2;
 					
-                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label);
+                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
 
                     if (mindmap.rootNode == undefined && nodes[i].parentNode == undefined && nodes[i] != undefined) {
 						
@@ -3064,7 +3065,7 @@ console.log(ids);
                 // node.style.order = node.style.order_bis;
 
                 // // console.log(node);
-                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label);
+                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
                 node = mindmap.nodes[node.id];
 
 
