@@ -79,19 +79,29 @@ module.exports = {
             }
         });
 
+        // TODO : Remove nodes that are not allowed
         // TODO Stream data to go faster #BarryAllen
 
-        Node.find({where: {mindmap: mindmap.id}}).sort({height: 'asc'}).populate('styles').exec(function (err, nodes) {
-            if (err) return res.serverError();
+        Node.find({where: {mindmap: mindmap.id}})
+            .sort({height: 'asc'})
+            .populate('styles')
+            .populate('permissions', {
+                or: [{user: req.user.id},
+                    {group: groups}]
+            })
+            .exec(function (err, nodes) {
 
-            nodes = SerializeService.styleLoad(nodes, req.session.user.id);
 
-            return res.json({
-                nodes: nodes,
-                user: req.user.id,
-                users: users
+                if (err) return res.serverError();
+
+                nodes = SerializeService.styleLoad(nodes, req.session.user.id);
+
+                return res.json({
+                    nodes: nodes,
+                    user: req.user.id,
+                    users: users
+                });
             });
-        });
     },
 
     perm: function (req, res) {
