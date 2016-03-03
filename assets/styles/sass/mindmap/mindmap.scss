@@ -192,9 +192,16 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
     visibility:visible !important;
 }*/
 
+#workselecter .material-icons {
+    font-size: 22px;
+    vertical-align: sub;
+}
+
 #workselecter > li {
     padding: 10px 15px;
 	cursor:pointer;
+	line-height:22px;
+	font-size: 17px;
 }
 
 #workselecter > li:hover {
@@ -205,17 +212,23 @@ g:not([id=""]):hover > circle[name=lx], g:not([id=""]):hover > circle[name=rx] {
     cursor: pointer;
     display: block;
     position: absolute;
+	font-size:20px;
+}
+
+.boxSelecter .material-icons {
+    font-size: 24px;
+    vertical-align: sub;
 }
 
 #workselecter {
     background: white none repeat scroll 0 0;
-    box-shadow: 0 2px 2px gray;
+    box-shadow: 0 2px 2px #aaa;
     left: 8px;
     margin: 0;
     position: absolute;
     top: 8px;
     z-index: 15;
-	width: 220px;
+	width: 250px;
 	display:none;
 }
 
@@ -472,4 +485,54 @@ color:#2196f3;
   text-align: center;
   font-size: 24px;
   overflow: hidden;
+}
+
+#revBoxStack {
+    min-height: 220px;
+    overflow-y: auto;
+}
+
+#revBoxStack > ul {
+    margin: 0;
+}
+
+#revBoxStack li {
+    border-bottom: 1px solid #d1d1d1;
+    margin: 5px;
+}
+
+#revBoxStack span:first-child {
+    color: #263238;
+    font-weight: bold;
+}
+#revBoxStack span {
+    display: block;
+    font-size: 15px;
+    padding: 0;
+}
+
+#revBoxStack button {
+    background-color: #2196f3;
+    border: 0 none;
+    border-radius: 2px;
+    color: white;
+    float: right;
+    height: 32px;
+    line-height: 44px;
+    padding: 0;
+    position: relative;
+    width: 32px;
+}
+
+#revBoxStack button[disabled] {
+    background-color: #263238;
+    color: #aaa;
+}
+
+#revBoxStack a {
+	cursor:pointer;
+}
+
+#revBoxStack a:hover {
+	text-decoration:underline;
 }

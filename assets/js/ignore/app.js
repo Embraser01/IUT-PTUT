@@ -1728,6 +1728,39 @@ MindmapFrame = function (c) {
 			}, 300, message, action, callback);
 		};
 	};
+    this.revBoxManager = new function () {
+
+        revBoxManager = this;
+		
+		this.historyStack = [];
+		
+
+        this.revBoxManagerContainer = document.getElementById("revBox");
+
+        this.pushHistory = function (kind, ctx, node) {
+			
+			this.historyStack.push({kind : kind, ctx : ctx, node : node});
+			
+			revBoxManager.updateView();
+		};
+
+		this.updateView = function () {
+
+			
+		
+		};
+		
+		
+
+		
+		this.revBoxManagerContainer.onload = function () {
+			
+		
+			revBoxManager.updateView();
+			
+		};
+		
+	};
 	
     this.permBoxManager = new function () {
 

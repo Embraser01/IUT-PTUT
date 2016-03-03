@@ -8,14 +8,66 @@ blah blah <a>do sth</a>
 <div id="workside">
 
 	<ul id="workselecter">
-		<li name="editBox">&#x270F; Édition d'un noeud</li>
-		<li name="permBox">&#x270B; Permissions d'un noeud</li>
+		<li name="editBox"><i class="material-icons">create</i> Édition d'un noeud</li>
+		<li name="permBox"><i class="material-icons">verified_user</i> Permissions d'un noeud</li>
+		<li name="revBox"><i class="material-icons">history</i> Historique des révisions</li>
 	</ul>
+	
+	<div class="box" id="revBox">
+
+		<div class="boxTitle">
+			<div class="boxSelecter">&#x25BE;<i class="material-icons">history</i> </div>
+			Historique des révisions
+		</div>
+		<div id="revBoxStack">
+			<ul>
+
+				<li>
+					<span><a>Noeud #023</a> - Édition - Label<button><i class="material-icons">history</i></button></span>
+					<span>Précédement "Hello world"</span>
+				</li>
+				<li>
+					<span><a>Noeud #023</a> - Édition - Format<button><i class="material-icons">history</i></button></span>
+					<span>Précédement "Hello world"</span>
+				</li>
+				<li>
+					<span><a>Noeud #023</a> - Édition - Police<button><i class="material-icons">history</i></button></span>
+					<span>Précédement "Hello world"</span>
+				</li>
+				<li>
+					<span><a>Noeud #023</a> - Édition - Couleur<button><i class="material-icons">history</i></button></span>
+					<span>Précédement "Hello world"</span>
+				</li>
+				<li>
+					<span><a>Noeud #023</a> - Édition - Déplacement<button><i class="material-icons">history</i></button></span>
+					<span>Précédement "Hello world"</span>
+				</li>				
+				<li>
+					<span>Noeud #024 - Suppression<button><i class="material-icons">history</i></button></span>
+					<span>Fils de <a>Noeud #023</a></span>
+				</li>
+				<li>
+					<span><a>Noeud #025</a> - Ajout<button><i class="material-icons">history</i></button></span>
+					<span>Fils de <a>Noeud #023</a></span>
+				</li>
+
+			</ul>
+		</div>
+		<!--
+		<div id="permBoxSearch">
+			<input type="text" class="simpleTextfield" placeholder="Rechercher un utilisateur ou un groupe" id="permBoxSearchElement" />
+			<span>
+				&#x1F50D;
+			</span>
+		</div>
+		<div id="permBoxResult">
+		</div>-->
+	</div>
 	
 	<div class="box" id="permBox">
 
 		<div class="boxTitle">
-			<div class="boxSelecter">&#x25BE; &#x270B; </div>
+			<div class="boxSelecter">&#x25BE;<i class="material-icons">verified_user</i> </div>
 			Permissions d'un noeud
 		</div>
 		
@@ -32,7 +84,7 @@ blah blah <a>do sth</a>
 	<div class="box" id="editBox">
 
 		<div class="boxTitle">
-			<div class="boxSelecter">&#x25BE; &#x270F; </div>
+			<div class="boxSelecter">&#x25BE;<i class="material-icons">create</i> </div>
 			Édition d'un noeud
 		</div>
 
