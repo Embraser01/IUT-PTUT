@@ -65,7 +65,7 @@ module.exports = {
             });
         }
         // We just add the socket in the list
-        req.mindmapSocket.push(sails.sockets.id(req.socket));
+        req.mindmapSocket.push(sails.sockets.getId(req.socket));
 
 
         var users = [];
@@ -79,30 +79,20 @@ module.exports = {
             }
         });
 
-        // TODO : Remove nodes that are not allowed
         // TODO Stream data to go faster #BarryAllen
 
-        Node.find({where: {mindmap: mindmap.id}})
-            .sort({height: 'asc'})
-            .populate('styles')
-            .exec(function (err, nodes) {
+        PermissionService.getAll(req, mindmap.id, function (nodes) {
 
-
-                if (err) return res.serverError();
-
-                nodes = SerializeService.styleLoad(nodes, req.session.user.id);
-
-                return res.json({
-                    nodes: nodes,
-                    user: req.user.id,
-                    users: users
-                });
+            return res.json({
+                nodes: nodes,
+                user: req.user.id,
+                users: users
             });
+        });
     },
 
     perm: function (req, res) {
         var perms = req.param('perm');
-
 
         Node.findOne({where: {mindmap: req.mindmap.id, parent_node: null}}).exec(function (err, node) {
 

@@ -34,7 +34,7 @@ function normalize(perms) {
 }
 
 
-function mindMapIsAllowed(req, id, cb) {
+function mindMapIsAllowed_old(req, id, cb) {
 
     getGroups(req.user.id, function (groups) {
         Node.findOne({where: {mindmap: id, parent_node: null}}).populate('permissions', {
@@ -45,6 +45,27 @@ function mindMapIsAllowed(req, id, cb) {
             if (!node) return cb(normalize(null));
 
             return cb(normalize(node.permissions));
+        });
+    });
+}
+
+function mindMapIsAllowed(req, id, cb) {
+
+    getGroups(req.user.id, function (groups) {
+        Node.find({where: {mindmap: id}}).populate('permissions', {
+            or: [{user: req.user.id},
+                {group: groups}]
+        }).exec(function (err, nodes) {
+
+            if (!nodes) return cb(normalize(null));
+
+            var perms = [];
+
+            _.forEach(nodes, function (n) {
+                perms.push(normalize(n.permissions));
+            });
+
+            return cb(normalize(perms));
         });
     });
 }
@@ -122,7 +143,7 @@ module.exports = {
                                 return node_id === n.parent_node;
                             })) {
                             isAllowed = true;
-                        } else if (p.p_read) {
+                        } else if (n.permissions.p_read) {
                             isAllowed = true;
                             if (n.parent_node) n.rootLink = true;
                         }
@@ -134,11 +155,7 @@ module.exports = {
                     nodes = SerializeService.styleLoad(nodes, req.session.user.id);
 
 
-                    return res.json({
-                        nodes: nodes,
-                        user: req.user.id,
-                        users: users
-                    });
+                    return cb(nodes);
                 });
         });
 
