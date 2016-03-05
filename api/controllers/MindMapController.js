@@ -83,6 +83,7 @@ module.exports = {
 
         PermissionService.getAll(req, mindmap.id, function (nodes) {
 
+            //console.log(nodes);
             return res.json({
                 nodes: nodes,
                 user: req.user.id,

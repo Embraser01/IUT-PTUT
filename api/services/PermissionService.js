@@ -135,27 +135,31 @@ module.exports = {
 
                     // Remove nodes forbidden
                     _.forEach(nodes, function (n) {
-                        n.permissions = normalize(n.permissions);
+
+                        n.permission = normalize(n.permissions);
 
                         var isAllowed = false;
 
-                        if (_.find(allowedNodes, function (node_id) { // On regarde si son parent est autorisé
-                                return node_id === n.parent_node;
+                        if(!n.parent_node) {
+                            isAllowed = true;
+                        } else if (_.find(allowedNodes, function (n_bis) { // On regarde si son parent est autorisé
+                                if(!n_bis.parent_node && !n_bis.permission.p_read) return false;
+                                return n_bis.id === n.parent_node;
                             })) {
                             isAllowed = true;
-                        } else if (n.permissions.p_read) {
+                        } else if (n.permission.p_read) {
                             isAllowed = true;
-                            if (n.parent_node) n.rootLink = true;
+                            n.rootLink = true;
                         }
 
-                        if (isAllowed) allowedNodes.push(n.id);
-                        else if (n.parent_node) n = null;
+                        if (isAllowed) allowedNodes.push(n);
                     });
 
-                    nodes = SerializeService.styleLoad(nodes, req.session.user.id);
+                    allowedNodes = SerializeService.styleLoad(allowedNodes, req.session.user.id);
 
 
-                    return cb(nodes);
+                    //console.log(nodes);
+                    return cb(allowedNodes);
                 });
         });
 
