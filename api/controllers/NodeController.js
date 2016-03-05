@@ -234,4 +234,4 @@ module.exports = {
     perm: function (req, res) {
 
     }
-}
+};

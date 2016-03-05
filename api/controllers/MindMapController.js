@@ -43,7 +43,25 @@ module.exports = {
                         console.log(err);
                         return res.serverError();
                     }
-                    return res.redirect('/mm/' + mindmap.id);
+
+                    Permission.create({
+                        node: node.id,
+                        owner: req.user.id,
+                        user: req.user.id,
+                        p_read: true,
+                        p_write: true,
+                        p_delete: true,
+                        p_unlock: true,
+                        p_assign: true
+                    }, function (err, perm) {
+
+                        if (err) {
+                            console.log(err);
+                            return res.serverError();
+                        }
+
+                        return res.redirect('/mm/' + mindmap.id);
+                    });
                 });
             });
         });
@@ -80,9 +98,10 @@ module.exports = {
         });
 
         // TODO Stream data to go faster #BarryAllen
-
+        //var time_start = Date.now();
         PermissionService.getAll(req, mindmap.id, function (nodes) {
 
+            //console.log("Time to getAll node : " + (Date.now() - time_start) + "ms");
             //console.log(nodes);
             return res.json({
                 nodes: nodes,
