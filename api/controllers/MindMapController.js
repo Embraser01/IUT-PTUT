@@ -85,10 +85,6 @@ module.exports = {
         Node.find({where: {mindmap: mindmap.id}})
             .sort({height: 'asc'})
             .populate('styles')
-            .populate('permissions', {
-                or: [{user: req.user.id},
-                    {group: groups}]
-            })
             .exec(function (err, nodes) {
 
 
