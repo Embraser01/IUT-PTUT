@@ -40,10 +40,14 @@ function sendNodesUpdate(req, res, ids) {
     Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
         if (err) return console.log(err);
 
-        MindMapMsgService.send('Update_nodes', req, nodes); // Notify users before load style
-
         nodes = SerializeService.styleLoad(nodes, req.session.user.id);
-        return res.json(nodes);
+        res.json(nodes);
+
+        _.forEach(nodes, function(n){
+            n.style = null;
+        });
+
+        return MindMapMsgService.send('Update_nodes', req, nodes); // Notify users before load style
     });
 }
 
@@ -218,16 +222,6 @@ module.exports = {
                 MindMapMsgService.send('Delete_nodes', req, nodes); // Notify users
                 return res.json(ids);
             });
-        });
-    },
-
-    getAll: function (req, res) {
-
-        Node.find({where: {mindmap: req.mindmap.id}}).populate('style', {owner: req.user.id}).exec(function (err, nodes) {
-            if (err) return res.serverError();
-
-            console.log(nodes);
-            res.jsonx(nodes);
         });
     },
 

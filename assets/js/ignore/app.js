@@ -1776,8 +1776,6 @@ MindmapFrame = function (c) {
 			
 			var node = mindmap.getSelectedNode();
 			
-			
-			
 			var canIAssignPerm = (node != null) ? node.hasPerm('p_assign') : false;
 			
 			var p = {
@@ -1872,33 +1870,12 @@ MindmapFrame = function (c) {
 		this.updateModel = function () {
 			
 			var search = document.getElementById("permBoxSearchElement").value;
-			
-			//TODO 3: Retour de la recherche d'un utilisateur ou d'un groupe dans le menu des permissions
-			/*io.socket.post(basePath + ".../...", function (data) {
-				
-				data au format :
-				
-					[	
-						{
-						"id" : 42,
-						"name" : "Benji Chaz",
-						"isOwner" : true,
-						"isUser" : true,
-						"perms" : {
-							"p_read" : true,
-							"p_write" : true,
-							"p_delete" : true,
-							"p_unlock" : true,
-							"p_assign" : true
-							}
-						},
-						...
-					]
-					
-					
-					
+
+            // TODO : Changer l'id du noeud
+			io.socket.post(basePath + "search/search", {node: 94, search: search}, function (data) {
+
 				permBoxManager.updateView(data); // On oublie pas de mettre à jour le modèle ensuite
-			});*/
+			});
 			
 		};
 		
@@ -1912,59 +1889,12 @@ MindmapFrame = function (c) {
 		};
 		
 		this.permBoxManagerContainer.onload = function () {
-			
-			
-			document.getElementById("permBoxSearchElement").value = "";
-			
-			// permBoxManager.updateModel(); //TODO prod, décommenter cette ligne et osef des deux suivantes
-			
-		entities_test = [
-		
-			{
-			"id" : 1,
-			"name" : "Benji Chaz",
-			"isOwner" : true,
-			"isUser" : true,
-			"perms" : {
-				"p_read" : true,
-				"p_write" : true,
-				"p_delete" : true,
-				"p_unlock" : true,
-				"p_assign" : true
-				}
-			},
-			{
-			"id" : 1,
-			"name" : "Administrateurs",
-			"isOwner" : false,
-			"isUser" : false,
-			"perms" : {
-				"p_read" : false,
-				"p_write" : false,
-				"p_delete" : false,
-				"p_unlock" : false,
-				"p_assign" : true
-				}
-			},
-			{
-			"id": 2,
-			"name" : "Boris Bo",
-			"isOwner" : false,
-			"isUser" : false,
-			"perms" : {
-				"p_read" : true,
-				"p_write" : true,
-				"p_delete" : false,
-				"p_unlock" : false,
-				"p_assign" : true
-				}
-			}
-			
-		
-		];
-		
-			permBoxManager.updateView(entities_test);//commenter cette ligne
-			
+
+
+            document.getElementById("permBoxSearchElement").value = "";
+
+            permBoxManager.updateModel();
+
 		};
 		
 	};
@@ -3047,22 +2977,13 @@ MindmapFrame = function (c) {
                 for (var i in nodes) {
 
                     var node = nodes[i];
-					
-					//TODO 1: Envoyer les permissions dans node, comme ce qui suit
-					/*node.permissions = {
-										"p_read" : true,
-										"p_write" : true,
-										"p_delete" : true,
-										"p_unlock" : true,
-										"p_assign" : true
-										};
-					*/
+
 					
 					////TODO 4: Envoyer le worker actuel (vérouillage) dans node, comme ce qui suit
 					//if(node.id == 2) //pour les test sans implementation
 					//	node.worker = 2;
 					
-                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
+                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label, node.owner);
 
                     if (mindmap.rootNode == undefined && nodes[i].parentNode == undefined && nodes[i] != undefined) {
 						
