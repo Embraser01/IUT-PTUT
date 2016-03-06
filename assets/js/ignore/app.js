@@ -238,6 +238,7 @@ MindmapFrame = function (c) {
                 this.branchElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 mindmap.layers.branchs.appendChild(this.branchElement);
                 this.branchElement.style.display = 'none';
+                this.branchElement.setAttribute("name", this.id);
             }
             else {
                 this.orientation = 'none';
@@ -939,7 +940,7 @@ MindmapFrame = function (c) {
                 this.unselectNode(false);
 
             node.worker = this.worker;
-            mindmap.setSelectedNode(eventManager.eventData.node.id);
+            mindmap.setSelectedNode(node.id);
 
             mindmap.getSelectedNode().drawNode();
 
@@ -1855,49 +1856,64 @@ MindmapFrame = function (c) {
 		
 		this.historyStack = [];
 		
+		this.displayAll = true;
+		
 
         this.revBoxManagerContainer = document.getElementById("revBox");
 
         this.pushHistory = function (kind, styleCtx, nodeCtx) {
-			console.log("yah", kind, styleCtx, nodeCtx);
 			mindmap.revBoxManager.historyStack.push({kind : kind, styleCtx : styleCtx, nodeCtx : nodeCtx});
 			
 			revBoxManager.updateView();
 		};
 		
 		document.getElementById("revBoxViewPickerAll").onclick = function () {
-			this.classList.add("selected");
-			document.getElementById("revBoxViewPickerNode").classList.remove("selected");
+			
+			mindmap.revBoxManager.displayAll = true;
+			
+// console.log(this.displayAll);
 			
 			mindmap.revBoxManager.updateView();			
 		}
 		
 		document.getElementById("revBoxViewPickerNode").onclick = function () {
-			this.classList.add("selected");
-			document.getElementById("revBoxViewPickerAll").classList.remove("selected");
+			
+			mindmap.revBoxManager.displayAll = false;			
+			// console.log(this.displayAll);
+
 			
 			mindmap.revBoxManager.updateView();
 		}
 
 		this.updateView = function () {
 			
-
+			if(this.displayAll) {
+				document.getElementById("revBoxViewPickerAll").classList.add("selected");
+				document.getElementById("revBoxViewPickerNode").classList.remove("selected");
+			}
+			else {
+				document.getElementById("revBoxViewPickerAll").classList.remove("selected");
+				document.getElementById("revBoxViewPickerNode").classList.add("selected");
+			}
 			
+
 
 			var revBoxStackElement = document.getElementById("revBoxStackElement");
 			
 			revBoxStackElement.innerHTML = "";
+
 			
-			var allNodes = document.getElementById("revBoxViewPickerAll").classList.contains("selected");
-			
-			if(!allNodes && mindmap.getSelectedNode() == null) {
+			console.log(mindmap.getSelectedNode());
+			/*
+			if(mindmap.getSelectedNode() == null) {
 				document.getElementById("revBoxViewPickerAll").click();
-			}
+			}*/
 			
 			for(var i=this.historyStack.length-1;i>=0;i--) {
 				
-				if(!allNodes && this.historyStack[i].nodeCtx.node.id != mindmap.getSelectedNode().id)
-					continue;
+				var isNode = mindmap.getSelectedNode() != null && this.historyStack[i].nodeCtx.node != null && this.historyStack[i].nodeCtx.node.id == mindmap.getSelectedNode().id;
+				var isParentNode = mindmap.getSelectedNode() != null && this.historyStack[i].nodeCtx.parentNode != null && this.historyStack[i].nodeCtx.parentNode.id == mindmap.getSelectedNode().id;
+
 				
 				var title = "";
 				var subtitle = "";	
@@ -1907,12 +1923,20 @@ MindmapFrame = function (c) {
 				switch(this.historyStack[i].kind) {
 					
 					case "node-edit-label" :
-						title = "<a>Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Label";
+					
+						if(!this.displayAll && !isNode)
+							continue;
+					
+						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Label";
 						subtitle = 'Précédement "'+ this.historyStack[i].styleCtx +'"';
 						break;
 						
 					case "node-edit-format" :
-						title = "<a>Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Format";
+
+						if(!this.displayAll && !isNode)
+							continue;
+						
+						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Format";
 						
 						subtitle = "Précédement ";
 						if(this.historyStack[i].styleCtx.weight == "bold")
@@ -1928,22 +1952,38 @@ MindmapFrame = function (c) {
 						break;
 						
 					case "node-edit-family" :
-						title = "<a>Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Police";
+					
+						if(!this.displayAll && !isNode)
+							continue;
+						
+						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Police";
 						subtitle = 'Précédement <span style="display:inline;font-family:'+this.historyStack[i].styleCtx+';" >'+ this.historyStack[i].styleCtx +'</span>';
 						break;
 						
 					case "node-edit-color" :
-						title = "<a>Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Couleur";
+					
+						if(!this.displayAll && !isNode)
+							continue;
+						
+						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Couleur";
 						subtitle = 'Précédement <span style="display:inline;color:'+this.historyStack[i].styleCtx+';" >&#x1F532; '+ this.historyStack[i].styleCtx +'</span>';
 						break;
 						
 					case "node-edit-dx" :
-						title = "<a>Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Déplacement";
+					
+						if(!this.displayAll && !isNode)
+							continue;
+						
+						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Déplacement";
 						break;
 						
 					case "node-add" :
-						title = "<a>Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Ajout";
-						subtitle = 'Fils de #<a>'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
+					
+						if(!this.displayAll && !isParentNode)
+							continue;					
+					
+						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Ajout";
+						subtitle = 'Fils de <a href="#node:'+this.historyStack[i].nodeCtx.parentNode.id+'">#'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
 
 						if(!(this.historyStack[i].nodeCtx.node.id in mindmap.nodes))
 							display = false;
@@ -1951,8 +1991,12 @@ MindmapFrame = function (c) {
 						break;
 						
 					case "node-delete" :
+					
+						if(!this.displayAll && !isParentNode)
+							continue;					
+					
 						title = "Noeud #"+this.historyStack[i].nodeCtx.node.id+" - Suppression";
-						subtitle = 'Fils de #<a>'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
+						subtitle = 'Fils de <a href="#node:'+this.historyStack[i].nodeCtx.parentNode.id+'">#'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
 						break;
 						
 
@@ -2003,6 +2047,7 @@ MindmapFrame = function (c) {
 						
 						case "node-edit-label" :
 
+						
 							mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind, 
 																mindmap.revBoxManager.historyStack[index].nodeCtx.node.label, 
 																mindmap.revBoxManager.historyStack[index].nodeCtx
@@ -2015,11 +2060,23 @@ MindmapFrame = function (c) {
 						case "node-edit-format" :
 						
 							mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind, 
-																mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.format, 
+																	{
+																		"weight" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.weight,
+																		"style" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.style,
+																		"decoration" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.decoration
+																	},
 																mindmap.revBoxManager.historyStack[index].nodeCtx
 															);
 															
-							mindmap.revBoxManager.historyStack[index].nodeCtx.node.format = mindmap.revBoxManager.historyStack[index].styleCtx;			
+
+
+							var styleCtx = mindmap.revBoxManager.historyStack[index].styleCtx;
+
+						
+							mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.weight = ("weight" in styleCtx) ? styleCtx.weight : "normal";
+							mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.style = ("style" in styleCtx) ? styleCtx.style : "normal";
+							mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.decoration = ("decoration" in styleCtx) ? styleCtx.decoration : "none";
+													
 
 							break;
 							
@@ -2312,39 +2369,27 @@ MindmapFrame = function (c) {
         this.label = null;
         this.style = null;
 		
-		this.loaded = null;
+		this.loadedNode = null;
+		
+		this.init = false;
 
 
         this.labelLoad = function () {
-            if (mindmap.getSelectedNode() != undefined) {
-                editBoxManager.label = mindmap.getSelectedNode().label;
+            if (this.loadedNode != undefined) {
+                editBoxManager.label = this.loadedNode.label;
                 return true;
             }
             return false;
         };
 
         this.styleLoad = function () {
-            if (mindmap.getSelectedNode() != undefined) {
-                editBoxManager.style = JSON.parse(JSON.stringify(mindmap.getSelectedNode().style));
+            if (this.loadedNode != undefined) {
+                editBoxManager.style = JSON.parse(JSON.stringify(this.loadedNode.style));
                 return true;
             }
             return false;
         };
-		
-		this.focus = function () {
-                this.editBox.elements["editBox_label"].focus();			
-		};
 
-        this.load = function () {
-
-            if (mindmap.getSelectedNode() != undefined) {
-
-                this.labelLoad();
-                this.styleLoad();
-                this.updateView();
-
-            }
-        };
 
         this.editBox.onsubmit = function () {
             return false;
@@ -2395,7 +2440,9 @@ MindmapFrame = function (c) {
 
         this.editBox.elements["editBox_delete"].onclick = function () {
             if (mindmap.getSelectedNode() != null)
-                mindmap.deleteSelectedNode();
+               mindmap.deleteSelectedNode();
+
+			
             editBoxManager.editBoxContainer.style.display = "none";
         };
 
@@ -2445,11 +2492,7 @@ MindmapFrame = function (c) {
 
         this.updateView = function () {
 			
-			var node = mindmap.getSelectedNode();
-			
-			var loaded = (this.loaded == node);
-			
-			if(node == null || !node.hasPerm("p_write")) {
+			if(this.loadedNode == null || !this.loadedNode.hasPerm("p_write")) {
 				
 				editBoxManager.editBox.elements["editBox_label"].disabled = true;
 				editBoxManager.editBox.elements["editBox_strike"].disabled = true;
@@ -2469,14 +2512,14 @@ MindmapFrame = function (c) {
 				editBoxManager.editBox.elements["editBox_family"].disabled = false;				
 			}
 			
-			if(node == null || !node.hasPerm("p_delete")) {
+			if(this.loadedNode == null || !this.loadedNode.hasPerm("p_delete")) {
 				editBoxManager.editBox.elements["editBox_delete"].disabled = true;		
 			}
 			else {
 				editBoxManager.editBox.elements["editBox_delete"].disabled = false;		
 			}
 			
-			if(!loaded)
+			if(this.loadedNode != null)
 				editBoxManager.editBox.elements["editBox_label"].value = this.label;
 			
 			editBoxManager.editBox.elements["editBox_family"].value = this.style.font.family;
@@ -2522,30 +2565,43 @@ MindmapFrame = function (c) {
             this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_italic"], editBoxManager.style.font.style == "italic");
             this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_underline"], editBoxManager.style.font.decoration == "underline");
             this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_strike"], editBoxManager.style.font.decoration == "strike");
-
-			this.loaded = node;
         };
 
         this.sync = function () {
 
             editBoxManager.updateView();
 
-            var node = mindmap.getSelectedNode();
 
-            if (node != undefined) {
+            if (editBoxManager.loadedNode != undefined) {
 
-                mindmap.ioManager.out.editNode(node, editBoxManager.label, editBoxManager.style, true);
+                mindmap.ioManager.out.editNode(editBoxManager.loadedNode, editBoxManager.label, editBoxManager.style, true);
 
             }
         }
 		
 		this.editBoxContainer.onload = function () {
-			editBoxManager.load();
+			
+
+			
+			if(editBoxManager.loadedNode != null) {
+				clearTimeout(editBoxManager.syncDelay);
+				editBoxManager.sync();				
+			}
+
+			editBoxManager.loadedNode = mindmap.getSelectedNode();	
+			
+            if (editBoxManager.loadedNode != undefined) {
+
+                editBoxManager.labelLoad();
+                editBoxManager.styleLoad();
+                editBoxManager.updateView();
+				
+				editBoxManager.editBox.elements["editBox_label"].focus();	
+
+            }
+			// this.init = true;
 		};
 
-		this.editBoxContainer.onfocus = function () {
-			editBoxManager.focus();
-		};
 
 
     };
@@ -2793,9 +2849,24 @@ MindmapFrame = function (c) {
                     }
 
                     break;
+				case 'clickPath' :
+				
+					if(eventManager.eventData.path == e.target) {
+						var nodeId = eventManager.eventData.path.getAttribute("name");
+						
+						if(nodeId in mindmap.nodes)
+							mindmap.selectNode(mindmap.nodes[nodeId]);
+					}	
 
+					eventManager.eventData = null;
+					eventManager.eventType = null;
+					
+					break;
                 case 'offsetNode':
+				
 
+
+								
                     switch (e.type) {
 
                         case 'mouseup':
@@ -2961,7 +3032,7 @@ MindmapFrame = function (c) {
                                     w: 0
                                 };
                             }
-                            else if (e.target.nodeName == 'g' && e.target.name == 'node') {
+                            else if ((e.target.nodeName == 'g' && e.target.name == 'node')) {
                                 eventManager.eventType = 'offsetNode';
 
                                 var nodeId = e.target.id;
@@ -2974,7 +3045,15 @@ MindmapFrame = function (c) {
                                 };
                             }
                             // if(e.target.id == 'container') {
-                            else if (e.target.nodeName == "svg" || e.target.nodeName == "path") {
+                            else if (e.target.nodeName == "path") {
+								
+								eventManager.eventType = 'clickPath';
+								eventManager.eventData = {
+									path : e.target
+								};
+							}
+								
+							else if (e.target.nodeName == "svg") {
 
 
                                 window.document.body.style.cursor = "grabbing";
@@ -3082,6 +3161,15 @@ MindmapFrame = function (c) {
 
                     console.log("Parsing data ...");
                     // console.log(jwr);
+					
+					if(data == null) {
+						mindmap.notificationManager.push("Il y a eu un problème de chargement", "Recharger", function () {
+							
+							location.reload();
+							
+						});
+						return;
+					}
 
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
@@ -3144,7 +3232,7 @@ MindmapFrame = function (c) {
 				var destParentNode = mindmap.getSelectedNode();
 				
 				mindmap.actionManager.restoreNodePosterity(nodesStack, destParentNode);
-console.log( nodesStack);
+
 				// if(nodesStack.length > 0)
 					// mindmap.revBoxManager.pushHistory("node-copy", saveNodePosterity, {node:node, parentNode:parentNode});
 
@@ -3515,7 +3603,7 @@ console.log( nodesStack);
 
             this.negotiate = function (message) {
 
-console.log(message.data.msg);
+
                 switch (message.verb) {
 
                     case 'messaged':
