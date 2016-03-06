@@ -1946,7 +1946,7 @@ MindmapFrame = function (c) {
 						if(this.historyStack[i].styleCtx.decoration == "underline")
 							subtitle += '<i style="vertical-align: top;" class="material-icons">format_underline</i>';
 						else if(this.historyStack[i].styleCtx.decoration == "strike")
-							subtitle += '<i style="vertical-align: top;" class="material-icons">format_strike</i>';
+							subtitle += '<i style="vertical-align: top;" class="material-icons">format_strikethrough</i>';
 						
 						// subtitle = 'Précédement "'+ this.historyStack[i].styleCtx.weight +'"';
 						break;
