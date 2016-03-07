@@ -97,13 +97,13 @@ MindmapFrame = function (c) {
          */
         this.permissions = permissions;
 
-        if (permissions == null) {
+        if(permissions == null) {
             this.permissions = {
-                "p_read": false,
-                "p_write": false,
-                "p_delete": false,
-                "p_unlock": false,
-                "p_assign": false
+                "p_read" : false,
+                "p_write" : false,
+                "p_delete" : false,
+                "p_unlock" : false,
+                "p_assign" : false
             };
         }
 
@@ -176,7 +176,7 @@ MindmapFrame = function (c) {
          */
         this.orientation = null; //left, right, none
 
-		this.cutAction = null;
+        this.cutAction = null;
 
         this.actionOrigin = null;
 
@@ -512,7 +512,7 @@ MindmapFrame = function (c) {
                 this.lineElement.setAttribute('stroke-width', 4);
                 this.lineElement.setAttribute('stroke-linecap', 'butt');
 
-                if (this.cutAction) {
+                if(this.cutAction) {
 
                     this.lineElement.setAttribute('stroke-dasharray', "5,5");
 
@@ -627,7 +627,7 @@ MindmapFrame = function (c) {
                 this.branchElement.setAttribute('stroke-width', '4');
 
 
-                if (mindmap.action.src != this && this.cutAction == true) {
+                if(mindmap.action.src != this && this.cutAction == true) {
 
                     this.branchElement.setAttribute('stroke-dasharray', "5,5");
 
@@ -840,10 +840,10 @@ MindmapFrame = function (c) {
      * @type {{MindmapNode}}
      */
     this.nodes = {};
-	
-	this.action = {type : null, src : null, dest : null};
 
-	this.actionHistory = {};
+    this.action = {type : null, src : null, dest : null};
+
+    this.actionHistory = {};
 
 
     /*===== FUNCTIONS =====*/
@@ -928,7 +928,7 @@ MindmapFrame = function (c) {
      */
     this.selectNode = function (node) {
 
-        if (node == null)
+        if(node == null)
             return;
 
         if (node.worker == mindmap.worker) {
@@ -948,7 +948,7 @@ MindmapFrame = function (c) {
             mindmap.ioManager.out.selectNode(node);
         } else {
 
-            if (node.hasPerm('p_unlock')) {
+            if(node.hasPerm('p_unlock')) {
 
                 notificationManager.push("Ce noeud est verrouillé", "Le dévérouiller", function () {
                     mindmap.ioManager.out.unselectNode(node);
@@ -1048,13 +1048,13 @@ MindmapFrame = function (c) {
 
             for (var i in node.childNodes) {
 
-				if (!node.hasPerm("p_delete"))
+                if (!node.hasPerm("p_delete"))
                     return -2;
 
                 if (node.childNodes[i].worker != null)
                     return -1;
 
-				var recursion = traverse(node.childNodes[i]);
+                var recursion = traverse(node.childNodes[i]);
                 if (recursion < 0)
                     return recursion;
             }
@@ -1067,26 +1067,26 @@ MindmapFrame = function (c) {
 
         if (canDelete > 0) {
 
-			var node = this.getSelectedNode();
+            var node = this.getSelectedNode();
 
-			var parentNode = (node != null) ? node.parentNode : null;
+            var parentNode = (node != null) ? node.parentNode : null;
 
-			var saveNodePosterity = (node != null) ? mindmap.actionManager.saveNodePosterity(node) : null;
+            var saveNodePosterity = (node != null) ? mindmap.actionManager.saveNodePosterity(node) : null;
 
-			mindmap.revBoxManager.pushHistory("node-delete", saveNodePosterity, {node:node, parentNode:parentNode});
+            mindmap.revBoxManager.pushHistory("node-delete", saveNodePosterity, {node:node, parentNode:parentNode});
 
-			mindmap.actionManager.destroyNodePosterity(node, true);
+            mindmap.actionManager.destroyNodePosterity(node, true);
 
             this.drawMap();
 
         }
-		else {
+        else {
 
-			if(canDelete == -2)
-				notificationManager.push("Vous n'avez pas le droit de supprimer un noeud fils", "", null);
-			else
-				notificationManager.push("Un noeud inférieur est vérouillé par quelqu'un d'autre", "", null);
-		}
+            if(canDelete == -2)
+                notificationManager.push("Vous n'avez pas le droit de supprimer un noeud fils", "", null);
+            else
+                notificationManager.push("Un noeud inférieur est vérouillé par quelqu'un d'autre", "", null);
+        }
     };
 
     /**
@@ -1310,122 +1310,122 @@ MindmapFrame = function (c) {
 
     /*===== MANAGERS =====*/
 
-	this.actionManager = new function () {
+    this.actionManager = new function () {
 
-		this.saveNodePosterity = function (node) {
+        this.saveNodePosterity = function (node) {
 
-			var nodesStack = [];
+            var nodesStack = [];
 
-			var traverse = function (node) {
-				nodesStack.push({id : node.id, parentNodeId : node.parentNode.id, data : {label : node.label, style : node.style}});
-				_.forEach(node.childNodes, function (n) {
-					traverse(n);
-				});
-			};
-			traverse(node);
+            var traverse = function (node) {
+                nodesStack.push({id : node.id, parentNodeId : node.parentNode.id, data : {label : node.label, style : node.style}});
+                _.forEach(node.childNodes, function (n) {
+                    traverse(n);
+                });
+            };
+            traverse(node);
 
-			return nodesStack;
-		};
+            return nodesStack;
+        };
 
-		this.restoreNodePosterity = function (nodesStack, destParentNode) {
+        this.restoreNodePosterity = function (nodesStack, destParentNode) {
 
-			var originalNodesStack = JSON.parse(JSON.stringify(nodesStack));
+            var originalNodesStack = JSON.parse(JSON.stringify(nodesStack));
 
-			if(nodesStack == undefined || destParentNode == undefined || nodesStack.length == 0)
-				return false;
+            if(nodesStack == undefined || destParentNode == undefined || nodesStack.length == 0)
+                return false;
 
-			var idTranslationTable = {};
+            var idTranslationTable = {};
 
-			idTranslationTable[nodesStack[0].parentNodeId] = destParentNode.id;
+            idTranslationTable[nodesStack[0].parentNodeId] = destParentNode.id;
 
-			var copyNextNode = function () {
+            var copyNextNode = function () {
 
-				if(nodesStack.length > 0 && nodesStack[0].parentNodeId in idTranslationTable) {
+                if(nodesStack.length > 0 && nodesStack[0].parentNodeId in idTranslationTable) {
 
-					var _parentNodeId = idTranslationTable[nodesStack[0].parentNodeId];
+                    var _parentNodeId = idTranslationTable[nodesStack[0].parentNodeId];
 
-					var newNode = {
-						'parent_node' : _parentNodeId,
-						'style' : nodesStack[0].data.style,
-						'label' : nodesStack[0].data.label,
-						'permissions' : {
-										"p_read" : true,
-										"p_write" : true,
-										"p_delete" : true,
-										"p_unlock" : true,
-										"p_assign" : true
-										}
-					};
+                    var newNode = {
+                        'parent_node' : _parentNodeId,
+                        'style' : nodesStack[0].data.style,
+                        'label' : nodesStack[0].data.label,
+                        'permissions' : {
+                            "p_read" : true,
+                            "p_write" : true,
+                            "p_delete" : true,
+                            "p_unlock" : true,
+                            "p_assign" : true
+                        }
+                    };
 
-					io.socket.post(basePath + "node/new", {
-						nodes: [newNode]
-					}, function (nodes) {
-
-
-						_.forEach(nodes, function (n) {
-							mindmap.ioManager.in.createdNode(n);
-
-							idTranslationTable[nodesStack[0].id] = n.id;
-
-							//TODO user progress notification
-
-							return;
-
-						});
-
-						nodesStack.splice(0, 1);
-
-						copyNextNode();
+                    io.socket.post(basePath + "node/new", {
+                        nodes: [newNode]
+                    }, function (nodes) {
 
 
+                        _.forEach(nodes, function (n) {
+                            mindmap.ioManager.in.createdNode(n);
 
-					});
+                            idTranslationTable[nodesStack[0].id] = n.id;
 
-				}
-				else {
+                            //TODO user progress notification
 
-					//TODO user progress notification
+                            return;
 
-				}
+                        });
+
+                        nodesStack.splice(0, 1);
+
+                        copyNextNode();
 
 
-			};
 
-			copyNextNode();
+                    });
 
-			return originalNodesStack;
-		};
+                }
+                else {
 
-		this.destroyNodePosterity = function (node, notif) {
+                    //TODO user progress notification
 
-			var ids_to_delete = [];
+                }
 
-			var traverseDelete = function (node) {
 
-				var nodeId = node.id;
+            };
 
-				var childNodesId = [];
+            copyNextNode();
 
-				for (var i in node.childNodes)
-					childNodesId.push(node.childNodes[i].id);
+            return originalNodesStack;
+        };
 
-				for (var j = 0; j < childNodesId.length; j++) {
-					traverseDelete(mindmap.nodes[childNodesId[j]]);
+        this.destroyNodePosterity = function (node, notif) {
 
-				}
+            var ids_to_delete = [];
 
-				node.destroyNode();
+            var traverseDelete = function (node) {
 
-				ids_to_delete.push(nodeId);
+                var nodeId = node.id;
 
-			};
+                var childNodesId = [];
 
-			traverseDelete(node);
+                for (var i in node.childNodes)
+                    childNodesId.push(node.childNodes[i].id);
 
-			if(ids_to_delete.length > 0)
-				mindmap.ioManager.out.deleteNodes(ids_to_delete, notif);
-		};
-	};
+                for (var j = 0; j < childNodesId.length; j++) {
+                    traverseDelete(mindmap.nodes[childNodesId[j]]);
+
+                }
+
+                node.destroyNode();
+
+                ids_to_delete.push(nodeId);
+
+            };
+
+            traverseDelete(node);
+
+            if(ids_to_delete.length > 0)
+                mindmap.ioManager.out.deleteNodes(ids_to_delete, notif);
+        };
+    };
 
     this.keyboardManager = new function () {
 
@@ -1454,22 +1454,23 @@ MindmapFrame = function (c) {
             }
 
 
-            if (keyboardManager.ctrl) {
+
+            if(keyboardManager.ctrl) {
 
                 switch (e.keyCode) {
                     case 67: //C
-					
-						break;
-					case 68: //D
-						return false;
- 					case 69: //E
-						return false;
+
+                        break;
+                    case 68: //D
+                        return false;
+                    case 69: //E
+                        return false;
                     case 86: //V
-						return false;
-					case 88: //X
-						return false;
-					case 90: //Z
-						return false;
+                        return false;
+                    case 88: //X
+                        return false;
+                    case 90: //Z
+                        return false;
 
                 }
 
@@ -1501,21 +1502,21 @@ MindmapFrame = function (c) {
 
                         break;
                     case 67: //C
-					
-					
-						var node = mindmap.getSelectedNode();
-						
-						if(node != undefined && node != mindmap.rootNode) {
 
-							mindmap.action.type = "copy";
-							mindmap.action.src = mindmap.actionManager.saveNodePosterity(node);
-							mindmap.action.dest = null;	
-							
-							//TODO notification copier
-							
-						}
-						
-						
+
+                        var node = mindmap.getSelectedNode();
+
+                        if(node != undefined && node != mindmap.rootNode) {
+
+                            mindmap.action.type = "copy";
+                            mindmap.action.src = mindmap.actionManager.saveNodePosterity(node);
+                            mindmap.action.dest = null;
+
+                            //TODO notification copier
+
+                        }
+
+
 
                         /*
                          var node = mindmap.getSelectedNode();
@@ -1537,24 +1538,24 @@ MindmapFrame = function (c) {
                         break;
                     case 69: //E
 
-						mindmap.selecterBoxManager.changeBox("editBox");
+                        mindmap.selecterBoxManager.changeBox("editBox");
 
                         break;
-                     case 68: //D
-					
-						mindmap.action.type = null;
-						mindmap.action.src = null;
-						mindmap.action.dest = null;
-					
-						
-						mindmap.drawMap();
+                    case 68: //D
+
+                        mindmap.action.type = null;
+                        mindmap.action.src = null;
+                        mindmap.action.dest = null;
+
+
+                        mindmap.drawMap();
 
                         break;
                     case 86: //V
 
                         var node = mindmap.getSelectedNode();
 
-                        if (node != null && node.hasPerm("p_write")) {
+                        if(node != null && node.hasPerm("p_write")) {
 
                             mindmap.ioManager.out.cutPaste();
 
@@ -1568,9 +1569,9 @@ MindmapFrame = function (c) {
 
                         var node = mindmap.getSelectedNode();
 
-                        if (node != undefined && node != mindmap.rootNode) {
+                        if(node != undefined && node != mindmap.rootNode) {
 
-                            if (mindmap.action == undefined || mindmap.action.src != node) {
+                            if(mindmap.action == undefined || mindmap.action.src != node) {
                                 mindmap.action.type = "cut";
                                 mindmap.action.src = node;
                                 mindmap.action.dest = null;
@@ -1591,7 +1592,7 @@ MindmapFrame = function (c) {
 
                         break;
                     case 90: //Z
-						mindmap.selecterBoxManager.changeBox("revBox");
+                        mindmap.selecterBoxManager.changeBox("revBox");
 
                         break;
 
@@ -1601,10 +1602,10 @@ MindmapFrame = function (c) {
             }
             else {
 
-                if (e.keyCode == 46) {//SUPPR
+                if(e.keyCode == 46) {//SUPPR
 
                     var node = mindmap.getSelectedNode();
-                    if (node != null && node.hasPerm("p_delete"))
+                    if(node != null && node.hasPerm("p_delete"))
                         document.getElementById('editBox_deleteButton').click();
 
                     return false;
@@ -1820,7 +1821,7 @@ MindmapFrame = function (c) {
             notificationManager.notificationElement.classList.add('hidden');
             notificationManager.transition = setTimeout(function (callback) {
                 notificationManager.notificationElement.classList.add('displaynone');
-                if (typeof(callback) == "function")
+                if(typeof(callback) == "function")
                     callback();
 
             }, 500, callback);
@@ -1836,10 +1837,10 @@ MindmapFrame = function (c) {
 
                 notificationManager.notificationElement.classList.remove('hidden');
 
-                notificationManager.notificationElement.innerHTML = message + " <a>" + action + "</a>";
+                notificationManager.notificationElement.innerHTML = message + " <a>"+action+"</a>";
                 notificationManager.notificationElement.children[0].onclick = function () {
                     notificationManager.pop();
-                    if (typeof(callback) == "function")
+                    if(typeof(callback) == "function")
                         callback();
                 };
 
@@ -1852,293 +1853,293 @@ MindmapFrame = function (c) {
     this.revBoxManager = new function () {
 
         revBoxManager = this;
-		
-		this.historyStack = [];
 
-		this.displayAll = true;
+        this.historyStack = [];
+
+        this.displayAll = true;
 
 
         this.revBoxManagerContainer = document.getElementById("revBox");
 
         this.pushHistory = function (kind, styleCtx, nodeCtx) {
-			mindmap.revBoxManager.historyStack.push({kind : kind, styleCtx : styleCtx, nodeCtx : nodeCtx});
+            mindmap.revBoxManager.historyStack.push({kind : kind, styleCtx : styleCtx, nodeCtx : nodeCtx});
 
-			revBoxManager.updateView();
-		};
+            revBoxManager.updateView();
+        };
 
-		document.getElementById("revBoxViewPickerAll").onclick = function () {
+        document.getElementById("revBoxViewPickerAll").onclick = function () {
 
-			mindmap.revBoxManager.displayAll = true;
+            mindmap.revBoxManager.displayAll = true;
 
 // console.log(this.displayAll);
 
-			mindmap.revBoxManager.updateView();
-		}
+            mindmap.revBoxManager.updateView();
+        }
 
-		document.getElementById("revBoxViewPickerNode").onclick = function () {
+        document.getElementById("revBoxViewPickerNode").onclick = function () {
 
-			mindmap.revBoxManager.displayAll = false;
-			// console.log(this.displayAll);
+            mindmap.revBoxManager.displayAll = false;
+            // console.log(this.displayAll);
 
 
-			mindmap.revBoxManager.updateView();
-		}
+            mindmap.revBoxManager.updateView();
+        }
 
-		this.updateView = function () {
+        this.updateView = function () {
 
-			if(this.displayAll) {
-				document.getElementById("revBoxViewPickerAll").classList.add("selected");
-				document.getElementById("revBoxViewPickerNode").classList.remove("selected");
-			}
-			else {
-				document.getElementById("revBoxViewPickerAll").classList.remove("selected");
-				document.getElementById("revBoxViewPickerNode").classList.add("selected");
-			}
+            if(this.displayAll) {
+                document.getElementById("revBoxViewPickerAll").classList.add("selected");
+                document.getElementById("revBoxViewPickerNode").classList.remove("selected");
+            }
+            else {
+                document.getElementById("revBoxViewPickerAll").classList.remove("selected");
+                document.getElementById("revBoxViewPickerNode").classList.add("selected");
+            }
 
 
 
-			var revBoxStackElement = document.getElementById("revBoxStackElement");
+            var revBoxStackElement = document.getElementById("revBoxStackElement");
 
-			revBoxStackElement.innerHTML = "";
+            revBoxStackElement.innerHTML = "";
 
 
-			console.log(mindmap.getSelectedNode());
-			/*
-			if(mindmap.getSelectedNode() == null) {
-				document.getElementById("revBoxViewPickerAll").click();
-			}*/
+            console.log(mindmap.getSelectedNode());
+            /*
+             if(mindmap.getSelectedNode() == null) {
+             document.getElementById("revBoxViewPickerAll").click();
+             }*/
 
-			for(var i=this.historyStack.length-1;i>=0;i--) {
+            for(var i=this.historyStack.length-1;i>=0;i--) {
 
-				var isNode = mindmap.getSelectedNode() != null && this.historyStack[i].nodeCtx.node != null && this.historyStack[i].nodeCtx.node.id == mindmap.getSelectedNode().id;
-				var isParentNode = mindmap.getSelectedNode() != null && this.historyStack[i].nodeCtx.parentNode != null && this.historyStack[i].nodeCtx.parentNode.id == mindmap.getSelectedNode().id;
+                var isNode = mindmap.getSelectedNode() != null && this.historyStack[i].nodeCtx.node != null && this.historyStack[i].nodeCtx.node.id == mindmap.getSelectedNode().id;
+                var isParentNode = mindmap.getSelectedNode() != null && this.historyStack[i].nodeCtx.parentNode != null && this.historyStack[i].nodeCtx.parentNode.id == mindmap.getSelectedNode().id;
 
 
-				var title = "";
-				var subtitle = "";
+                var title = "";
+                var subtitle = "";
 
-				var display = true;
+                var display = true;
 
-				switch(this.historyStack[i].kind) {
+                switch(this.historyStack[i].kind) {
 
-					case "node-edit-label" :
+                    case "node-edit-label" :
 
-						if(!this.displayAll && !isNode)
-							continue;
+                        if(!this.displayAll && !isNode)
+                            continue;
 
-						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Label";
-						subtitle = 'Précédement "'+ this.historyStack[i].styleCtx +'"';
-						break;
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Label";
+                        subtitle = 'Précédement "'+ this.historyStack[i].styleCtx +'"';
+                        break;
 
-					case "node-edit-format" :
+                    case "node-edit-format" :
 
-						if(!this.displayAll && !isNode)
-							continue;
+                        if(!this.displayAll && !isNode)
+                            continue;
 
-						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Format";
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Format";
 
-						subtitle = "Précédement ";
-						if(this.historyStack[i].styleCtx.weight == "bold")
-							subtitle += '<i style="vertical-align: top;" class="material-icons">format_bold</i>';
-						if(this.historyStack[i].styleCtx.style == "italic")
-							subtitle += '<i style="vertical-align: top;" class="material-icons">format_italic</i>';
-						if(this.historyStack[i].styleCtx.decoration == "underline")
-							subtitle += '<i style="vertical-align: top;" class="material-icons">format_underline</i>';
-						else if(this.historyStack[i].styleCtx.decoration == "strike")
-							subtitle += '<i style="vertical-align: top;" class="material-icons">format_strikethrough</i>';
+                        subtitle = "Précédement ";
+                        if(this.historyStack[i].styleCtx.weight == "bold")
+                            subtitle += '<i style="vertical-align: top;" class="material-icons">format_bold</i>';
+                        if(this.historyStack[i].styleCtx.style == "italic")
+                            subtitle += '<i style="vertical-align: top;" class="material-icons">format_italic</i>';
+                        if(this.historyStack[i].styleCtx.decoration == "underline")
+                            subtitle += '<i style="vertical-align: top;" class="material-icons">format_underline</i>';
+                        else if(this.historyStack[i].styleCtx.decoration == "strike")
+                            subtitle += '<i style="vertical-align: top;" class="material-icons">format_strikethrough</i>';
 
-						// subtitle = 'Précédement "'+ this.historyStack[i].styleCtx.weight +'"';
-						break;
+                        // subtitle = 'Précédement "'+ this.historyStack[i].styleCtx.weight +'"';
+                        break;
 
-					case "node-edit-family" :
+                    case "node-edit-family" :
 
-						if(!this.displayAll && !isNode)
-							continue;
+                        if(!this.displayAll && !isNode)
+                            continue;
 
-						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Police";
-						subtitle = 'Précédement <span style="display:inline;font-family:'+this.historyStack[i].styleCtx+';" >'+ this.historyStack[i].styleCtx +'</span>';
-						break;
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Police";
+                        subtitle = 'Précédement <span style="display:inline;font-family:'+this.historyStack[i].styleCtx+';" >'+ this.historyStack[i].styleCtx +'</span>';
+                        break;
 
-					case "node-edit-color" :
+                    case "node-edit-color" :
 
-						if(!this.displayAll && !isNode)
-							continue;
+                        if(!this.displayAll && !isNode)
+                            continue;
 
-						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Couleur";
-						subtitle = 'Précédement <span style="display:inline;color:'+this.historyStack[i].styleCtx+';" >&#x1F532; '+ this.historyStack[i].styleCtx +'</span>';
-						break;
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Couleur";
+                        subtitle = 'Précédement <span style="display:inline;color:'+this.historyStack[i].styleCtx+';" >&#x1F532; '+ this.historyStack[i].styleCtx +'</span>';
+                        break;
 
-					case "node-edit-dx" :
+                    case "node-edit-dx" :
 
-						if(!this.displayAll && !isNode)
-							continue;
+                        if(!this.displayAll && !isNode)
+                            continue;
 
-						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Déplacement";
-						break;
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Déplacement";
+                        break;
 
-					case "node-add" :
+                    case "node-add" :
 
-						if(!this.displayAll && !isParentNode)
-							continue;
+                        if(!this.displayAll && !isParentNode)
+                            continue;
 
-						title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Ajout";
-						subtitle = 'Fils de <a href="#node:'+this.historyStack[i].nodeCtx.parentNode.id+'">#'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Ajout";
+                        subtitle = 'Fils de <a href="#node:'+this.historyStack[i].nodeCtx.parentNode.id+'">#'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
 
-						if(!(this.historyStack[i].nodeCtx.node.id in mindmap.nodes))
-							display = false;
+                        if(!(this.historyStack[i].nodeCtx.node.id in mindmap.nodes))
+                            display = false;
 
-						break;
+                        break;
 
-					case "node-delete" :
+                    case "node-delete" :
 
-						if(!this.displayAll && !isParentNode)
-							continue;
+                        if(!this.displayAll && !isParentNode)
+                            continue;
 
-						title = "Noeud #"+this.historyStack[i].nodeCtx.node.id+" - Suppression";
-						subtitle = 'Fils de <a href="#node:'+this.historyStack[i].nodeCtx.parentNode.id+'">#'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
-						break;
+                        title = "Noeud #"+this.historyStack[i].nodeCtx.node.id+" - Suppression";
+                        subtitle = 'Fils de <a href="#node:'+this.historyStack[i].nodeCtx.parentNode.id+'">#'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
+                        break;
 
 
 
 
-				}
+                }
 
-				if(!display)
-					continue;
+                if(!display)
+                    continue;
 
-				var out = "";
+                var out = "";
 
-				out += "<li>";
+                out += "<li>";
 
-					out += "<span>";
+                out += "<span>";
 
-						out += title;
+                out += title;
 
-						out += '<button class="revButton" name="'+i+'"><i class="material-icons">history</i></button>';
+                out += '<button class="revButton" name="'+i+'"><i class="material-icons">history</i></button>';
 
-					out += "</span>";
+                out += "</span>";
 
-					out += "<span>";
+                out += "<span>";
 
-						out += subtitle;
+                out += subtitle;
 
-					out += "</span>";
+                out += "</span>";
 
-				out += "</li>";
+                out += "</li>";
 
-				revBoxStackElement.innerHTML += out;
+                revBoxStackElement.innerHTML += out;
 
 
 
-			}
+            }
 
-			var revButtons = document.getElementsByClassName("revButton");
+            var revButtons = document.getElementsByClassName("revButton");
 
 
 
-			for(var i = 0; i < revButtons.length; i++) {
+            for(var i = 0; i < revButtons.length; i++) {
 
-				revButtons.item(i).onclick = function () {
+                revButtons.item(i).onclick = function () {
 
-					var index = this.getAttribute("name");
+                    var index = this.getAttribute("name");
 
-					switch(mindmap.revBoxManager.historyStack[index].kind) {
+                    switch(mindmap.revBoxManager.historyStack[index].kind) {
 
-						case "node-edit-label" :
+                        case "node-edit-label" :
 
 
-							mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
-																mindmap.revBoxManager.historyStack[index].nodeCtx.node.label,
-																mindmap.revBoxManager.historyStack[index].nodeCtx
-															);
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx.node.label,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
 
-							mindmap.revBoxManager.historyStack[index].nodeCtx.node.label = mindmap.revBoxManager.historyStack[index].styleCtx;
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.label = mindmap.revBoxManager.historyStack[index].styleCtx;
 
-							break;
+                            break;
 
-						case "node-edit-format" :
+                        case "node-edit-format" :
 
-							mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
-																	{
-																		"weight" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.weight,
-																		"style" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.style,
-																		"decoration" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.decoration
-																	},
-																mindmap.revBoxManager.historyStack[index].nodeCtx
-															);
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                {
+                                    "weight" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.weight,
+                                    "style" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.style,
+                                    "decoration" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.decoration
+                                },
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
 
 
 
-							var styleCtx = mindmap.revBoxManager.historyStack[index].styleCtx;
+                            var styleCtx = mindmap.revBoxManager.historyStack[index].styleCtx;
 
 
-							mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.weight = ("weight" in styleCtx) ? styleCtx.weight : "normal";
-							mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.style = ("style" in styleCtx) ? styleCtx.style : "normal";
-							mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.decoration = ("decoration" in styleCtx) ? styleCtx.decoration : "none";
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.weight = ("weight" in styleCtx) ? styleCtx.weight : "normal";
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.style = ("style" in styleCtx) ? styleCtx.style : "normal";
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.decoration = ("decoration" in styleCtx) ? styleCtx.decoration : "none";
 
 
-							break;
+                            break;
 
-						case "node-edit-family" :
-							mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
-																mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.family,
-																mindmap.revBoxManager.historyStack[index].nodeCtx
-															);
+                        case "node-edit-family" :
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.family,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
 
-							mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.family = mindmap.revBoxManager.historyStack[index].styleCtx;
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.family = mindmap.revBoxManager.historyStack[index].styleCtx;
 
-							break;
+                            break;
 
-						case "node-edit-color" :
-							mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
-																mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.color,
-																mindmap.revBoxManager.historyStack[index].nodeCtx
-															);
+                        case "node-edit-color" :
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.color,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
 
-							mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.color = mindmap.revBoxManager.historyStack[index].styleCtx;
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.color = mindmap.revBoxManager.historyStack[index].styleCtx;
 
-							break;
+                            break;
 
-						case "node-edit-dx" :
-							mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
-																mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.dx,
-																mindmap.revBoxManager.historyStack[index].nodeCtx
-															);
+                        case "node-edit-dx" :
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.dx,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
 
-							mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.dx = mindmap.revBoxManager.historyStack[index].styleCtx;
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.dx = mindmap.revBoxManager.historyStack[index].styleCtx;
 
-							break;
+                            break;
 
-						case "node-add" :
+                        case "node-add" :
 
-							mindmap.revBoxManager.pushHistory("node-delete", mindmap.actionManager.saveNodePosterity(mindmap.revBoxManager.historyStack[index].nodeCtx.node), mindmap.revBoxManager.historyStack[index].nodeCtx);
+                            mindmap.revBoxManager.pushHistory("node-delete", mindmap.actionManager.saveNodePosterity(mindmap.revBoxManager.historyStack[index].nodeCtx.node), mindmap.revBoxManager.historyStack[index].nodeCtx);
 
-							mindmap.actionManager.destroyNodePosterity(mindmap.revBoxManager.historyStack[index].nodeCtx.node, true);
+                            mindmap.actionManager.destroyNodePosterity(mindmap.revBoxManager.historyStack[index].nodeCtx.node, true);
 
-							break;
+                            break;
 
-						case "node-delete" :
+                        case "node-delete" :
 
 
-							mindmap.actionManager.restoreNodePosterity(mindmap.revBoxManager.historyStack[index].styleCtx, mindmap.revBoxManager.historyStack[index].nodeCtx.parentNode);
+                            mindmap.actionManager.restoreNodePosterity(mindmap.revBoxManager.historyStack[index].styleCtx, mindmap.revBoxManager.historyStack[index].nodeCtx.parentNode);
 
 
-							break;
+                            break;
 
-						}
+                    }
 
-						mindmap.revBoxManager.historyStack.splice(index, 1);
+                    mindmap.revBoxManager.historyStack.splice(index, 1);
 
-						mindmap.revBoxManager.updateView();
+                    mindmap.revBoxManager.updateView();
 
-						mindmap.drawMap();
+                    mindmap.drawMap();
 
-				};
-			}
-		
-		};
-		
-		
+                };
+            }
+
+        };
+
+
 
 
         this.revBoxManagerContainer.onload = function () {
@@ -2164,47 +2165,49 @@ MindmapFrame = function (c) {
 
             var node = mindmap.getSelectedNode();
 
+
+
             var canIAssignPerm = (node != null) ? node.hasPerm('p_assign') : false;
 
             var p = {
-                "p_read": 'visibility',
-                "p_write": 'create',
-                "p_delete": 'delete',
-                "p_unlock": 'lock_open',
-                "p_assign": 'assignment_ind'
+                "p_read" : 'visibility',
+                "p_write" : 'create',
+                "p_delete" : 'delete',
+                "p_unlock" : 'lock_open',
+                "p_assign" : 'assignment_ind'
             };
 
-            if (node != undefined || entities.length == 0) {
+            if(node != undefined || entities.length == 0) {
 
-                for (var i in entities) {
+                for(var i in entities) {
 
                     var id = entities[i].id;
                     var kind = entities[i].isUser ? 'u' : 'g';
 
-                    out += '<span name="' + id + '"><i name="' + kind + '" class="material-icons entity">';
-                    if (entities[i].isUser)
+                    out += '<span name="'+id+'"><i name="'+kind+'" class="material-icons entity">';
+                    if(entities[i].isUser)
                         out += 'account_circle';
                     else
                         out += 'group_work';
                     out += '</i> ';
                     out += entities[i].name;
-                    if (entities[i].isOwner)
+                    if(entities[i].isOwner)
                         out += ' (propriétaire)';
                     out += '</span>';
                     out += '<div class="perms">';
 
-                    for (var j in p) {
+                    for(var j in p) {
 
                         var checked = entities[i].perms[j] ? 'checked="checked"' : '';
                         var disabled = (!canIAssignPerm || entities[i].isOwner) ? 'disabled' : '';
 
-                        out += '<div>';
-                        out += '<label>';
-                        out += '<input name="' + j + '" type="checkbox" class="rightpicker" ' + disabled + ' ' + checked + ' />';
-                        out += '<span>&#x2713;</span>';
-                        out += '<i class="material-icons">' + p[j] + '</i>';
-                        out += '</label>';
-                        out += '</div>';
+                        out+= '<div>';
+                        out+= '<label>';
+                        out+= '<input name="'+j+'" type="checkbox" class="rightpicker" '+disabled+' '+checked+' />';
+                        out+= '<span>&#x2713;</span>';
+                        out+= '<i class="material-icons">'+p[j]+'</i>';
+                        out+= '</label>';
+                        out+= '</div>';
 
                     }
 
@@ -2223,7 +2226,7 @@ MindmapFrame = function (c) {
 
             var checkboxs = document.getElementById("permBoxResult").getElementsByTagName("input");
 
-            for (var i = 0; i < checkboxs.length; i++) {
+            for(var i = 0; i < checkboxs.length; i++) {
 
                 checkboxs.item(i).onchange = function () {
 
@@ -2234,10 +2237,11 @@ MindmapFrame = function (c) {
                     var permValue = this.checked;
 
                     console.log("Debug time !");
+                    if(!mindmap.getSelectedNode()) return;
 
                     //TODO 2: Fixer une permission en fonction de id, isUser, permKey et permValue
                     io.socket.post(basePath + "node/perm", {
-                        node: mindmap.getSelectedNode(),
+                        node: mindmap.getSelectedNode().id,
                         isUser: isUser,
                         permKey: permKey,
                         permValue: permValue,
@@ -2248,7 +2252,8 @@ MindmapFrame = function (c) {
 
                     });
 
-                    if (permKey == "p_write" && permValue) {
+
+                    if(permKey == "p_write" && permValue) {
                         var checkboxRead = this.parentNode.parentNode.parentNode.children["0"].children["0"].children["0"];
                         checkboxRead.checked = true;
                         checkboxRead.onchange();
@@ -2262,12 +2267,15 @@ MindmapFrame = function (c) {
         };
 
 
+
         this.updateModel = function () {
 
             var search = document.getElementById("permBoxSearchElement").value;
 
+            if(!mindmap.getSelectedNode()) return;
+
             io.socket.post(basePath + "search/search", {
-                node: mindmap.getSelectedNode(),
+                node: mindmap.getSelectedNode().id,
                 search: search
             }, function (data) {
                 console.log("Search" ,data);
@@ -2278,7 +2286,7 @@ MindmapFrame = function (c) {
 
         document.getElementById("permBoxSearchElement").onkeyup = function () {
 
-            if (this.searchDelay != null)
+            if(this.searchDelay != null)
                 clearTimeout(this.searchDelay);
 
             this.searchDelay = setTimeout(permBoxManager.updateModel, 400);
@@ -2286,7 +2294,6 @@ MindmapFrame = function (c) {
         };
 
         this.permBoxManagerContainer.onload = function () {
-
 
             document.getElementById("permBoxSearchElement").value = "";
 
@@ -2307,9 +2314,9 @@ MindmapFrame = function (c) {
         this.label = null;
         this.style = null;
 
-		this.loadedNode = null;
+        this.loadedNode = null;
 
-		this.init = false;
+        this.init = false;
 
 
         this.labelLoad = function () {
@@ -2350,7 +2357,7 @@ MindmapFrame = function (c) {
         this.editBox.elements["editBox_family"].onchange = function () {
             if (editBoxManager.styleLoad()) {
 
-                if (this.selectedOptions[0].getAttribute('name') != null) {
+                if(this.selectedOptions[0].getAttribute('name') != null) {
 
                     this.style.fontFamily = this.value;
                     editBoxManager.style.font.family = this.value;
@@ -2363,7 +2370,7 @@ MindmapFrame = function (c) {
         this.editBox.elements["editBox_color"].onchange = function () {
             if (editBoxManager.styleLoad()) {
 
-                if (this.selectedOptions[0].getAttribute('name') != null) {
+                if(this.selectedOptions[0].getAttribute('name') != null) {
 
                     this.style.color = this.selectedOptions[0].getAttribute('name');
                     editBoxManager.style.font.color = this.selectedOptions[0].getAttribute('name');
@@ -2378,7 +2385,7 @@ MindmapFrame = function (c) {
 
         this.editBox.elements["editBox_delete"].onclick = function () {
             if (mindmap.getSelectedNode() != null)
-               mindmap.deleteSelectedNode();
+                mindmap.deleteSelectedNode();
 
 
             editBoxManager.editBoxContainer.style.display = "none";
@@ -2415,6 +2422,7 @@ MindmapFrame = function (c) {
         };
 
 
+
         this.__checkBoxUpdate = function (checkbox, checked) {
 
             if (checked) {
@@ -2428,59 +2436,59 @@ MindmapFrame = function (c) {
         };
 
         this.updateView = function () {
-			
-			if(this.loadedNode == null || !this.loadedNode.hasPerm("p_write")) {
 
-				editBoxManager.editBox.elements["editBox_label"].disabled = true;
-				editBoxManager.editBox.elements["editBox_strike"].disabled = true;
-				editBoxManager.editBox.elements["editBox_underline"].disabled = true;
-				editBoxManager.editBox.elements["editBox_italic"].disabled = true;
-				editBoxManager.editBox.elements["editBox_bold"].disabled = true;
-				editBoxManager.editBox.elements["editBox_color"].disabled = true;
-				editBoxManager.editBox.elements["editBox_family"].disabled = true;
-			}
-			else {
-				editBoxManager.editBox.elements["editBox_label"].disabled = false;
-				editBoxManager.editBox.elements["editBox_strike"].disabled = false;
-				editBoxManager.editBox.elements["editBox_underline"].disabled = false;
-				editBoxManager.editBox.elements["editBox_italic"].disabled = false;
-				editBoxManager.editBox.elements["editBox_bold"].disabled = false;
-				editBoxManager.editBox.elements["editBox_color"].disabled = false;
-				editBoxManager.editBox.elements["editBox_family"].disabled = false;
-			}
+            if(this.loadedNode == null || !this.loadedNode.hasPerm("p_write")) {
 
-			if(this.loadedNode == null || !this.loadedNode.hasPerm("p_delete")) {
-				editBoxManager.editBox.elements["editBox_delete"].disabled = true;
-			}
-			else {
-				editBoxManager.editBox.elements["editBox_delete"].disabled = false;
-			}
+                editBoxManager.editBox.elements["editBox_label"].disabled = true;
+                editBoxManager.editBox.elements["editBox_strike"].disabled = true;
+                editBoxManager.editBox.elements["editBox_underline"].disabled = true;
+                editBoxManager.editBox.elements["editBox_italic"].disabled = true;
+                editBoxManager.editBox.elements["editBox_bold"].disabled = true;
+                editBoxManager.editBox.elements["editBox_color"].disabled = true;
+                editBoxManager.editBox.elements["editBox_family"].disabled = true;
+            }
+            else {
+                editBoxManager.editBox.elements["editBox_label"].disabled = false;
+                editBoxManager.editBox.elements["editBox_strike"].disabled = false;
+                editBoxManager.editBox.elements["editBox_underline"].disabled = false;
+                editBoxManager.editBox.elements["editBox_italic"].disabled = false;
+                editBoxManager.editBox.elements["editBox_bold"].disabled = false;
+                editBoxManager.editBox.elements["editBox_color"].disabled = false;
+                editBoxManager.editBox.elements["editBox_family"].disabled = false;
+            }
 
-			if(this.loadedNode != null)
-				editBoxManager.editBox.elements["editBox_label"].value = this.label;
-			
-			editBoxManager.editBox.elements["editBox_family"].value = this.style.font.family;
-			
-			if(editBoxManager.editBox.elements["editBox_family"].selectedOptions[0].getAttribute('name') != this.style.font.family) {
-				
-				var p = editBoxManager.editBox.elements["editBox_family"].children.item(0);
-				p.style.display = '';
-				p.innerHTML = this.style.font.family;
-				p.style.fontFamily = this.style.font.family;
-				p.setAttribute('name', this.style.font.family);
-				p.selected = true;
-				
-			}
-			
-			
-			editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
+            if(this.loadedNode == null || !this.loadedNode.hasPerm("p_delete")) {
+                editBoxManager.editBox.elements["editBox_delete"].disabled = true;
+            }
+            else {
+                editBoxManager.editBox.elements["editBox_delete"].disabled = false;
+            }
+
+            if(this.loadedNode != null)
+                editBoxManager.editBox.elements["editBox_label"].value = this.label;
+
+            editBoxManager.editBox.elements["editBox_family"].value = this.style.font.family;
+
+            if(editBoxManager.editBox.elements["editBox_family"].selectedOptions[0].getAttribute('name') != this.style.font.family) {
+
+                var p = editBoxManager.editBox.elements["editBox_family"].children.item(0);
+                p.style.display = '';
+                p.innerHTML = this.style.font.family;
+                p.style.fontFamily = this.style.font.family;
+                p.setAttribute('name', this.style.font.family);
+                p.selected = true;
+
+            }
+
+
+            editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
 
             editBoxManager.editBox.elements["editBox_color"].value = "&#x1F532; " + this.style.font.color;
 
-            if (this.style.font.color in editBoxManager.editBox.elements["editBox_color"].children) {
+            if(this.style.font.color in editBoxManager.editBox.elements["editBox_color"].children) {
                 editBoxManager.editBox.elements["editBox_color"].children[this.style.font.color].selected = true;
             }
-            else if (this.style.font.color != null) {
+            else if(this.style.font.color != null) {
 
                 var p = editBoxManager.editBox.elements["editBox_color"].children.item(0);
                 p.style.display = '';
@@ -2515,17 +2523,17 @@ MindmapFrame = function (c) {
 
             }
         }
-		
-		this.editBoxContainer.onload = function () {
+
+        this.editBoxContainer.onload = function () {
 
 
 
-			if(editBoxManager.loadedNode != null) {
-				clearTimeout(editBoxManager.syncDelay);
-				editBoxManager.sync();
-			}
+            if(editBoxManager.loadedNode != null) {
+                clearTimeout(editBoxManager.syncDelay);
+                editBoxManager.sync();
+            }
 
-			editBoxManager.loadedNode = mindmap.getSelectedNode();
+            editBoxManager.loadedNode = mindmap.getSelectedNode();
 
             if (editBoxManager.loadedNode != undefined) {
 
@@ -2533,11 +2541,11 @@ MindmapFrame = function (c) {
                 editBoxManager.styleLoad();
                 editBoxManager.updateView();
 
-				editBoxManager.editBox.elements["editBox_label"].focus();
+                editBoxManager.editBox.elements["editBox_label"].focus();
 
             }
-			// this.init = true;
-		};
+            // this.init = true;
+        };
 
 
 
@@ -2552,7 +2560,7 @@ MindmapFrame = function (c) {
         var selecters = document.getElementsByClassName("boxSelecter");
 
         //Open menu
-        for (var i = 0; i < selecters.length; i++) {
+        for(var i = 0;i < selecters.length; i++) {
 
             selecters.item(i).onclick = function () {
 
@@ -2572,7 +2580,7 @@ MindmapFrame = function (c) {
 
         this.close = function () {
 
-            for (var j = 0; j < this.boxs.length; j++) {
+            for(var j=0;j<this.boxs.length;j++) {
 
                 this.boxs.item(j).style.display = 'none';
                 this.boxs.item(j).onload();
@@ -2586,28 +2594,29 @@ MindmapFrame = function (c) {
             //var node = mindmap.getSelectedNode();
 
 
+
             //alert(mindmap.getSelectedNode().permissions);
 
             var already_open = false;
 
-            for (var j = 0; j < this.boxs.length; j++) {
+            for(var j=0;j<this.boxs.length;j++) {
                 this.boxs[j].onload();
-                if (!already_open && this.boxs[j].style.display == 'block')
+                if(!already_open && this.boxs[j].style.display == 'block')
                     already_open = true;
             }
 
-            if (!already_open)
+            if(!already_open)
                 this.changeBox("editBox");
 
         };
 
         this.changeBox = function (id) {
 
-            for (var j = 0; j < this.boxs.length; j++) {
+            for(var j=0;j<this.boxs.length;j++) {
 
                 var box = this.boxs.item(j);
 
-                if (id == box.id) {
+                if(id == box.id) {
                     box.style.display = 'block';
                     box.onload();
                 }
@@ -2622,7 +2631,7 @@ MindmapFrame = function (c) {
         //Change box
         var boxRefs = document.getElementById("workselecter").children;
 
-        for (var i = 0; i < boxRefs.length; i++) {
+        for(var i=0; i < boxRefs.length; i++) {
 
             boxRefs.item(i).onclick = function () {
 
@@ -2785,19 +2794,19 @@ MindmapFrame = function (c) {
                     }
 
                     break;
-				case 'clickPath' :
+                case 'clickPath' :
 
-					if(eventManager.eventData.path == e.target) {
-						var nodeId = eventManager.eventData.path.getAttribute("name");
+                    if(eventManager.eventData.path == e.target) {
+                        var nodeId = eventManager.eventData.path.getAttribute("name");
 
-						if(nodeId in mindmap.nodes)
-							mindmap.selectNode(mindmap.nodes[nodeId]);
-					}
+                        if(nodeId in mindmap.nodes)
+                            mindmap.selectNode(mindmap.nodes[nodeId]);
+                    }
 
-					eventManager.eventData = null;
-					eventManager.eventType = null;
+                    eventManager.eventData = null;
+                    eventManager.eventType = null;
 
-					break;
+                    break;
                 case 'offsetNode':
 
 
@@ -2906,7 +2915,7 @@ MindmapFrame = function (c) {
 
                                 if (node != mindmap.rootNode && node.childNodes.length > 0) {
 
-									//var style = JSON.parse(JSON.stringify(node.style));
+                                    //var style = JSON.parse(JSON.stringify(node.style));
 
                                     node.style.folded = !node.style.folded;
 
@@ -2983,13 +2992,13 @@ MindmapFrame = function (c) {
                             // if(e.target.id == 'container') {
                             else if (e.target.nodeName == "path") {
 
-								eventManager.eventType = 'clickPath';
-								eventManager.eventData = {
-									path : e.target
-								};
-							}
+                                eventManager.eventType = 'clickPath';
+                                eventManager.eventData = {
+                                    path : e.target
+                                };
+                            }
 
-							else if (e.target.nodeName == "svg") {
+                            else if (e.target.nodeName == "svg") {
 
 
                                 window.document.body.style.cursor = "grabbing";
@@ -3020,7 +3029,7 @@ MindmapFrame = function (c) {
 
 
                                 if (zoom) {
-                                    if (mindmap.view.zoom < 5.0625) {
+                                    if(mindmap.view.zoom < 5.0625) {
 
                                         mindmap.view.zoom *= zoom_coef;
                                         mindmap.view.offset.x -= (zoom_coef * e.clientX - e.clientX) / mindmap.view.zoom;
@@ -3030,7 +3039,7 @@ MindmapFrame = function (c) {
                                 }
                                 else {
 
-                                    if (mindmap.view.zoom > 0.43) {
+                                    if(mindmap.view.zoom > 0.43){
 
                                         mindmap.view.zoom /= zoom_coef;
                                         mindmap.view.offset.x += (e.clientX - e.clientX / zoom_coef ) / mindmap.view.zoom;
@@ -3098,14 +3107,14 @@ MindmapFrame = function (c) {
                     console.log("Parsing data ...");
                     // console.log(jwr);
 
-					if(data == null) {
-						mindmap.notificationManager.push("Il y a eu un problème de chargement", "Recharger", function () {
+                    if(data == null) {
+                        mindmap.notificationManager.push("Il y a eu un problème de chargement", "Recharger", function () {
 
-							location.reload();
+                            location.reload();
 
-						});
-						return;
-					}
+                        });
+                        return;
+                    }
 
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
@@ -3126,53 +3135,53 @@ MindmapFrame = function (c) {
 
             this.cutPaste = function () {
 
-                if (mindmap.action.type != "cut") return;
+                if(mindmap.action.type != "cut") return;
 
                 var srcNode = mindmap.action.src;
 
                 var destParentNode = mindmap.getSelectedNode();
 
-				if(srcNode != undefined && destParentNode != undefined  && destParentNode.cutAction == false) {
-					
-					/*client cutPaste implementation, not stable*/
-					var nodesStack = mindmap.actionManager.saveNodePosterity(srcNode);
+                if(srcNode != undefined && destParentNode != undefined  && destParentNode.cutAction == false) {
 
-					mindmap.actionManager.destroyNodePosterity(srcNode, false);
+                    /*client cutPaste implementation, not stable*/
+                    var nodesStack = mindmap.actionManager.saveNodePosterity(srcNode);
 
-					mindmap.drawMap();
-					mindmap.action.type = "copy";
-					mindmap.action.src = nodesStack;
-					mindmap.action.dest = null;
-					
-					// mindmap.ioManager.out.copyPaste();
-					
-					//TODO 5: cutPaste opti côté serveur, variables utiles : srcNode, destParentNode for io.socket.post
-					
-					//dans le callback, si nécessaire, on peut détruire le tampon 
+                    mindmap.actionManager.destroyNodePosterity(srcNode, false);
 
-						// mindmap.action.type = null;
-						// mindmap.action.src = null;
-						// mindmap.action.dest = null;
-						
-						mindmap.drawMap();
-				}
-				
-			};
-			
-			this.copyPaste = function () {
-				
-				if(mindmap.action.type != "copy") return;
-				
-				var nodesStack = JSON.parse(JSON.stringify(mindmap.action.src));
-				
-				var destParentNode = mindmap.getSelectedNode();
+                    mindmap.drawMap();
+                    mindmap.action.type = "copy";
+                    mindmap.action.src = nodesStack;
+                    mindmap.action.dest = null;
 
-				mindmap.actionManager.restoreNodePosterity(nodesStack, destParentNode);
+                    // mindmap.ioManager.out.copyPaste();
 
-				// if(nodesStack.length > 0)
-					// mindmap.revBoxManager.pushHistory("node-copy", saveNodePosterity, {node:node, parentNode:parentNode});
+                    //TODO 5: cutPaste opti côté serveur, variables utiles : srcNode, destParentNode for io.socket.post
 
-			};
+                    //dans le callback, si nécessaire, on peut détruire le tampon
+
+                    // mindmap.action.type = null;
+                    // mindmap.action.src = null;
+                    // mindmap.action.dest = null;
+
+                    mindmap.drawMap();
+                }
+
+            };
+
+            this.copyPaste = function () {
+
+                if(mindmap.action.type != "copy") return;
+
+                var nodesStack = JSON.parse(JSON.stringify(mindmap.action.src));
+
+                var destParentNode = mindmap.getSelectedNode();
+
+                mindmap.actionManager.restoreNodePosterity(nodesStack, destParentNode);
+
+                // if(nodesStack.length > 0)
+                // mindmap.revBoxManager.pushHistory("node-copy", saveNodePosterity, {node:node, parentNode:parentNode});
+
+            };
 
             ////When user query server to get the id of a new node
             this.newNode = function (parentNodeId, worker, permissions, style) {
@@ -3200,10 +3209,10 @@ MindmapFrame = function (c) {
 
                 // console.log("Out : edit Node", node);
 
-				var updateStyle = _.isEqual(style, node.style) == false;
+                var updateStyle = _.isEqual(style, node.style) == false;
 
-				if(!updateView)
-					updateStyle = true;
+                if(!updateView)
+                    updateStyle = true;
 
                 var path = basePath + "node/update/" + (updateStyle ? 'yes' : 'no');
 
@@ -3219,9 +3228,9 @@ MindmapFrame = function (c) {
                 }, function (nodes) {
 
                     _.forEach(nodes, function (n) {
-						if(updateView) {
-							mindmap.ioManager.in.editNode(0, n, true);
-						}
+                        if(updateView) {
+                            mindmap.ioManager.in.editNode(0, n, true);
+                        }
 
                     });
 
@@ -3284,38 +3293,38 @@ MindmapFrame = function (c) {
 
                 // console.log("Out : delete Node", ids);
 
-				if(ids.length == 0)
-					return;
-				
-				var authorized = true;
+                if(ids.length == 0)
+                    return;
 
-				for(var i=0;i<ids.length;i++) {
-					var n = mindmap.nodes[ids[i]];
+                var authorized = true;
 
-					if(n == null)
-						continue;
+                for(var i=0;i<ids.length;i++) {
+                    var n = mindmap.nodes[ids[i]];
 
-					if(!n.hasPerm("p_delete")) {
+                    if(n == null)
+                        continue;
 
-						notificationManager.push("Vous n'avez pas le droit de supprimer un noeud fils", "");
-						authorized = false;
-						break;
-					}
+                    if(!n.hasPerm("p_delete")) {
 
-					if(n.worker != null && n.worker != mindmap.worker) {
-						notificationManager.push("Un noeud fils est verrouillé", "");
-						authorized = false;
-						break;
-					}
+                        notificationManager.push("Vous n'avez pas le droit de supprimer un noeud fils", "");
+                        authorized = false;
+                        break;
+                    }
 
-				}
+                    if(n.worker != null && n.worker != mindmap.worker) {
+                        notificationManager.push("Un noeud fils est verrouillé", "");
+                        authorized = false;
+                        break;
+                    }
 
-				if(notif) {
-					if(ids.length == 1)
-						notificationManager.push("Le noeud a été supprimé", "");
-					else
-						notificationManager.push("Les noeuds ont été supprimés", "");
-				}
+                }
+
+                if(notif) {
+                    if(ids.length == 1)
+                        notificationManager.push("Le noeud a été supprimé", "");
+                    else
+                        notificationManager.push("Les noeuds ont été supprimés", "");
+                }
                 //Données utiles : id
 
                 var data = {nodes: []};
@@ -3325,6 +3334,7 @@ MindmapFrame = function (c) {
                         id: n
                     });
                 });
+
 
 
                 io.socket.post(basePath + "node/delete", data, function (ids) {
@@ -3346,12 +3356,21 @@ MindmapFrame = function (c) {
 
                     var node = nodes[i];
 
+                    //TODO 1: Envoyer les permissions dans node, comme ce qui suit
+                    /*node.permissions = {
+                     "p_read" : true,
+                     "p_write" : true,
+                     "p_delete" : true,
+                     "p_unlock" : true,
+                     "p_assign" : true
+                     };
+                     */
 
                     ////TODO 4: Envoyer le worker actuel (vérouillage) dans node, comme ce qui suit
                     //if(node.id == 2) //pour les test sans implementation
                     //	node.worker = 2;
 
-                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label, node.owner);
+                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
 
                     if (mindmap.rootNode == undefined && nodes[i].parentNode == undefined && nodes[i] != undefined) {
 
@@ -3390,7 +3409,7 @@ MindmapFrame = function (c) {
                 mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
                 node = mindmap.nodes[node.id];
 
-				mindmap.revBoxManager.pushHistory("node-add", null, {node:node, parentNode:node.parentNode});
+                mindmap.revBoxManager.pushHistory("node-add", null, {node:node, parentNode:node.parentNode});
 
 
                 if (node.parentNode) {
@@ -3466,30 +3485,30 @@ MindmapFrame = function (c) {
             //When a collaborator edit a node
             this.editNode = function (workerId, node, isMe) {
 
-				if(node.id in mindmap.nodes && isMe) {
+                if(node.id in mindmap.nodes && isMe) {
 
-					var currentNode = mindmap.nodes[node.id];
+                    var currentNode = mindmap.nodes[node.id];
 
-	// console.log(currentNode.label, node.label);
+                    // console.log(currentNode.label, node.label);
 
-					if(node.label != currentNode.label)
-						mindmap.revBoxManager.pushHistory("node-edit-label", currentNode.label, {node:currentNode, parentNode:currentNode.parentNode});
+                    if(node.label != currentNode.label)
+                        mindmap.revBoxManager.pushHistory("node-edit-label", currentNode.label, {node:currentNode, parentNode:currentNode.parentNode});
 
-					if(node.style.dx != currentNode.style.dx)
-						mindmap.revBoxManager.pushHistory("node-edit-dx", currentNode.style.dx, {node:currentNode, parentNode:currentNode.parentNode});
+                    if(node.style.dx != currentNode.style.dx)
+                        mindmap.revBoxManager.pushHistory("node-edit-dx", currentNode.style.dx, {node:currentNode, parentNode:currentNode.parentNode});
 
-					if(node.style.font.family != currentNode.style.font.family)
-						mindmap.revBoxManager.pushHistory("node-edit-family", currentNode.style.font.family, {node:currentNode, parentNode:currentNode.parentNode});
+                    if(node.style.font.family != currentNode.style.font.family)
+                        mindmap.revBoxManager.pushHistory("node-edit-family", currentNode.style.font.family, {node:currentNode, parentNode:currentNode.parentNode});
 
-					if(node.style.font.color != currentNode.style.font.color)
-						mindmap.revBoxManager.pushHistory("node-edit-color", currentNode.style.font.color, {node:currentNode, parentNode:currentNode.parentNode});
+                    if(node.style.font.color != currentNode.style.font.color)
+                        mindmap.revBoxManager.pushHistory("node-edit-color", currentNode.style.font.color, {node:currentNode, parentNode:currentNode.parentNode});
 
-					if(node.style.font.weight != currentNode.style.font.weight || node.style.font.style != currentNode.style.font.style || node.style.font.decoration != currentNode.style.font.decoration)
-						mindmap.revBoxManager.pushHistory("node-edit-format", {weight : currentNode.style.font.weight, style : currentNode.style.font.style, decoration : currentNode.style.font.decoration}, {node:currentNode, parentNode:currentNode.parentNode});
+                    if(node.style.font.weight != currentNode.style.font.weight || node.style.font.style != currentNode.style.font.style || node.style.font.decoration != currentNode.style.font.decoration)
+                        mindmap.revBoxManager.pushHistory("node-edit-format", {weight : currentNode.style.font.weight, style : currentNode.style.font.style, decoration : currentNode.style.font.decoration}, {node:currentNode, parentNode:currentNode.parentNode});
 
 
 
-				}
+                }
 
                 mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
 
@@ -3545,8 +3564,8 @@ MindmapFrame = function (c) {
                                 break;
                             case 'Update_nodes':
                                 _.forEach(message.data.msg, function (n) {
-									if(n.style != null)
-										mindmap.ioManager.in.editNode(0, n, false);
+                                    if(n.style != null)
+                                        mindmap.ioManager.in.editNode(0, n, false);
                                 });
                                 break;
                             case 'Delete_nodes':
