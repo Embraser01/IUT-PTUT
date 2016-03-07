@@ -7,18 +7,18 @@ module.exports = {
 
         Permission.find({
                 where: {
-                    node: node_id,
-                    owner: req.user.id
+                    node: node_id
                 },
                 sort: 'updatedAt'
             })
-            .populate('user')
+            .populate('user', {
+                name: {'contains': search}
+            })
             .populate('group', {
                 name: {'contains': search}
             })
             .exec(function (err, perms) {
 
-                console.log(search, err);
                 var data = [];
 
                 _.forEach(perms, function (p) {
@@ -44,26 +44,59 @@ module.exports = {
                             display_name: {'contains': search}
                         }
                     })
-                    .populate('permissions', {node: node_id})
                     .exec(function (err, users) {
 
                         _.forEach(users, function (u) {
-                            data.push({
-                                perms: {
-                                    p_read: false,
-                                    p_write: false,
-                                    p_delete: false,
-                                    p_unlock: false,
-                                    p_assign: false
-                                },
-                                id: u.id,
-                                isOwner: false,
-                                isUser: true,
-                                name: u.display_name
-                            });
+
+                            if (!_.find(data, function (d) {
+                                    return (d.isUser && d.id === u.id);
+                                })) {
+                                data.push({
+                                    perms: {
+                                        p_read: false,
+                                        p_write: false,
+                                        p_delete: false,
+                                        p_unlock: false,
+                                        p_assign: false
+                                    },
+                                    id: u.id,
+                                    isOwner: false,
+                                    isUser: true,
+                                    name: u.display_name
+                                });
+                            }
                         });
 
-                        return res.json(data)
+                        Group.find({
+                                where: {
+                                    name: {'contains': search}
+                                }
+                            })
+                            .exec(function (err, groups) {
+
+                                _.forEach(groups, function (g) {
+
+                                    if (!_.find(data, function (d) {
+                                            return (!d.isUser && d.id === g.id);
+                                        })) {
+                                        data.push({
+                                            perms: {
+                                                p_read: false,
+                                                p_write: false,
+                                                p_delete: false,
+                                                p_unlock: false,
+                                                p_assign: false
+                                            },
+                                            id: g.id,
+                                            isOwner: false,
+                                            isUser: false,
+                                            name: g.name
+                                        });
+                                    }
+                                });
+
+                                return res.json(data)
+                            });
                     });
             });
 

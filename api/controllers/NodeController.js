@@ -43,11 +43,11 @@ function sendNodesUpdate(req, res, ids) {
         nodes = SerializeService.styleLoad(nodes, req.session.user.id);
         res.json(nodes);
 
-        _.forEach(nodes, function(n){
-            n.style = null;
-        });
+        /* _.forEach(nodes, function(n){
+         n.style = null;
+         });*/
 
-        return MindMapMsgService.send('Update_nodes', req, nodes); // Notify users before load style
+        return MindMapMsgService.send('Update_nodes', req, nodes);
     });
 }
 
@@ -227,5 +227,48 @@ module.exports = {
 
     perm: function (req, res) {
 
+        var node = req.param("node");
+        var permKey = req.param("permKey");
+        var permValue = req.param("permValue");
+        var isUser = req.param("isUser");
+        var id = req.param("id");
+
+        var request = {where: {node: node}};
+
+        if (isUser) request.where.user = id;
+        else request.where.group = id;
+
+        Permision.find(request).exec(function (err, perms) {
+            if (err) return console.log(err);
+
+            if (perms.length > 1) console.log("Plusieurs permissions pour un noeud/user/group");
+
+            if (!perms) {
+                var data = {
+                    node: node,
+                    owner: req.user.id
+                };
+
+                if (isUser) data.user = id;
+                else data.group = id;
+
+                data[permKey] = permValue;
+
+                Permission.create(data, function (err, perm) {
+                    if (err) return res.serverError();
+
+                    return res.json(perm);
+                });
+            } else {
+                var data = {};
+                data[permKey] = permValue;
+
+                Permission.update(perms[0].id, data, function (err, perm) {
+                    if (err) return res.serverError();
+
+                    return res.json(perm);
+                });
+            }
+        });
     }
 };
