@@ -2282,6 +2282,7 @@ MindmapFrame = function (c) {
                 permBoxManager.updateView(data); // On oublie pas de mettre à jour le modèle ensuite
             });
 
+
         };
 
         document.getElementById("permBoxSearchElement").onkeyup = function () {
@@ -2295,9 +2296,11 @@ MindmapFrame = function (c) {
 
         this.permBoxManagerContainer.onload = function () {
 
+
             document.getElementById("permBoxSearchElement").value = "";
 
             permBoxManager.updateModel();
+
 
         };
 
