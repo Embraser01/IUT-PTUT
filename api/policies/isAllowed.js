@@ -18,6 +18,7 @@ module.exports = function (req, res, next) {
         if (!user) return res.forbidden();
 
         req.mindmap = mindmap;
+        req.mindmapUser = user;
         req.mindmapSocket = user.sockets; // List of the user's sockets
         return next();
     } else {

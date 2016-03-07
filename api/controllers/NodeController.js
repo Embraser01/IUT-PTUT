@@ -199,7 +199,9 @@ module.exports = {
     },
 
     select: function (req, res) {
-        // TODO Select broadcast
+        var user = req.mindmapUser;
+        var node = req.param("node") || -1;
+
     },
 
     unselect: function (req, res) {
@@ -244,21 +246,27 @@ module.exports = {
             if (perms.length > 1) console.log("Plusieurs permissions pour un noeud/user/group");
 
             if (!perms) {
-                var data = {
-                    node: node,
-                    owner: req.user.id
-                };
 
-                if (isUser) data.user = id;
-                else data.group = id;
+                Node.find(node).exec(function(err, nodes){
+                    if(!nodes) return res.badRequest();
 
-                data[permKey] = permValue;
+                    var data = {
+                        node: node,
+                        owner: req.user.id
+                    };
 
-                Permission.create(data, function (err, perm) {
-                    if (err) return res.serverError();
+                    if (isUser) data.user = id;
+                    else data.group = id;
 
-                    return res.json(perm);
+                    data[permKey] = permValue;
+
+                    Permission.create(data, function (err, perm) {
+                        if (err) return res.serverError();
+
+                        return res.json(perm);
+                    });
                 });
+
             } else {
                 var data = {};
                 data[permKey] = permValue;
