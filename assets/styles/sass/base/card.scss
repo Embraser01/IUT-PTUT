@@ -22,9 +22,15 @@
 }
 
 .card-signup {
-  width: 100%
+  width: 100%;
+   flex:1;
 }
 
 .card-panel {
-  height:100%;
+  width: 100%;
+  flex:1;
+}
+
+.flexible {
+	display:flex;
 }
