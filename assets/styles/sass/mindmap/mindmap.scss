@@ -583,3 +583,10 @@ color:#2196f3;
 #revBoxStack a:hover {
 	text-decoration:underline;
 }
+
+.boxCloser {
+    cursor: pointer;
+    position: absolute;
+    right: 7px;
+    top: 7px;
+}

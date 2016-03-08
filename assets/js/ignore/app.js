@@ -2717,6 +2717,8 @@ MindmapFrame = function (c) {
 
 
         };
+		
+		
 
         this.reloadBoxs = function () {
             //dbg
@@ -2756,6 +2758,21 @@ MindmapFrame = function (c) {
             }
 
         };
+		
+        var boxClosers = document.getElementsByClassName("boxCloser");
+
+        
+        for(var i = 0;i < boxClosers.length; i++) {
+
+            boxClosers.item(i).onclick = function () {
+
+                mindmap.unselectNode(true);
+				mindmap.selecterBoxManager.changeBox(null);
+
+            };
+
+
+        }
 
         //Change box
         var boxRefs = document.getElementById("workselecter").children;
