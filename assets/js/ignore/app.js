@@ -2293,6 +2293,9 @@ MindmapFrame = function (c) {
         };
 
         this.permBoxManagerContainer.onload = function () {
+			
+			document.getElementById("permBoxTitle").textContent = (mindmap.getSelectedNode() == mindmap.rootNode) ? "Permissions de la carte " : "Permissions d'un noeud ";
+				
 
             document.getElementById("permBoxSearchElement").value = "";
 
@@ -3207,7 +3210,23 @@ MindmapFrame = function (c) {
 
             }
         };
-    };
+    
+		var menu = document.getElementById("dropdown-user");
+		
+		var li_right = document.createElement("li");
+		
+		li_right.innerHTML = '<a id="pickGlobalRight">Droits globaux</a>';
+		
+		menu.insertBefore(li_right, menu.childNodes[0]);
+		
+		document.getElementById("pickGlobalRight").onclick = function () {
+			
+			mindmap.rootNode.viewNode();
+			mindmap.selectNode(mindmap.rootNode);
+			mindmap.selecterBoxManager.changeBox("permBox");
+			
+		};
+	};
 
     /**
      * Distant event manager (i/o)
