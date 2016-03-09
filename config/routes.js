@@ -104,6 +104,15 @@ module.exports.routes = {
         }
     },
 
+    /*===== Group Controller =====*/
+    'get /groups': {
+        controller: 'GroupController',
+        action: 'index',
+        locals: {
+            layout: 'layouts/explorer'
+        }
+    }
+
 
     /*===== Test Controller =====*/
 
