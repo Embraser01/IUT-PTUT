@@ -3,7 +3,7 @@ module.exports = {
     search: function (req, res) {
 
         var search = req.param("search");
-        var node_id = req.param("node") || -1;
+        var node_id = req.param("nodes")[0] || -1;
 
         Permission.find({
                 where: {

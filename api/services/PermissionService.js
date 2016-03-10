@@ -33,22 +33,6 @@ function normalize(perms) {
     return final_perm;
 }
 
-
-function mindMapIsAllowed_old(req, id, cb) {
-
-    getGroups(req.user.id, function (groups) {
-        Node.findOne({where: {mindmap: id, parent_node: null}}).populate('permissions', {
-            or: [{user: req.user.id},
-                {group: groups}]
-        }).exec(function (err, node) {
-
-            if (!node) return cb(normalize(null));
-
-            return cb(normalize(node.permissions));
-        });
-    });
-}
-
 function mindMapIsAllowed(req, id, cb) {
 
     getGroups(req.user.id, function (groups) {
