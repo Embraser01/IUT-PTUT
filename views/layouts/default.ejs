@@ -5,6 +5,7 @@
     <title><%= (title) ? title + '|' + AppName : AppName %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--STYLES-->
+    <link rel="stylesheet" href="/styles/importer.css">
     <!--STYLES END-->
 
     <link rel="stylesheet" href="//cdn.jsdelivr.net/flexboxgrid/6.3.0/flexboxgrid.min.css" type="text/css" >
@@ -41,6 +42,11 @@
     </footer>
 
     <!--SCRIPTS-->
+    <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/js/dependencies/jquery.min.js"></script>
+    <script src="/js/dependencies/lodash.min.js"></script>
+    <script src="/js/dependencies/materialize.min.js"></script>
+    <script src="/js/initMaterialize.js"></script>
     <!--SCRIPTS END-->
 
     <%- scripts %>
