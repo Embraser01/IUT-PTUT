@@ -56,7 +56,8 @@ MindmapFrame = function (c) {
      * @param permissions ?? permissions of the user for this node
      * @param style {Object} Style of the node
      * @param label {String} Label of the node
-     * @constructor
+     * @param owner
+ * @constructor
      */
     MindmapNode = function (id, parentNode, worker, permissions, style, label, owner) {
 
