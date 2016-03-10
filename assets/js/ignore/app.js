@@ -2230,16 +2230,15 @@ MindmapFrame = function (c) {
                     var permKey = this.getAttribute("name");
                     var permValue = this.checked;
 
-                    console.log("Debug time !");
                     if(!mindmap.getSelectedNode()) return;
 
                     //TODO 2: Fixer une permission en fonction de id, isUser, permKey et permValue
                     io.socket.post(basePath + "node/perm", {
-                        node: mindmap.getSelectedNode().id,
+                        nodes: [mindmap.getSelectedNode().id],
                         isUser: isUser,
                         permKey: permKey,
                         permValue: permValue,
-                        id: id
+                        id_user: id
 
                     }, function (data) {
 
@@ -2269,10 +2268,9 @@ MindmapFrame = function (c) {
             if(!mindmap.getSelectedNode()) return;
 
             io.socket.post(basePath + "search/search", {
-                node: mindmap.getSelectedNode().id,
+                nodes: [mindmap.getSelectedNode().id],
                 search: search
             }, function (data) {
-                console.log("Search" ,data);
                 permBoxManager.updateView(data); // On oublie pas de mettre à jour le modèle ensuite
             });
 
@@ -3263,7 +3261,6 @@ MindmapFrame = function (c) {
                 io.socket.post(basePath + "join", function (data, jwr) {
                     // Subscribe to mindmap event and receive all the mindmap once
 
-                    console.log("Parsing data ...");
                     // console.log(jwr);
 
                     if(data == null) {
@@ -3540,7 +3537,7 @@ MindmapFrame = function (c) {
                     //if(node.id == 2) //pour les test sans implementation
                     //	node.worker = 2;
 
-                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
+                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label, node.owner);
 
                     if (mindmap.rootNode == undefined && nodes[i].parentNode == undefined && nodes[i] != undefined) {
 
@@ -3575,8 +3572,7 @@ MindmapFrame = function (c) {
                 // // console.log(node);
                 // node.style.order = node.style.order_bis;
 
-                // // console.log(node);
-                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
+                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label, node.owner);
                 node = mindmap.nodes[node.id];
 
                 mindmap.revBoxManager.pushHistory("node-add", null, {node:node, parentNode:node.parentNode});

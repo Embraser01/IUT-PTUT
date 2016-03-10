@@ -124,16 +124,21 @@ module.exports = {
 
                         var isAllowed = false;
 
-                        if(!n.parent_node) {
+                        if (!n.parent_node) {
                             isAllowed = true;
-                        } else if (_.find(allowedNodes, function (n_bis) { // On regarde si son parent est autorisé
-                                if(!n_bis.parent_node && !n_bis.permission.p_read) return false;
+                        } else {
+                            var parent = _.find(allowedNodes, function (n_bis) { // On regarde si son parent est autorisé
+                                if (!n_bis.parent_node && !n_bis.permission.p_read) return false;
                                 return n_bis.id === n.parent_node;
-                            })) {
-                            isAllowed = true;
-                        } else if (n.permission.p_read) {
-                            isAllowed = true;
-                            n.rootLink = true;
+                            });
+
+                            if (parent) {
+                                isAllowed = true;
+                                n.permission = parent.permission;
+                            } else if (n.permission.p_read) {
+                                isAllowed = true;
+                                n.rootLink = true;
+                            }
                         }
 
                         if (isAllowed) allowedNodes.push(n);

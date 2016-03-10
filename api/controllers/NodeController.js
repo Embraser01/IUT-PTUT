@@ -108,14 +108,37 @@ module.exports = {
                                 style: new_styles[key].style,
                                 node: new_styles[key].node,
                                 owner: new_styles[key].owner
-                            }
+                            };
+                            n.permission = {
+                                p_read: true,
+                                p_write: true,
+                                p_delete: true,
+                                p_unlock: true,
+                                p_assign: true
+                            };
                         });
 
                         SerializeService.styleLoad(new_nodes, req.user.id);
 
                         MindMapMsgService.send('New_nodes', req, new_nodes); // Notify users
+
+                        res.json(new_nodes);
+
+                        var data = [];
+                        _.forEach(new_nodes, function (n) {
+                            data.push({
+                                node: n.id,
+                                owner: req.user.id,
+                                user: req.user.id,
+                                p_read: true,
+                                p_write: true,
+                                p_delete: true,
+                                p_unlock: true,
+                                p_assign: true
+                            });
+                        });
+                        return Permission.create(data);
                     }
-                    return res.json(new_nodes);
                 });
             });
         });
@@ -226,22 +249,23 @@ module.exports = {
         var permKey = req.param("permKey");
         var permValue = req.param("permValue");
         var isUser = req.param("isUser");
-        var id = req.param("id");
+        var id = req.param("id_user") || -1;
 
         var request = {where: {node: node}};
 
         if (isUser) request.where.user = id;
         else request.where.group = id;
 
-        Permision.find(request).exec(function (err, perms) {
+        Permission.find(request).exec(function (err, perms) {
             if (err) return console.log(err);
+
 
             if (perms.length > 1) console.log("Plusieurs permissions pour un noeud/user/group");
 
-            if (!perms) {
+            if (perms.length == 0) {
 
-                Node.find(node).exec(function(err, nodes){
-                    if(!nodes) return res.badRequest();
+                Node.find(node).exec(function (err, nodes) {
+                    if (!nodes) return res.badRequest();
 
                     var data = {
                         node: node,
