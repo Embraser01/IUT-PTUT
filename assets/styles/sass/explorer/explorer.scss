@@ -9,13 +9,19 @@
 .explorer-navigation {
   @extend .white;
 
-  .col {
-    .breadcrumb:nth-child(2)::before {
-      display: none
-    }
+  .breadcrumb:nth-child(1)::before {
+    display: none
+  }
+
+  .nav-wrapper {
+    display: flex;
   }
 
   .breadcrumb {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     cursor: pointer;
 
     &, &:before {
@@ -25,6 +31,10 @@
     &:last-child {
       font-weight: 500;
     }
+  }
+
+  [class^="btn"] {
+    line-height: 1;
   }
 
   .previous {

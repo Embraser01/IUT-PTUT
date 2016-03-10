@@ -3,7 +3,7 @@
     var explorer = new Explorer(
         $('.directories .explorer .row'),
         $('.files .explorer .row'),
-        $('.explorer-navigation .col')
+        $('.explorer-navigation .nav-wrapper')
     );
 
     function newDirectory(e) {
