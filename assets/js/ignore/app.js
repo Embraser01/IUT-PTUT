@@ -84,7 +84,7 @@ MindmapFrame = function (c) {
          */
         this.label = label;
 
-		this.owner = owner;
+        this.owner = owner;
         /**
          * Style of the node
          * @type {Object}
@@ -96,16 +96,16 @@ MindmapFrame = function (c) {
          * @type {Object}
          */
         this.permissions = permissions;
-		
-		if(permissions == null) {
-			this.permissions = {
-								"p_read" : false,
-								"p_write" : false,
-								"p_delete" : false,
-								"p_unlock" : false,
-								"p_assign" : false
-								};
-		}
+
+        if(permissions == null) {
+            this.permissions = {
+                "p_read" : false,
+                "p_write" : false,
+                "p_delete" : false,
+                "p_unlock" : false,
+                "p_assign" : false
+            };
+        }
 
 
         // Node data for drawing and other purpose
@@ -176,16 +176,18 @@ MindmapFrame = function (c) {
          */
         this.orientation = null; //left, right, none
 
-		this.cutAction = null;
-		
+        this.cutAction = null;
+
+        this.actionOrigin = null;
+
         /*===== FUNCTIONS =====*/
 
         /**
          * Initialisation function
          */
         this.init = function () {
-			
-			this.cutAction = false;
+
+            this.cutAction = false;
 
             //Create DOM Elements and Nodes
             this.nodeElement = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -236,6 +238,7 @@ MindmapFrame = function (c) {
                 this.branchElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 mindmap.layers.branchs.appendChild(this.branchElement);
                 this.branchElement.style.display = 'none';
+                this.branchElement.setAttribute("name", this.id);
             }
             else {
                 this.orientation = 'none';
@@ -356,11 +359,11 @@ MindmapFrame = function (c) {
          * Draw the node with the style attribute
          */
         this.drawNode = function () {
-			
-			this.cutAction = "type" in mindmap.action && "src" in mindmap.action && mindmap.action.type == "cut" && (mindmap.action.src == this || (this.parentNode != undefined && this.parentNode.cutAction));
-			
-			// // console.log(this.cutAction);
-			
+
+            this.cutAction = "type" in mindmap.action && "src" in mindmap.action && mindmap.action.type == "cut" && (mindmap.action.src == this || (this.parentNode != undefined && this.parentNode.cutAction));
+
+            // // console.log(this.cutAction);
+
             var nodePosition = {
                 x: this.position.x,
                 y: this.position.y
@@ -404,6 +407,7 @@ MindmapFrame = function (c) {
                 tmpStyle.font.weight = 'normal';
                 tmpStyle.font.style = 'normal';
                 tmpStyle.font.decoration = 'none';
+                tmpStyle.font.family = 'Roboto';
 
 
                 this.nodeElement.setAttribute("title", "Double-cliquer pour déplier");
@@ -433,7 +437,7 @@ MindmapFrame = function (c) {
 
             this.textNode.label = this.label;
 
-            this.textElement.setAttribute('font-family', this.style.font.family);
+            this.textElement.setAttribute('font-family', tmpStyle.font.family);
             this.textElement.setAttribute('font-size', parseFloat(this.style.font.size));
             this.textElement.setAttribute('fill', tmpStyle.font.color);
 
@@ -507,17 +511,17 @@ MindmapFrame = function (c) {
                 this.lineElement.setAttribute('stroke', this.style.parentBranch.color);
                 this.lineElement.setAttribute('stroke-width', 4);
                 this.lineElement.setAttribute('stroke-linecap', 'butt');
-				
-				if(this.cutAction) {
-					
-					this.lineElement.setAttribute('stroke-dasharray', "5,5");
-					
-				}
-				else {
-					
-					this.lineElement.setAttribute('stroke-dasharray', "");
-					
-				}
+
+                if(this.cutAction) {
+
+                    this.lineElement.setAttribute('stroke-dasharray', "5,5");
+
+                }
+                else {
+
+                    this.lineElement.setAttribute('stroke-dasharray', "");
+
+                }
 
                 this.textElement.setAttribute('y', textTop + rectHeight / 2 - textHeight - 4);
 
@@ -621,19 +625,19 @@ MindmapFrame = function (c) {
                 this.branchElement.setAttribute('fill', 'none');
                 this.branchElement.setAttribute('stroke', '#42a5f5');
                 this.branchElement.setAttribute('stroke-width', '4');
-               
-				
-				if(mindmap.action.src != this && this.cutAction == true) {
-					
-					this.branchElement.setAttribute('stroke-dasharray', "5,5");
-					
-				}
-				else {
-					
-					this.branchElement.setAttribute('stroke-dasharray', "");
-					
-				}
-				
+
+
+                if(mindmap.action.src != this && this.cutAction == true) {
+
+                    this.branchElement.setAttribute('stroke-dasharray', "5,5");
+
+                }
+                else {
+
+                    this.branchElement.setAttribute('stroke-dasharray', "");
+
+                }
+
 
                 //node.branchElement.style.filter = selection ? 'drop-shadow(5px 5px 7px #888)' : '';
             }
@@ -650,20 +654,23 @@ MindmapFrame = function (c) {
          * @param style
          * @param isMe
          */
-        this.editNode = function (worker, text, style, isMe) {
+        this.editNode = function (worker, text, style) {
 
             var drawFromParent = false;
 
             if (text != null)
                 this.label = text;
 
-            // // console.log(this.label, style)
 
             if (style) {
 
 
                 if ("dx" in style) {
+
+
                     this.style.dx = style.dx;
+
+
 
                     //TODO: Risque de bug, peut être que ce test ne s'applique qu'à la première génération
                     if (this.style.dx < 0)
@@ -671,6 +678,8 @@ MindmapFrame = function (c) {
                     else
                         this.orientation = 'right';
                 }
+
+
 
 
                 if ("order" in style)
@@ -697,6 +706,9 @@ MindmapFrame = function (c) {
                 if ("font" in style) {
 
                     _.forEach(style.font, function (n, key) {
+
+
+
                         this.style.font[key] = n;
 
                     }.bind(this));
@@ -721,7 +733,7 @@ MindmapFrame = function (c) {
 
 
             // TODO Bouger la fonction à la vraie edition et appeler cette fonction après la réponse serveur
-            if (isMe) mindmap.ioManager.out.editNode(this, true);
+            //if (isMe) mindmap.ioManager.out.editNode(this, true);
         };
 
         /**
@@ -739,20 +751,20 @@ MindmapFrame = function (c) {
             delete mindmap.nodes[this.id];
 
         };
-		
-		this.hasPerm = function (permKey) {
 
-			return (mindmap.worker == this.owner || (typeof(this.permissions) == "object" && permKey in this.permissions && this.permissions[permKey]));
-			
-		};
+        this.hasPerm = function (permKey) {
+
+            return (mindmap.worker == this.owner || (typeof(this.permissions) == "object" && permKey in this.permissions && this.permissions[permKey]));
+
+        };
 
 
         /*===== INITIALISATION =====*/
 
         if (parentNode != null)
-			parentNode.childNodes.push(this);
-       // else
-		//	mindmap.rootNode = this;
+            parentNode.childNodes.push(this);
+        // else
+        //	mindmap.rootNode = this;
 
         this.init();
     };
@@ -828,8 +840,10 @@ MindmapFrame = function (c) {
      * @type {{MindmapNode}}
      */
     this.nodes = {};
-	
-	this.action = {type : null, src : null, dest : null};
+
+    this.action = {type : null, src : null, dest : null};
+
+    this.actionHistory = {};
 
 
     /*===== FUNCTIONS =====*/
@@ -914,38 +928,38 @@ MindmapFrame = function (c) {
      */
     this.selectNode = function (node) {
 
-		if(node == null)
-			return;
-	
-		if (node.worker == mindmap.worker) {
-			//nothing
-		}
+        if(node == null)
+            return;
+
+        if (node.worker == mindmap.worker) {
+            //nothing
+        }
         else if (node.worker == null) { //If the node isn't currently selected by the user or a contributor
 
             if (this.getSelectedNode() != null) //If user has already selected a node
                 this.unselectNode(false);
 
             node.worker = this.worker;
-            mindmap.setSelectedNode(eventManager.eventData.node.id);
+            mindmap.setSelectedNode(node.id);
 
             mindmap.getSelectedNode().drawNode();
 
             // TODO Wait for confirmation before select
             mindmap.ioManager.out.selectNode(node);
         } else {
-			
-			if(node.hasPerm('p_unlock')) {
-				
-				notificationManager.push("Ce noeud est verrouillé", "Le dévérouiller", function () {
-					mindmap.ioManager.out.unselectNode(node);
-				});
-				
-			}
-			else {
-				
-				notificationManager.push("Vous n'avez pas le droit de déverouiller ce noeud", "", null);
-				
-			}
+
+            if(node.hasPerm('p_unlock')) {
+
+                notificationManager.push("Ce noeud est verrouillé", "Le dévérouiller", function () {
+                    mindmap.ioManager.out.unselectNode(node);
+                });
+
+            }
+            else {
+
+                notificationManager.push("Vous n'avez pas le droit de déverouiller ce noeud", "", null);
+
+            }
         }
 
     };
@@ -1034,49 +1048,44 @@ MindmapFrame = function (c) {
 
             for (var i in node.childNodes) {
 
-                if (node.childNodes[i].worker != null)
-                    return false;
+                if (!node.hasPerm("p_delete"))
+                    return -2;
 
-                if (!traverse(node.childNodes[i]))
-                    return false;
+                if (node.childNodes[i].worker != null)
+                    return -1;
+
+                var recursion = traverse(node.childNodes[i]);
+                if (recursion < 0)
+                    return recursion;
             }
 
-            return true;
+            return 1;
 
         };
 
         var canDelete = traverse(this.getSelectedNode());
 
-        if (canDelete) {
+        if (canDelete > 0) {
 
-            var ids_to_delete = [];
+            var node = this.getSelectedNode();
 
-            var traverseDelete = function (node) {
+            var parentNode = (node != null) ? node.parentNode : null;
 
-                var nodeId = node.id;
+            var saveNodePosterity = (node != null) ? mindmap.actionManager.saveNodePosterity(node) : null;
 
-                var childNodesId = [];
+            mindmap.revBoxManager.pushHistory("node-delete", saveNodePosterity, {node:node, parentNode:parentNode});
 
-                for (var i in node.childNodes)
-                    childNodesId.push(node.childNodes[i].id);
-
-                for (var j = 0; j < childNodesId.length; j++) {
-                    traverseDelete(mindmap.nodes[childNodesId[j]]);
-
-                }
-
-                node.destroyNode();
-
-                ids_to_delete.push(nodeId);
-
-            };
-
-            traverseDelete(this.getSelectedNode());
-
-            if (ids_to_delete) mindmap.ioManager.out.deleteNodes(ids_to_delete, true);
+            mindmap.actionManager.destroyNodePosterity(node, true);
 
             this.drawMap();
 
+        }
+        else {
+
+            if(canDelete == -2)
+                notificationManager.push("Vous n'avez pas le droit de supprimer un noeud fils", "", null);
+            else
+                notificationManager.push("Un noeud inférieur est vérouillé par quelqu'un d'autre", "", null);
         }
     };
 
@@ -1301,6 +1310,123 @@ MindmapFrame = function (c) {
 
     /*===== MANAGERS =====*/
 
+    this.actionManager = new function () {
+
+        this.saveNodePosterity = function (node) {
+
+            var nodesStack = [];
+
+            var traverse = function (node) {
+                nodesStack.push({id : node.id, parentNodeId : node.parentNode.id, data : {label : node.label, style : node.style}});
+                _.forEach(node.childNodes, function (n) {
+                    traverse(n);
+                });
+            };
+            traverse(node);
+
+            return nodesStack;
+        };
+
+        this.restoreNodePosterity = function (nodesStack, destParentNode) {
+
+            var originalNodesStack = JSON.parse(JSON.stringify(nodesStack));
+
+            if(nodesStack == undefined || destParentNode == undefined || nodesStack.length == 0)
+                return false;
+
+            var idTranslationTable = {};
+
+            idTranslationTable[nodesStack[0].parentNodeId] = destParentNode.id;
+
+            var copyNextNode = function () {
+
+                if(nodesStack.length > 0 && nodesStack[0].parentNodeId in idTranslationTable) {
+
+                    var _parentNodeId = idTranslationTable[nodesStack[0].parentNodeId];
+
+                    var newNode = {
+                        'parent_node' : _parentNodeId,
+                        'style' : nodesStack[0].data.style,
+                        'label' : nodesStack[0].data.label,
+                        'permissions' : {
+                            "p_read" : true,
+                            "p_write" : true,
+                            "p_delete" : true,
+                            "p_unlock" : true,
+                            "p_assign" : true
+                        }
+                    };
+
+                    io.socket.post(basePath + "node/new", {
+                        nodes: [newNode]
+                    }, function (nodes) {
+
+
+                        _.forEach(nodes, function (n) {
+                            mindmap.ioManager.in.createdNode(n);
+
+                            idTranslationTable[nodesStack[0].id] = n.id;
+
+                            //TODO user progress notification
+
+                            return;
+
+                        });
+
+                        nodesStack.splice(0, 1);
+
+                        copyNextNode();
+
+
+
+                    });
+
+                }
+                else {
+
+                    //TODO user progress notification
+
+                }
+
+
+            };
+
+            copyNextNode();
+
+            return originalNodesStack;
+        };
+
+        this.destroyNodePosterity = function (node, notif) {
+
+            var ids_to_delete = [];
+
+            var traverseDelete = function (node) {
+
+                var nodeId = node.id;
+
+                var childNodesId = [];
+
+                for (var i in node.childNodes)
+                    childNodesId.push(node.childNodes[i].id);
+
+                for (var j = 0; j < childNodesId.length; j++) {
+                    traverseDelete(mindmap.nodes[childNodesId[j]]);
+
+                }
+
+                node.destroyNode();
+
+                ids_to_delete.push(nodeId);
+
+            };
+
+            traverseDelete(node);
+
+            if(ids_to_delete.length > 0)
+                mindmap.ioManager.out.deleteNodes(ids_to_delete, notif);
+        };
+    };
+
     this.keyboardManager = new function () {
 
         keyboardManager = this;
@@ -1311,8 +1437,8 @@ MindmapFrame = function (c) {
 
         window.onkeydown = function (e) {
 
-			// if(e.keyCode == 116) return true;
-		
+            // if(e.keyCode == 116) return true;
+
             switch (e.keyCode) {
 
                 case 16:
@@ -1326,30 +1452,31 @@ MindmapFrame = function (c) {
                     return false;
 
             }
-			
-			
-			
-			if(keyboardManager.ctrl) {
-				
-				switch (e.keyCode) {
-                    case 67: //C
-					
-						break;
-					case 68: //D
-						return false;
-						
-                    case 86: //V
-						
-					
-						return false;
-					case 88: //X
-						return false;
 
-				}
-				
-			}
-			
-			// return false;
+
+
+            if(keyboardManager.ctrl) {
+
+                switch (e.keyCode) {
+                    case 67: //C
+
+                        break;
+                    case 68: //D
+                        return false;
+                    case 69: //E
+                        return false;
+                    case 86: //V
+                        return false;
+                    case 88: //X
+                        return false;
+                    case 90: //Z
+                        return false;
+
+                }
+
+            }
+
+            // return false;
         };
 
         window.onkeyup = function (e) {
@@ -1364,7 +1491,7 @@ MindmapFrame = function (c) {
                     break;
                 case 18:
                     keyboardManager.alt = false;
-                    break;			
+                    break;
 
             }
 
@@ -1375,126 +1502,121 @@ MindmapFrame = function (c) {
 
                         break;
                     case 67: //C
-					
-					
-						var node = mindmap.getSelectedNode();
-						
-						if(node != undefined && node != mindmap.rootNode) {
-							
-							
-							var nodesStack = [];
-							
-							var traverse = function (node) {
-								nodesStack.push({id : node.id, parentNodeId : node.parentNode.id, data : {label : node.label, style : node.style}});
-								_.forEach(node.childNodes, function (n) {
-									traverse(n);
-								});
-							};
-							traverse(node);
-					
-							mindmap.action.type = "copy";
-							mindmap.action.src = nodesStack;									
-							mindmap.action.dest = null;	
-							
-							//TODO notification copier
-							
-						}
-						
-						
 
-						/*
-						var node = mindmap.getSelectedNode();
-						
-						if(node != undefined && node != mindmap.rootNode) {
-							
-							if(mindmap.action == undefined || mindmap.action != node) {
-								mindmap.action.type = "copy";
-								mindmap.action = node;									
-							}
-							else {
-								mindmap.action = null;								
-								mindmap.action.type = null;
-							}
-						}*/
-							
-						mindmap.drawMap();
+
+                        var node = mindmap.getSelectedNode();
+
+                        if(node != undefined && node != mindmap.rootNode) {
+
+                            mindmap.action.type = "copy";
+                            mindmap.action.src = mindmap.actionManager.saveNodePosterity(node);
+                            mindmap.action.dest = null;
+
+                            //TODO notification copier
+
+                        }
+
+
+
+                        /*
+                         var node = mindmap.getSelectedNode();
+
+                         if(node != undefined && node != mindmap.rootNode) {
+
+                         if(mindmap.action == undefined || mindmap.action != node) {
+                         mindmap.action.type = "copy";
+                         mindmap.action = node;
+                         }
+                         else {
+                         mindmap.action = null;
+                         mindmap.action.type = null;
+                         }
+                         }*/
+
+                        mindmap.drawMap();
+
+                        break;
+                    case 69: //E
+
+                        mindmap.selecterBoxManager.changeBox("editBox");
 
                         break;
                     case 68: //D
-					
-						mindmap.action.type = null;
-						mindmap.action.src = null;
-						mindmap.action.dest = null;
-					
-						
-						mindmap.drawMap();
+
+                        mindmap.action.type = null;
+                        mindmap.action.src = null;
+                        mindmap.action.dest = null;
+
+
+                        mindmap.drawMap();
 
                         break;
                     case 86: //V
-					
-						var node = mindmap.getSelectedNode();
-						
-						if(node != null && node.hasPerm("p_write")) {
-						
-							mindmap.ioManager.out.cutPaste();
-							
-							mindmap.ioManager.out.copyPaste();
-							}
-						
-						mindmap.drawMap();
+
+                        var node = mindmap.getSelectedNode();
+
+                        if(node != null && node.hasPerm("p_write")) {
+
+                            mindmap.ioManager.out.cutPaste();
+
+                            mindmap.ioManager.out.copyPaste();
+                        }
+
+                        mindmap.drawMap();
 
                         break;
                     case 88: //X
-					
-						var node = mindmap.getSelectedNode();
-						
-						if(node != undefined && node != mindmap.rootNode) {
-							
-							if(mindmap.action == undefined || mindmap.action.src != node) {
-								mindmap.action.type = "cut";
-								mindmap.action.src = node;									
-								mindmap.action.dest = null;									
-							}
-							else {
-								mindmap.action.dest = null;								
-								mindmap.action.src = null;								
-								mindmap.action.type = null;
-							}
 
-							
-							mindmap.drawMap();
-							
-						}
+                        var node = mindmap.getSelectedNode();
+
+                        if(node != undefined && node != mindmap.rootNode) {
+
+                            if(mindmap.action == undefined || mindmap.action.src != node) {
+                                mindmap.action.type = "cut";
+                                mindmap.action.src = node;
+                                mindmap.action.dest = null;
+                            }
+                            else {
+                                mindmap.action.dest = null;
+                                mindmap.action.src = null;
+                                mindmap.action.type = null;
+                            }
+
+
+                            mindmap.drawMap();
+
+                        }
 
                         break;
                     case 89: //Y
 
                         break;
                     case 90: //Z
+                        mindmap.selecterBoxManager.changeBox("revBox");
 
                         break;
 
                 }
-				
-				return false;
+
+                return false;
             }
-			else {
-				
-				if(e.keyCode == 46) {//SUPPR
-				
-					var node = mindmap.getSelectedNode();
-					if(node != null && node.hasPerm("p_delete"))
-						document.getElementById('editBox_deleteButton').click();
-				
-					return false;
-				}
-				else {
-					return true;
-				}
-				
-			}
-			
-			
+            else {
+
+                if(e.keyCode == 46) {//SUPPR
+
+                    var node = mindmap.getSelectedNode();
+                    if(node != null && node.hasPerm("p_delete"))
+                        document.getElementById('editBox_deleteButton').click();
+
+                    return false;
+                }
+                else {
+                    return true;
+                }
+
+            }
+
+
         };
 
 
@@ -1685,83 +1807,349 @@ MindmapFrame = function (c) {
 
 
     };
-	
-	this.notificationManager = new function () {
-		
-		notificationManager = this;
-		
+
+    this.notificationManager = new function () {
+
+        notificationManager = this;
+
         this.notificationElement = document.getElementById("notification");
-		this.delay = null;
-		this.transition = null;
-		
-		this.pop = function (callback) {
-			
-			notificationManager.notificationElement.classList.add('hidden');
-			notificationManager.transition = setTimeout(function (callback) {
-				notificationManager.notificationElement.classList.add('displaynone');
-				if(typeof(callback) == "function")
-					callback();
-				
-			}, 500, callback);
-			
-		};
-		
-		this.push = function (message, action, callback) {
-			
-			this.notificationElement.classList.remove('displaynone');
-			
-			clearTimeout(notificationManager.transition);
-			notificationManager.transition = setTimeout(function (message, action, callback) {
-				
-				notificationManager.notificationElement.classList.remove('hidden');
-				
-				notificationManager.notificationElement.innerHTML = message + " <a>"+action+"</a>";
-				notificationManager.notificationElement.children[0].onclick = function () {
-					notificationManager.pop();
-					if(typeof(callback) == "function")
-						callback();
-				};
-				
-				clearTimeout(notificationManager.delay);
-				notificationManager.delay = setTimeout(notificationManager.pop, 5000);
-			
-			}, 300, message, action, callback);
-		};
-	};
+        this.delay = null;
+        this.transition = null;
+
+        this.pop = function (callback) {
+
+            notificationManager.notificationElement.classList.add('hidden');
+            notificationManager.transition = setTimeout(function (callback) {
+                notificationManager.notificationElement.classList.add('displaynone');
+                if(typeof(callback) == "function")
+                    callback();
+
+            }, 500, callback);
+
+        };
+
+        this.push = function (message, action, callback) {
+
+            this.notificationElement.classList.remove('displaynone');
+
+            clearTimeout(notificationManager.transition);
+            notificationManager.transition = setTimeout(function (message, action, callback) {
+
+                notificationManager.notificationElement.classList.remove('hidden');
+
+                notificationManager.notificationElement.innerHTML = message + " <a>"+action+"</a>";
+                notificationManager.notificationElement.children[0].onclick = function () {
+                    notificationManager.pop();
+                    if(typeof(callback) == "function")
+                        callback();
+                };
+
+                clearTimeout(notificationManager.delay);
+                notificationManager.delay = setTimeout(notificationManager.pop, 5000);
+
+            }, 300, message, action, callback);
+        };
+    };
     this.revBoxManager = new function () {
 
         revBoxManager = this;
-		
-		this.historyStack = [];
-		
+
+        this.historyStack = [];
+
+        this.displayAll = true;
+
 
         this.revBoxManagerContainer = document.getElementById("revBox");
 
-        this.pushHistory = function (kind, ctx, node) {
-			
-			this.historyStack.push({kind : kind, ctx : ctx, node : node});
-			
-			revBoxManager.updateView();
-		};
+        this.pushHistory = function (kind, styleCtx, nodeCtx) {
+            mindmap.revBoxManager.historyStack.push({kind : kind, styleCtx : styleCtx, nodeCtx : nodeCtx});
 
-		this.updateView = function () {
+            revBoxManager.updateView();
+        };
 
-			
-		
-		};
-		
-		
+        document.getElementById("revBoxViewPickerAll").onclick = function () {
 
-		
-		this.revBoxManagerContainer.onload = function () {
-			
-		
-			revBoxManager.updateView();
-			
-		};
-		
-	};
-	
+            mindmap.revBoxManager.displayAll = true;
+
+// console.log(this.displayAll);
+
+            mindmap.revBoxManager.updateView();
+        }
+
+        document.getElementById("revBoxViewPickerNode").onclick = function () {
+
+            mindmap.revBoxManager.displayAll = false;
+            // console.log(this.displayAll);
+
+
+            mindmap.revBoxManager.updateView();
+        }
+
+        this.updateView = function () {
+
+            if(this.displayAll) {
+                document.getElementById("revBoxViewPickerAll").classList.add("selected");
+                document.getElementById("revBoxViewPickerNode").classList.remove("selected");
+            }
+            else {
+                document.getElementById("revBoxViewPickerAll").classList.remove("selected");
+                document.getElementById("revBoxViewPickerNode").classList.add("selected");
+            }
+
+
+
+            var revBoxStackElement = document.getElementById("revBoxStackElement");
+
+            revBoxStackElement.innerHTML = "";
+
+
+            /*
+             if(mindmap.getSelectedNode() == null) {
+             document.getElementById("revBoxViewPickerAll").click();
+             }*/
+
+            for(var i=this.historyStack.length-1;i>=0;i--) {
+
+                var isNode = mindmap.getSelectedNode() != null && this.historyStack[i].nodeCtx.node != null && this.historyStack[i].nodeCtx.node.id == mindmap.getSelectedNode().id;
+                var isParentNode = mindmap.getSelectedNode() != null && this.historyStack[i].nodeCtx.parentNode != null && this.historyStack[i].nodeCtx.parentNode.id == mindmap.getSelectedNode().id;
+
+
+                var title = "";
+                var subtitle = "";
+
+                var display = true;
+
+                switch(this.historyStack[i].kind) {
+
+                    case "node-edit-label" :
+
+                        if(!this.displayAll && !isNode)
+                            continue;
+
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Label";
+                        subtitle = 'Précédement "'+ this.historyStack[i].styleCtx +'"';
+                        break;
+
+                    case "node-edit-format" :
+
+                        if(!this.displayAll && !isNode)
+                            continue;
+
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Format";
+
+                        subtitle = "Précédement ";
+                        if(this.historyStack[i].styleCtx.weight == "bold")
+                            subtitle += '<i style="vertical-align: top;" class="material-icons">format_bold</i>';
+                        if(this.historyStack[i].styleCtx.style == "italic")
+                            subtitle += '<i style="vertical-align: top;" class="material-icons">format_italic</i>';
+                        if(this.historyStack[i].styleCtx.decoration == "underline")
+                            subtitle += '<i style="vertical-align: top;" class="material-icons">format_underline</i>';
+                        else if(this.historyStack[i].styleCtx.decoration == "strike")
+                            subtitle += '<i style="vertical-align: top;" class="material-icons">format_strikethrough</i>';
+
+                        // subtitle = 'Précédement "'+ this.historyStack[i].styleCtx.weight +'"';
+                        break;
+
+                    case "node-edit-family" :
+
+                        if(!this.displayAll && !isNode)
+                            continue;
+
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Police";
+                        subtitle = 'Précédement <span style="display:inline;font-family:'+this.historyStack[i].styleCtx+';" >'+ this.historyStack[i].styleCtx +'</span>';
+                        break;
+
+                    case "node-edit-color" :
+
+                        if(!this.displayAll && !isNode)
+                            continue;
+
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Couleur";
+                        subtitle = 'Précédement <span style="display:inline;color:'+this.historyStack[i].styleCtx+';" >&#x1F532; '+ this.historyStack[i].styleCtx +'</span>';
+                        break;
+
+                    case "node-edit-dx" :
+
+                        if(!this.displayAll && !isNode)
+                            continue;
+
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Déplacement";
+                        break;
+
+                    case "node-add" :
+
+                        if(!this.displayAll && !isParentNode)
+                            continue;
+
+                        title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Ajout";
+                        subtitle = 'Fils de <a href="#node:'+this.historyStack[i].nodeCtx.parentNode.id+'">#'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
+
+                        if(!(this.historyStack[i].nodeCtx.node.id in mindmap.nodes))
+                            display = false;
+
+                        break;
+
+                    case "node-delete" :
+
+                        if(!this.displayAll && !isParentNode)
+                            continue;
+
+                        title = "Noeud #"+this.historyStack[i].nodeCtx.node.id+" - Suppression";
+                        subtitle = 'Fils de <a href="#node:'+this.historyStack[i].nodeCtx.parentNode.id+'">#'+this.historyStack[i].nodeCtx.parentNode.id+'</a>';
+                        break;
+
+
+
+
+                }
+
+                if(!display)
+                    continue;
+
+                var out = "";
+
+                out += "<li>";
+
+                out += "<span>";
+
+                out += title;
+
+                out += '<button class="revButton" name="'+i+'"><i class="material-icons">history</i></button>';
+
+                out += "</span>";
+
+                out += "<span>";
+
+                out += subtitle;
+
+                out += "</span>";
+
+                out += "</li>";
+
+                revBoxStackElement.innerHTML += out;
+
+
+
+            }
+
+            var revButtons = document.getElementsByClassName("revButton");
+
+
+
+            for(var i = 0; i < revButtons.length; i++) {
+
+                revButtons.item(i).onclick = function () {
+
+                    var index = this.getAttribute("name");
+
+                    switch(mindmap.revBoxManager.historyStack[index].kind) {
+
+                        case "node-edit-label" :
+
+
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx.node.label,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
+
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.label = mindmap.revBoxManager.historyStack[index].styleCtx;
+
+                            break;
+
+                        case "node-edit-format" :
+
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                {
+                                    "weight" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.weight,
+                                    "style" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.style,
+                                    "decoration" : mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.decoration
+                                },
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
+
+
+
+                            var styleCtx = mindmap.revBoxManager.historyStack[index].styleCtx;
+
+
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.weight = ("weight" in styleCtx) ? styleCtx.weight : "normal";
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.style = ("style" in styleCtx) ? styleCtx.style : "normal";
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.decoration = ("decoration" in styleCtx) ? styleCtx.decoration : "none";
+
+
+                            break;
+
+                        case "node-edit-family" :
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.family,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
+
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.family = mindmap.revBoxManager.historyStack[index].styleCtx;
+
+                            break;
+
+                        case "node-edit-color" :
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.color,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
+
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.font.color = mindmap.revBoxManager.historyStack[index].styleCtx;
+
+                            break;
+
+                        case "node-edit-dx" :
+                            mindmap.revBoxManager.pushHistory(	mindmap.revBoxManager.historyStack[index].kind,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.dx,
+                                mindmap.revBoxManager.historyStack[index].nodeCtx
+                            );
+
+                            mindmap.revBoxManager.historyStack[index].nodeCtx.node.style.dx = mindmap.revBoxManager.historyStack[index].styleCtx;
+
+                            break;
+
+                        case "node-add" :
+
+                            mindmap.revBoxManager.pushHistory("node-delete", mindmap.actionManager.saveNodePosterity(mindmap.revBoxManager.historyStack[index].nodeCtx.node), mindmap.revBoxManager.historyStack[index].nodeCtx);
+
+                            mindmap.actionManager.destroyNodePosterity(mindmap.revBoxManager.historyStack[index].nodeCtx.node, true);
+
+                            break;
+
+                        case "node-delete" :
+
+
+                            mindmap.actionManager.restoreNodePosterity(mindmap.revBoxManager.historyStack[index].styleCtx, mindmap.revBoxManager.historyStack[index].nodeCtx.parentNode);
+
+
+                            break;
+
+                    }
+
+                    mindmap.revBoxManager.historyStack.splice(index, 1);
+
+                    mindmap.revBoxManager.updateView();
+
+                    mindmap.drawMap();
+
+                };
+            }
+
+        };
+
+
+
+
+        this.revBoxManagerContainer.onload = function () {
+
+
+            revBoxManager.updateView();
+
+        };
+
+    };
+
     this.permBoxManager = new function () {
 
         permBoxManager = this;
@@ -1770,204 +2158,152 @@ MindmapFrame = function (c) {
 
         this.searchDelay = null;
 
-		this.updateView = function (entities) {
-			
-			var out = "";
-			
-			var node = mindmap.getSelectedNode();
-			
-			
-			
-			var canIAssignPerm = (node != null) ? node.hasPerm('p_assign') : false;
-			
-			var p = {
-				"p_read" : 'visibility',
-				"p_write" : 'create',
-				"p_delete" : 'delete',
-				"p_unlock" : 'lock_open',
-				"p_assign" : 'assignment_ind'
-				};
-			
-			if(node != undefined || entities.length == 0) {
-				
-				for(var i in entities) {
-					
-					var id = entities[i].id;
-					var kind = entities[i].isUser ? 'u' : 'g';
-			
-					out += '<span name="'+id+'"><i name="'+kind+'" class="material-icons entity">';
-					if(entities[i].isUser)
-						out += 'account_circle';
-					else
-						out += 'group_work';
-					out += '</i> ';
-					out += entities[i].name;
-					if(entities[i].isOwner)
-						out += ' (propriétaire)';
-					out += '</span>';
-					out += '<div class="perms">';
-					
-					for(var j in p) {
-						
-						var checked = entities[i].perms[j] ? 'checked="checked"' : '';
-						var disabled = (!canIAssignPerm || entities[i].isOwner) ? 'disabled' : '';
-						
-						out+= '<div>';
-							out+= '<label>';
-								out+= '<input name="'+j+'" type="checkbox" class="rightpicker" '+disabled+' '+checked+' />';
-								out+= '<span>&#x2713;</span>';
-								out+= '<i class="material-icons">'+p[j]+'</i>';
-							out+= '</label>';
-						out+= '</div>';
-						
-					}
-					
-					out += '</div>';
-					
-				}
-				
-			}
-			else {
-				out = "Aucun résultat";
-			}
+        this.updateView = function (entities) {
 
-			
-			document.getElementById("permBoxResult").innerHTML = out;
-			
-			
-			var checkboxs = document.getElementById("permBoxResult").getElementsByTagName("input");
-			
-			for(var i = 0; i < checkboxs.length; i++) {
-				
-				checkboxs.item(i).onchange = function () {
-					
-					var id = this.parentNode.parentNode.parentNode.previousElementSibling.getAttribute("name");
-					var isUser = (this.parentNode.parentNode.parentNode.previousElementSibling.children["0"].getAttribute("name") == 'u')
-					
-					var permKey = this.getAttribute("name");
-					var permValue = this.checked;
-					
-					//TODO 2: Fixer une permission en fonction de id, isUser, permKey et permValue
-					/*io.socket.post(basePath + ".../...", function (data) {
-						
-						rien à faire en retour
-						
-					});*/
-					
-					if(permKey == "p_write" && permValue) {
-						var checkboxRead = this.parentNode.parentNode.parentNode.children["0"].children["0"].children["0"];
-						checkboxRead.checked = true;
-						checkboxRead.onchange();
-					}
-					
-					
-				};
-				
-			}
-			
-		};
-		
+            var out = "";
 
-		
-		this.updateModel = function () {
+            var node = mindmap.getSelectedNode();
+
+
+
+            var canIAssignPerm = (node != null) ? node.hasPerm('p_assign') : false;
+
+            var p = {
+                "p_read" : 'visibility',
+                "p_write" : 'create',
+                "p_delete" : 'delete',
+                "p_unlock" : 'lock_open',
+                "p_assign" : 'assignment_ind'
+            };
+
+            if(node != undefined || entities.length == 0) {
+
+                for(var i in entities) {
+
+                    var id = entities[i].id;
+                    var kind = entities[i].isUser ? 'u' : 'g';
+
+                    out += '<span name="'+id+'"><i name="'+kind+'" class="material-icons entity">';
+                    if(entities[i].isUser)
+                        out += 'account_circle';
+                    else
+                        out += 'group_work';
+                    out += '</i> ';
+                    out += entities[i].name;
+                    if(entities[i].isOwner)
+                        out += ' (propriétaire)';
+                    out += '</span>';
+                    out += '<div class="perms">';
+
+                    for(var j in p) {
+
+                        var checked = entities[i].perms[j] ? 'checked="checked"' : '';
+                        var disabled = (!canIAssignPerm || entities[i].isOwner) ? 'disabled' : '';
+
+                        out+= '<div>';
+                        out+= '<label>';
+                        out+= '<input name="'+j+'" type="checkbox" class="rightpicker" '+disabled+' '+checked+' />';
+                        out+= '<span>&#x2713;</span>';
+                        out+= '<i class="material-icons">'+p[j]+'</i>';
+                        out+= '</label>';
+                        out+= '</div>';
+
+                    }
+
+                    out += '</div>';
+
+                }
+
+            }
+            else {
+                out = "Aucun résultat";
+            }
+
+
+            document.getElementById("permBoxResult").innerHTML = out;
+
+
+            var checkboxs = document.getElementById("permBoxResult").getElementsByTagName("input");
+
+            for(var i = 0; i < checkboxs.length; i++) {
+
+                checkboxs.item(i).onchange = function () {
+
+                    var id = this.parentNode.parentNode.parentNode.previousElementSibling.getAttribute("name");
+                    var isUser = (this.parentNode.parentNode.parentNode.previousElementSibling.children["0"].getAttribute("name") == 'u')
+
+                    var permKey = this.getAttribute("name");
+                    var permValue = this.checked;
+
+                    console.log("Debug time !");
+                    if(!mindmap.getSelectedNode()) return;
+
+                    //TODO 2: Fixer une permission en fonction de id, isUser, permKey et permValue
+                    io.socket.post(basePath + "node/perm", {
+                        node: mindmap.getSelectedNode().id,
+                        isUser: isUser,
+                        permKey: permKey,
+                        permValue: permValue,
+                        id: id
+
+                    }, function (data) {
+
+
+                    });
+
+
+                    if(permKey == "p_write" && permValue) {
+                        var checkboxRead = this.parentNode.parentNode.parentNode.children["0"].children["0"].children["0"];
+                        checkboxRead.checked = true;
+                        checkboxRead.onchange();
+                    }
+
+
+                };
+
+            }
+
+        };
+
+
+
+        this.updateModel = function () {
+
+            var search = document.getElementById("permBoxSearchElement").value;
+
+            if(!mindmap.getSelectedNode()) return;
+
+            io.socket.post(basePath + "search/search", {
+                node: mindmap.getSelectedNode().id,
+                search: search
+            }, function (data) {
+                console.log("Search" ,data);
+                permBoxManager.updateView(data); // On oublie pas de mettre à jour le modèle ensuite
+            });
+
+        };
+
+        document.getElementById("permBoxSearchElement").onkeyup = function () {
+
+            if(this.searchDelay != null)
+                clearTimeout(this.searchDelay);
+
+            this.searchDelay = setTimeout(permBoxManager.updateModel, 400);
+
+        };
+
+        this.permBoxManagerContainer.onload = function () {
 			
-			var search = document.getElementById("permBoxSearchElement").value;
-			
-			//TODO 3: Retour de la recherche d'un utilisateur ou d'un groupe dans le menu des permissions
-			/*io.socket.post(basePath + ".../...", function (data) {
+			document.getElementById("permBoxTitle").textContent = (mindmap.getSelectedNode() == mindmap.rootNode) ? "Permissions de la carte " : "Permissions d'un noeud ";
 				
-				data au format :
-				
-					[	
-						{
-						"id" : 42,
-						"name" : "Benji Chaz",
-						"isOwner" : true,
-						"isUser" : true,
-						"perms" : {
-							"p_read" : true,
-							"p_write" : true,
-							"p_delete" : true,
-							"p_unlock" : true,
-							"p_assign" : true
-							}
-						},
-						...
-					]
-					
-					
-					
-				permBoxManager.updateView(data); // On oublie pas de mettre à jour le modèle ensuite
-			});*/
-			
-		};
-		
-		document.getElementById("permBoxSearchElement").onkeyup = function () {
-			
-			if(this.searchDelay != null)
-				clearTimeout(this.searchDelay);
-			
-			this.searchDelay = setTimeout(permBoxManager.updateModel, 400);
-			
-		};
-		
-		this.permBoxManagerContainer.onload = function () {
-			
-			
-			document.getElementById("permBoxSearchElement").value = "";
-			
-			// permBoxManager.updateModel(); //TODO prod, décommenter cette ligne et osef des deux suivantes
-			
-		entities_test = [
-		
-			{
-			"id" : 1,
-			"name" : "Benji Chaz",
-			"isOwner" : true,
-			"isUser" : true,
-			"perms" : {
-				"p_read" : true,
-				"p_write" : true,
-				"p_delete" : true,
-				"p_unlock" : true,
-				"p_assign" : true
-				}
-			},
-			{
-			"id" : 1,
-			"name" : "Administrateurs",
-			"isOwner" : false,
-			"isUser" : false,
-			"perms" : {
-				"p_read" : false,
-				"p_write" : false,
-				"p_delete" : false,
-				"p_unlock" : false,
-				"p_assign" : true
-				}
-			},
-			{
-			"id": 2,
-			"name" : "Boris Bo",
-			"isOwner" : false,
-			"isUser" : false,
-			"perms" : {
-				"p_read" : true,
-				"p_write" : true,
-				"p_delete" : false,
-				"p_unlock" : false,
-				"p_assign" : true
-				}
-			}
-			
-		
-		];
-		
-			permBoxManager.updateView(entities_test);//commenter cette ligne
-			
-		};
-		
-	};
+
+            document.getElementById("permBoxSearchElement").value = "";
+
+            permBoxManager.updateModel();
+
+        };
+
+    };
 
     this.editBoxManager = new function () {
 
@@ -1980,37 +2316,27 @@ MindmapFrame = function (c) {
         this.label = null;
         this.style = null;
 
+        this.loadedNode = null;
+
+        this.init = false;
+
 
         this.labelLoad = function () {
-            if (mindmap.getSelectedNode() != undefined) {
-                editBoxManager.label = mindmap.getSelectedNode().label;
+            if (this.loadedNode != undefined) {
+                editBoxManager.label = this.loadedNode.label;
                 return true;
             }
             return false;
         };
 
         this.styleLoad = function () {
-            if (mindmap.getSelectedNode() != undefined) {
-                editBoxManager.style = mindmap.getSelectedNode().style;
+            if (this.loadedNode != undefined) {
+                editBoxManager.style = JSON.parse(JSON.stringify(this.loadedNode.style));
                 return true;
             }
             return false;
         };
-		
-		this.focus = function () {
-                this.editBox.elements["editBox_label"].focus();			
-		};
 
-        this.load = function () {
-
-            if (mindmap.getSelectedNode() != undefined) {
-
-                this.labelLoad();
-                this.styleLoad();
-                this.updateView();
-
-            }
-        };
 
         this.editBox.onsubmit = function () {
             return false;
@@ -2020,38 +2346,154 @@ MindmapFrame = function (c) {
             if (editBoxManager.labelLoad()) {
                 editBoxManager.label = this.value;
 
+
+
                 if (this.syncDelay != undefined)
                     clearTimeout(this.syncDelay);
 
-                this.syncDelay = setTimeout(editBoxManager.sync, 300);
+                this.syncDelay = setTimeout(editBoxManager.sync, 600);
             }
         };
 
+        document.getElementById("colorpicker").onchange = function () {
+			alert("colorpicker onchnage");
+            var c = document.getElementById('editBox_color');
+			
+			var currIndex = editBoxManager.editBox.elements["editBox_family"].selectedIndex;
+			
+			var f = c.children[currIndex].getAttribute('name');
+			
+			if(f == null)
+				return;
+			
+			c.value = this.value;
+			
+			var p = c.children.item(0);
+			
+			p.innerHTML = '&#x1F532; ' + this.value;
+			
+			p.style.color = this.value;
+			
+			p.setAttribute('name',this.value);
+			
+			p.style.display='';
+			
+			p.selected=true;
+			
+			c.onchange();
+        };
 
         this.editBox.elements["editBox_family"].onchange = function () {
+
             if (editBoxManager.styleLoad()) {
 				
-				if(this.selectedOptions[0].getAttribute('name') != null) {
+				var currIndex = this.selectedIndex;
 
-					this.style.fontFamily = this.value;
-					editBoxManager.style.font.family = this.value;
-					editBoxManager.sync();
-				
+                if(currIndex >= 0 && this.children[currIndex].hasAttribute('name')) {
+
+                    this.style.fontFamily = this.value;
+                    editBoxManager.style.font.family = this.value;
+                    editBoxManager.sync();
+
+                }
+				else {					
+					var p = this.children.item(0);
+					
+					var f = prompt('Entrer le nom d\'une police');
+					
+					var currIndex = -1;
+						
+					for(var i=0;i<editBoxManager.editBox.elements["editBox_family"].children.length;i++) {
+						if(editBoxManager.editBox.elements["editBox_family"].children[i].getAttribute("name") == f) {
+							currIndex = i;
+							break;
+						}
+						
+					}
+					
+					if(currIndex != -1) {
+						this.children[currIndex].selected = true;
+					}
+					else {
+						
+						p.innerHTML = f;
+						
+						p.style.fontFamily = f;
+						
+						p.setAttribute('name',f);
+						
+						p.style.display = '';
+						
+						p.selected = true;
+
+					}
+					this.onchange();					
+
 				}
             }
         };
-		
+
         this.editBox.elements["editBox_color"].onchange = function () {
+						
             if (editBoxManager.styleLoad()) {
 				
-				if(this.selectedOptions[0].getAttribute('name') != null) {
-				
-					this.style.color = this.selectedOptions[0].getAttribute('name');
-					editBoxManager.style.font.color = this.selectedOptions[0].getAttribute('name');
-					document.getElementById('colorpicker').value = this.style.color;
-				
+				var currIndex = editBoxManager.editBox.elements["editBox_color"].selectedIndex;
+
+                if(currIndex >= 0 && this.children[currIndex].hasAttribute('name')) {
+
+                    this.style.color = this.children[currIndex].getAttribute('name');
+                    editBoxManager.style.font.color = this.children[currIndex].getAttribute('name');
+                    document.getElementById('colorpicker').value = this.style.color;
+
+                }
+				else {
+					if(window.chrome) {
+						
+						document.getElementById('colorpicker').value = prompt("Entrer un code hexadecimal");
+						var color = document.getElementById('colorpicker').value;
+						
+						var currIndex = -1;
+						
+						for(var i=1;i<editBoxManager.editBox.elements["editBox_color"].children.length;i++) {
+							
+							if(editBoxManager.editBox.elements["editBox_color"].children[i].getAttribute("name") == color) {
+								currIndex = i;
+								break;
+							}
+						}
+						
+						if(currIndex != -1) {
+							
+							editBoxManager.editBox.elements["editBox_color"].selectedIndex = currIndex;
+							
+						}
+						else {
+							
+							var p = this.children[0];
+							
+							p.innerHTML = '&#x1F532; ' + color;
+							
+							p.style.color = color;
+							
+							p.setAttribute('name',color);
+							
+							p.style.display='';
+							
+							//p.selected=true;
+							
+							editBoxManager.editBox.elements["editBox_color"].selectedIndex = 0;
+							
+							
+						}
+						
+						this.onchange();
+
+					}
+					else {
+						document.getElementById('colorpicker').click();
+					}
 				}
-				
+
                 editBoxManager.sync();
             }
         };
@@ -2060,10 +2502,13 @@ MindmapFrame = function (c) {
         this.editBox.elements["editBox_delete"].onclick = function () {
             if (mindmap.getSelectedNode() != null)
                 mindmap.deleteSelectedNode();
+
+
             editBoxManager.editBoxContainer.style.display = "none";
         };
 
         this.editBox.elements["editBox_bold"].onclick = function () {
+
             if (editBoxManager.styleLoad()) {
                 editBoxManager.style.font.weight = this.checked ? "bold" : "normal";
 
@@ -2097,7 +2542,7 @@ MindmapFrame = function (c) {
         this.__checkBoxUpdate = function (checkbox, checked) {
 
             if (checked) {
-				checkbox.nextElementSibling.classList.add("is-checked")
+                checkbox.nextElementSibling.classList.add("is-checked")
                 checkbox.checked = true;
             }
             else {
@@ -2106,207 +2551,249 @@ MindmapFrame = function (c) {
             }
         };
 
+
         this.updateView = function () {
-			
-			var node = mindmap.getSelectedNode();
-			
-			if(node == null || !node.hasPerm("p_write")) {
-				
-				editBoxManager.editBox.elements["editBox_label"].disabled = true;
-				editBoxManager.editBox.elements["editBox_strike"].disabled = true;
-				editBoxManager.editBox.elements["editBox_underline"].disabled = true;
-				editBoxManager.editBox.elements["editBox_italic"].disabled = true;
-				editBoxManager.editBox.elements["editBox_bold"].disabled = true;
-				editBoxManager.editBox.elements["editBox_color"].disabled = true;
-				editBoxManager.editBox.elements["editBox_family"].disabled = true;
-			}
-			else {
-				editBoxManager.editBox.elements["editBox_label"].disabled = false;
-				editBoxManager.editBox.elements["editBox_strike"].disabled = false;
-				editBoxManager.editBox.elements["editBox_underline"].disabled = false;
-				editBoxManager.editBox.elements["editBox_italic"].disabled = false;
-				editBoxManager.editBox.elements["editBox_bold"].disabled = false;
-				editBoxManager.editBox.elements["editBox_color"].disabled = false;
-				editBoxManager.editBox.elements["editBox_family"].disabled = false;				
-			}
-			
-			if(node == null || !node.hasPerm("p_delete")) {
-				editBoxManager.editBox.elements["editBox_delete"].disabled = true;		
-			}
-			else {
-				editBoxManager.editBox.elements["editBox_delete"].disabled = false;		
-			}
-			
-			editBoxManager.editBox.elements["editBox_label"].value = this.label;
-			
-			editBoxManager.editBox.elements["editBox_family"].value = this.style.font.family;
-			
-			if(editBoxManager.editBox.elements["editBox_family"].selectedOptions[0].getAttribute('name') != this.style.font.family) {
-				
-				var p = editBoxManager.editBox.elements["editBox_family"].children.item(0);
-				p.style.display = '';
-				p.innerHTML = this.style.font.family;
-				p.style.fontFamily = this.style.font.family;
-				p.setAttribute('name', this.style.font.family);
-				p.selected = true;
-				
-			}
-			
-			
-			editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
 
-			editBoxManager.editBox.elements["editBox_color"].value = "&#x1F532; " + this.style.font.color;
+            if(this.loadedNode == null || !this.loadedNode.hasPerm("p_write")) {
+
+                editBoxManager.editBox.elements["editBox_label"].disabled = true;
+                editBoxManager.editBox.elements["editBox_strike"].disabled = true;
+                editBoxManager.editBox.elements["editBox_underline"].disabled = true;
+                editBoxManager.editBox.elements["editBox_italic"].disabled = true;
+                editBoxManager.editBox.elements["editBox_bold"].disabled = true;
+                editBoxManager.editBox.elements["editBox_color"].disabled = true;
+                editBoxManager.editBox.elements["editBox_family"].disabled = true;
+            }
+            else {
+                editBoxManager.editBox.elements["editBox_label"].disabled = false;
+                editBoxManager.editBox.elements["editBox_strike"].disabled = false;
+                editBoxManager.editBox.elements["editBox_underline"].disabled = false;
+                editBoxManager.editBox.elements["editBox_italic"].disabled = false;
+                editBoxManager.editBox.elements["editBox_bold"].disabled = false;
+                editBoxManager.editBox.elements["editBox_color"].disabled = false;
+                editBoxManager.editBox.elements["editBox_family"].disabled = false;
+            }
+
+            if(this.loadedNode == null || !this.loadedNode.hasPerm("p_delete")) {
+                editBoxManager.editBox.elements["editBox_delete"].disabled = true;
+            }
+            else {
+                editBoxManager.editBox.elements["editBox_delete"].disabled = false;
+            }
+
+            if(this.loadedNode != null)
+                editBoxManager.editBox.elements["editBox_label"].value = this.label;
+
+			var currIndex = -1;
 			
-			if(this.style.font.color in editBoxManager.editBox.elements["editBox_color"].children) {
-				editBoxManager.editBox.elements["editBox_color"].children[this.style.font.color].selected = true;
+			for(var i=0;i<editBoxManager.editBox.elements["editBox_family"].children.length;i++) {
+				if(editBoxManager.editBox.elements["editBox_family"].children[i].getAttribute("name") == this.style.font.family) {
+					currIndex = i;
+					break;
+				}
+				
 			}
-			else if(this.style.font.color != null) {
-				
-				var p = editBoxManager.editBox.elements["editBox_color"].children.item(0);
-				p.style.display = '';
-				p.innerHTML = "&#x1F532; " + this.style.font.color;
-				p.style.color = this.style.font.color;
-				p.setAttribute('name', this.style.font.color);
-				
-				
-				p.selected = true;
-				
+			
+			
+			// alert();
 
-			}
 
-			editBoxManager.editBox.elements["editBox_color"].style.color = this.style.font.color;
+            if(currIndex == -1) {
 
-			document.getElementById('colorpicker').value = this.style.font.color;
+                var p = editBoxManager.editBox.elements["editBox_family"].children.item(0);
+                p.style.display = '';
+                p.innerHTML = this.style.font.family;
+                p.style.fontFamily = this.style.font.family;
+                p.setAttribute('name', this.style.font.family);
+                p.selected = true;
+				
+				currIndex = 0;
+
+            }
+			
+			editBoxManager.editBox.elements["editBox_family"].selectedIndex = currIndex;
+
+            editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
+
+            editBoxManager.editBox.elements["editBox_color"].value = "&#x1F532; " + this.style.font.color;
+
+            if(this.style.font.color in editBoxManager.editBox.elements["editBox_color"].children) {
+                editBoxManager.editBox.elements["editBox_color"].children[this.style.font.color].selected = true;
+            }
+            else if(this.style.font.color != null) {
+
+                var p = editBoxManager.editBox.elements["editBox_color"].children.item(0);
+                p.style.display = '';
+                p.innerHTML = "&#x1F532; " + this.style.font.color;
+                p.style.color = this.style.font.color;
+                p.setAttribute('name', this.style.font.color);
+
+
+                p.selected = true;
+
+
+            }
+
+            editBoxManager.editBox.elements["editBox_color"].style.color = this.style.font.color;
+
+            document.getElementById('colorpicker').value = this.style.font.color;
 
             this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_bold"], editBoxManager.style.font.weight == "bold");
             this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_italic"], editBoxManager.style.font.style == "italic");
             this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_underline"], editBoxManager.style.font.decoration == "underline");
             this.__checkBoxUpdate(editBoxManager.editBox.elements["editBox_strike"], editBoxManager.style.font.decoration == "strike");
-
         };
 
         this.sync = function () {
 
             editBoxManager.updateView();
 
-            var node = mindmap.getSelectedNode();
 
-            if (node != undefined) {
+            if (editBoxManager.loadedNode != undefined) {
 
-                node.label = editBoxManager.label;
-
-                node.style = editBoxManager.style;
-
-                mindmap.ioManager.out.editNode(node, true);
+                mindmap.ioManager.out.editNode(editBoxManager.loadedNode, editBoxManager.label, editBoxManager.style, true);
 
             }
         }
-		
-		this.editBoxContainer.onload = function () {
-			editBoxManager.load();
-		};
 
-		this.editBoxContainer.onfocus = function () {
-			editBoxManager.focus();
-		};
+        this.editBoxContainer.onload = function () {
+
+
+
+            if(editBoxManager.loadedNode != null) {
+                clearTimeout(editBoxManager.syncDelay);
+                editBoxManager.sync();
+            }
+
+            editBoxManager.loadedNode = mindmap.getSelectedNode();
+
+            if (editBoxManager.loadedNode != undefined) {
+
+                editBoxManager.labelLoad();
+                editBoxManager.styleLoad();
+                editBoxManager.updateView();
+
+                editBoxManager.editBox.elements["editBox_label"].focus();
+
+            }
+            // this.init = true;
+        };
+
 
 
     };
-	
+
     this.selecterBoxManager = new function () {
-		
-		selecterBoxManager = this;
-		
-		this.boxs = document.getElementsByClassName("box");
-		
-		var selecters = document.getElementsByClassName("boxSelecter");
-		
-		//Open menu 
-		for(var i = 0;i < selecters.length; i++) {
-			
-			selecters.item(i).onclick = function () {
-				
-				document.getElementById("workselecter").style.display = 'block';
-				
-			};
-			
-			
-		}
 
-		//Close menu
-		document.getElementById("workselecter").onmouseleave = function () {
-		
-			this.style.display = 'none';
-		
-			};
-			
-		this.close = function () {
-			
-			for(var j=0;j<this.boxs.length;j++) {
-				
-				this.boxs.item(j).style.display = 'none';
-				this.boxs.item(j).onload();
-			}
-			
-			
-		};
-			
-		this.reloadBoxs = function () {
-			//dbg
-			//var node = mindmap.getSelectedNode();
-			
-			
-			
-			//alert(mindmap.getSelectedNode().permissions);
-			
-			var already_open = false;
-			
-			for(var j=0;j<this.boxs.length;j++) {
-				this.boxs[j].onload();
-				if(!already_open && this.boxs[j].style.display == 'block')
-					already_open = true;
-			}
-			
-			if(!already_open)
-				this.changeBox("editBox");
-			
-		};
-			
-		this.changeBox = function (id) {
-			
-			for(var j=0;j<this.boxs.length;j++) {
-				
-				var box = this.boxs.item(j);
-				
-				if(id == box.id) {
-					box.style.display = 'block';
-					box.onload();
-				}
-				else {
-					box.style.display = 'none';
-				}
-				
-			}
-			
-		};
-			
-		//Change box
-		var boxRefs = document.getElementById("workselecter").children;
-		
-		for(var i=0; i < boxRefs.length; i++) {
-			
-			boxRefs.item(i).onclick = function () {
-				
-				var id = this.getAttribute("name");
-				
-				selecterBoxManager.changeBox(id);
-				
-				document.getElementById("workselecter").style.display = 'none';
+        selecterBoxManager = this;
 
-			};
-		}
+        this.boxs = document.getElementsByClassName("box");
+
+        var selecters = document.getElementsByClassName("boxSelecter");
+
+        //Open menu
+        for(var i = 0;i < selecters.length; i++) {
+
+            selecters.item(i).onclick = function () {
+
+                document.getElementById("workselecter").style.display = 'block';
+
+            };
+
+
+        }
+
+        //Close menu
+        document.getElementById("workselecter").onmouseleave = function () {
+
+            this.style.display = 'none';
+
+        };
+
+        this.close = function () {
+
+            for(var j=0;j<this.boxs.length;j++) {
+
+                this.boxs.item(j).style.display = 'none';
+                this.boxs.item(j).onload();
+            }
+
+
+        };
 		
-	};
+		
+
+        this.reloadBoxs = function () {
+            //dbg
+            //var node = mindmap.getSelectedNode();
+
+
+
+            //alert(mindmap.getSelectedNode().permissions);
+
+            var already_open = false;
+
+            for(var j=0;j<this.boxs.length;j++) {
+                this.boxs[j].onload();
+                if(!already_open && this.boxs[j].style.display == 'block')
+                    already_open = true;
+            }
+
+            if(!already_open)
+                this.changeBox("editBox");
+
+        };
+
+        this.changeBox = function (id) {
+
+            for(var j=0;j<this.boxs.length;j++) {
+
+                var box = this.boxs.item(j);
+
+                if(id == box.id) {
+                    box.style.display = 'block';
+                    box.onload();
+                }
+                else {
+                    box.style.display = 'none';
+                }
+
+            }
+
+        };
+		
+        var boxClosers = document.getElementsByClassName("boxCloser");
+
+        
+        for(var i = 0;i < boxClosers.length; i++) {
+
+            boxClosers.item(i).onclick = function () {
+
+                mindmap.unselectNode(true);
+				mindmap.selecterBoxManager.changeBox(null);
+
+            };
+
+
+        }
+
+        //Change box
+        var boxRefs = document.getElementById("workselecter").children;
+
+        for(var i=0; i < boxRefs.length; i++) {
+
+            boxRefs.item(i).onclick = function () {
+
+                var id = this.getAttribute("name");
+
+                selecterBoxManager.changeBox(id);
+
+                document.getElementById("workselecter").style.display = 'none';
+
+            };
+        }
+
+    };
 
 
     /**
@@ -2456,8 +2943,23 @@ MindmapFrame = function (c) {
                     }
 
                     break;
+                case 'clickPath' :
 
+                    if(eventManager.eventData.path == e.target) {
+                        var nodeId = eventManager.eventData.path.getAttribute("name");
+
+                        if(nodeId in mindmap.nodes)
+                            mindmap.selectNode(mindmap.nodes[nodeId]);
+                    }
+
+                    eventManager.eventData = null;
+                    eventManager.eventType = null;
+
+                    break;
                 case 'offsetNode':
+
+
+
 
                     switch (e.type) {
 
@@ -2562,6 +3064,8 @@ MindmapFrame = function (c) {
 
                                 if (node != mindmap.rootNode && node.childNodes.length > 0) {
 
+                                    //var style = JSON.parse(JSON.stringify(node.style));
+
                                     node.style.folded = !node.style.folded;
 
                                     if (node.style.folded)
@@ -2569,7 +3073,7 @@ MindmapFrame = function (c) {
 
                                     mindmap.drawMap();
 
-                                    mindmap.ioManager.out.editNode(node, true);
+                                    mindmap.ioManager.out.editNode(node, node.label, JSON.parse(JSON.stringify(node.style)), false);
                                 }
                             }
                             /*else if (e.target.nodeName == 'g' && e.target.name == 'node') {
@@ -2622,7 +3126,7 @@ MindmapFrame = function (c) {
                                     w: 0
                                 };
                             }
-                            else if (e.target.nodeName == 'g' && e.target.name == 'node') {
+                            else if ((e.target.nodeName == 'g' && e.target.name == 'node')) {
                                 eventManager.eventType = 'offsetNode';
 
                                 var nodeId = e.target.id;
@@ -2635,7 +3139,15 @@ MindmapFrame = function (c) {
                                 };
                             }
                             // if(e.target.id == 'container') {
-                            else if (e.target.nodeName == "svg" || e.target.nodeName == "path") {
+                            else if (e.target.nodeName == "path") {
+
+                                eventManager.eventType = 'clickPath';
+                                eventManager.eventData = {
+                                    path : e.target
+                                };
+                            }
+
+                            else if (e.target.nodeName == "svg") {
 
 
                                 window.document.body.style.cursor = "grabbing";
@@ -2666,25 +3178,25 @@ MindmapFrame = function (c) {
 
 
                                 if (zoom) {
-									if(mindmap.view.zoom < 5.0625) {
-										
-										mindmap.view.zoom *= zoom_coef;
-										mindmap.view.offset.x -= (zoom_coef * e.clientX - e.clientX) / mindmap.view.zoom;
-										mindmap.view.offset.y -= (zoom_coef * e.clientY - e.clientY) / mindmap.view.zoom;
-										
-									}
+                                    if(mindmap.view.zoom < 5.0625) {
+
+                                        mindmap.view.zoom *= zoom_coef;
+                                        mindmap.view.offset.x -= (zoom_coef * e.clientX - e.clientX) / mindmap.view.zoom;
+                                        mindmap.view.offset.y -= (zoom_coef * e.clientY - e.clientY) / mindmap.view.zoom;
+
+                                    }
                                 }
                                 else {
-									
-									if(mindmap.view.zoom > 0.43){
-									
-										mindmap.view.zoom /= zoom_coef;
-										mindmap.view.offset.x += (e.clientX - e.clientX / zoom_coef ) / mindmap.view.zoom;
-										mindmap.view.offset.y += (e.clientY - e.clientY / zoom_coef ) / mindmap.view.zoom;
-										
-									}
+
+                                    if(mindmap.view.zoom > 0.43){
+
+                                        mindmap.view.zoom /= zoom_coef;
+                                        mindmap.view.offset.x += (e.clientX - e.clientX / zoom_coef ) / mindmap.view.zoom;
+                                        mindmap.view.offset.y += (e.clientY - e.clientY / zoom_coef ) / mindmap.view.zoom;
+
+                                    }
                                 }
-								
+
                                 mindmap.setView();
 
                             }
@@ -2698,7 +3210,23 @@ MindmapFrame = function (c) {
 
             }
         };
-    };
+    
+		var menu = document.getElementById("dropdown-user");
+		
+		var li_right = document.createElement("li");
+		
+		li_right.innerHTML = '<a id="pickGlobalRight">Droits globaux</a>';
+		
+		menu.insertBefore(li_right, menu.childNodes[0]);
+		
+		document.getElementById("pickGlobalRight").onclick = function () {
+			
+			mindmap.rootNode.viewNode();
+			mindmap.selectNode(mindmap.rootNode);
+			mindmap.selecterBoxManager.changeBox("permBox");
+			
+		};
+	};
 
     /**
      * Distant event manager (i/o)
@@ -2744,6 +3272,15 @@ MindmapFrame = function (c) {
                     console.log("Parsing data ...");
                     // console.log(jwr);
 
+                    if(data == null) {
+                        mindmap.notificationManager.push("Il y a eu un problème de chargement", "Recharger", function () {
+
+                            location.reload();
+
+                        });
+                        return;
+                    }
+
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
                     _.forEach(data.users, function (u) {
@@ -2759,152 +3296,57 @@ MindmapFrame = function (c) {
                     });
                 });
             };
-			
-			
-			this.cutPaste = function () {
-			
-				if(mindmap.action.type != "cut") return;
-				
-				var srcNode = mindmap.action.src;
-				
-				var destParentNode = mindmap.getSelectedNode();
 
-				if(srcNode != undefined && destParentNode != undefined  && destParentNode.cutAction == false) {
-					
-					/*client cutPaste implementation, not stable*/
-					var nodesStack = [];
-					
-					var traverse = function (node) {
-						
-						nodesStack.push({id : node.id, parentNodeId : node.parentNode.id, data : {label : node.label, style : node.style}});
-						_.forEach(node.childNodes, function (n) {
-							traverse(n);
-						});
-					};
-					traverse(srcNode);
-					
-					var ids_to_delete = [];
 
-					var traverseDelete = function (node) {
+            this.cutPaste = function () {
 
-						var nodeId = node.id;
+                if(mindmap.action.type != "cut") return;
 
-						var childNodesId = [];
+                var srcNode = mindmap.action.src;
 
-						for (var i in node.childNodes)
-							childNodesId.push(node.childNodes[i].id);
+                var destParentNode = mindmap.getSelectedNode();
 
-						for (var j = 0; j < childNodesId.length; j++) {
-							traverseDelete(mindmap.nodes[childNodesId[j]]);
+                if(srcNode != undefined && destParentNode != undefined  && destParentNode.cutAction == false) {
 
-						}
+                    /*client cutPaste implementation, not stable*/
+                    var nodesStack = mindmap.actionManager.saveNodePosterity(srcNode);
 
-						node.destroyNode();
+                    mindmap.actionManager.destroyNodePosterity(srcNode, false);
 
-						ids_to_delete.push(nodeId);
+                    mindmap.drawMap();
+                    mindmap.action.type = "copy";
+                    mindmap.action.src = nodesStack;
+                    mindmap.action.dest = null;
 
-					};
-					
-					traverseDelete(srcNode);
-					
-					mindmap.ioManager.out.deleteNodes(ids_to_delete, false);	
-					mindmap.drawMap();
-					mindmap.action.type = "copy";
-					mindmap.action.src = nodesStack;
-					mindmap.action.dest = null;
-					
-					// mindmap.ioManager.out.copyPaste();
-					
-					//TODO 5: cutPaste opti côté serveur, variables utiles : srcNode, destParentNode for io.socket.post
-					
-					//dans le callback, si nécessaire, on peut détruire le tampon 
+                    // mindmap.ioManager.out.copyPaste();
 
-						// mindmap.action.type = null;
-						// mindmap.action.src = null;
-						// mindmap.action.dest = null;
-						
-						mindmap.drawMap();
-				}
-				
-			};
-			
-			this.copyPaste = function () {
-				
-				if(mindmap.action.type != "copy") return;
-				
-				var nodesStack = JSON.parse(JSON.stringify(mindmap.action.src));
-				
-				var destParentNode = mindmap.getSelectedNode();
+                    //TODO 5: cutPaste opti côté serveur, variables utiles : srcNode, destParentNode for io.socket.post
 
-				if(nodesStack != undefined && destParentNode != undefined && nodesStack.length > 0) {
+                    //dans le callback, si nécessaire, on peut détruire le tampon
 
-				//TODO 6: Implementer le copyPaste côté serveur, variables utile : mindmap.action.src, destParentNode
-				
-				//client implementation dans ce if
-				
-				var idTranslationTable = {};
-					
-					idTranslationTable[nodesStack[0].parentNodeId] = destParentNode.id;
-					
-					var copyNextNode = function () {
-						
-						if(nodesStack.length > 0 && nodesStack[0].parentNodeId in idTranslationTable) {
-							
-							var _parentNodeId = idTranslationTable[nodesStack[0].parentNodeId];
-							
-							var newNode = {
-								'parent_node' : _parentNodeId,
-								'style' : nodesStack[0].data.style,
-								'label' : nodesStack[0].data.label,
-								'permissions' : {
-												"p_read" : true,
-												"p_write" : true,
-												"p_delete" : true,
-												"p_unlock" : true,
-												"p_assign" : true
-												}
-							};
-							
-							io.socket.post(basePath + "node/new", {
-								nodes: [newNode]
-							}, function (nodes) {							
-								
+                    // mindmap.action.type = null;
+                    // mindmap.action.src = null;
+                    // mindmap.action.dest = null;
 
-								_.forEach(nodes, function (n) {
-									mindmap.ioManager.in.createdNode(n);
-									
-									idTranslationTable[nodesStack[0].id] = n.id;
-									
-									//TODO user progress notification
-									
-									return;
-									
-								});
-								
-								nodesStack.splice(0, 1);
-								
-								copyNextNode();
-								
+                    mindmap.drawMap();
+                }
 
-								
-							});
-							
-						}
-						else {
-							
-							//TODO user progress notification
-							
-						}
-						
-						
-					};
-					
-					copyNextNode();
+            };
 
-					
-				}
-				
-			};
+            this.copyPaste = function () {
+
+                if(mindmap.action.type != "copy") return;
+
+                var nodesStack = JSON.parse(JSON.stringify(mindmap.action.src));
+
+                var destParentNode = mindmap.getSelectedNode();
+
+                mindmap.actionManager.restoreNodePosterity(nodesStack, destParentNode);
+
+                // if(nodesStack.length > 0)
+                // mindmap.revBoxManager.pushHistory("node-copy", saveNodePosterity, {node:node, parentNode:parentNode});
+
+            };
 
             ////When user query server to get the id of a new node
             this.newNode = function (parentNodeId, worker, permissions, style) {
@@ -2927,10 +3369,15 @@ MindmapFrame = function (c) {
                 });
             };
 
-            //When user edit node
-            this.editNode = function (node, updateStyle) {
+            //When user edit node :out.editNode
+            this.editNode = function (node, label, style, updateView) {
 
                 // console.log("Out : edit Node", node);
+
+                var updateStyle = _.isEqual(style, node.style) == false;
+
+                if(!updateView)
+                    updateStyle = true;
 
                 var path = basePath + "node/update/" + (updateStyle ? 'yes' : 'no');
 
@@ -2939,14 +3386,17 @@ MindmapFrame = function (c) {
                 io.socket.post(path, {
                     nodes: [{
                         parent_node: father,
-                        style: node.style,
-                        label: node.label,
+                        style: style,
+                        label: label,
                         id: node.id
                     }]
                 }, function (nodes) {
-                    _.forEach(nodes, function (n) {
 
-                        mindmap.ioManager.in.editNode(0, n, false);
+                    _.forEach(nodes, function (n) {
+                        if(updateView) {
+                            mindmap.ioManager.in.editNode(0, n, true);
+                        }
+
                     });
 
                 });
@@ -2973,7 +3423,7 @@ MindmapFrame = function (c) {
                 io.socket.post(path, data, function (nodes) {
 
                     _.forEach(nodes, function (n) {
-                        mindmap.ioManager.in.editNode(0, n, false);
+                        mindmap.ioManager.in.editNode(0, n, true);
                     });
 
                 });
@@ -2984,8 +3434,8 @@ MindmapFrame = function (c) {
 
                 // console.log("Out : unselect Node", node);
 
-				//TODO 4: a placer dans le ioManager.in quand le vérrouillage sera implenté
-				selecterBoxManager.reloadBoxs();
+                //TODO 4: a placer dans le ioManager.in quand le vérrouillage sera implenté
+                selecterBoxManager.reloadBoxs();
 
                 //TODO: Notification de déséléction - Émission
                 //Données utiles : node.id
@@ -2996,8 +3446,8 @@ MindmapFrame = function (c) {
 
                 // console.log("Out : select Node", node);
 
-				//TODO 4:a placer dans le ioManager.in  quand le vérrouillage sera implenté (bis)
-				selecterBoxManager.reloadBoxs();
+                //TODO 4:a placer dans le ioManager.in  quand le vérrouillage sera implenté (bis)
+                selecterBoxManager.reloadBoxs();
 
                 //TODO: Notification de séléction - Émission
                 //Données utiles : node.id
@@ -3008,15 +3458,38 @@ MindmapFrame = function (c) {
 
                 // console.log("Out : delete Node", ids);
 
-				if(ids.length == 0)
-					return;
-				
-				if(notif) {
-					if(ids.length == 1)
-						notificationManager.push("Le noeud a été supprimé", "");
-					else
-						notificationManager.push("Les noeuds ont été supprimés", "");
-				}
+                if(ids.length == 0)
+                    return;
+
+                var authorized = true;
+
+                for(var i=0;i<ids.length;i++) {
+                    var n = mindmap.nodes[ids[i]];
+
+                    if(n == null)
+                        continue;
+
+                    if(!n.hasPerm("p_delete")) {
+
+                        notificationManager.push("Vous n'avez pas le droit de supprimer un noeud fils", "");
+                        authorized = false;
+                        break;
+                    }
+
+                    if(n.worker != null && n.worker != mindmap.worker) {
+                        notificationManager.push("Un noeud fils est verrouillé", "");
+                        authorized = false;
+                        break;
+                    }
+
+                }
+
+                if(notif) {
+                    if(ids.length == 1)
+                        notificationManager.push("Le noeud a été supprimé", "");
+                    else
+                        notificationManager.push("Les noeuds ont été supprimés", "");
+                }
                 //Données utiles : id
 
                 var data = {nodes: []};
@@ -3026,11 +3499,11 @@ MindmapFrame = function (c) {
                         id: n
                     });
                 });
-				
-			
+
+
 
                 io.socket.post(basePath + "node/delete", data, function (ids) {
-	
+
                     _.forEach(ids, function (n) {
                         mindmap.ioManager.in.deleteNode(n.id);
                     });
@@ -3047,34 +3520,34 @@ MindmapFrame = function (c) {
                 for (var i in nodes) {
 
                     var node = nodes[i];
-					
-					//TODO 1: Envoyer les permissions dans node, comme ce qui suit
-					/*node.permissions = {
-										"p_read" : true,
-										"p_write" : true,
-										"p_delete" : true,
-										"p_unlock" : true,
-										"p_assign" : true
-										};
-					*/
-					
-					////TODO 4: Envoyer le worker actuel (vérouillage) dans node, comme ce qui suit
-					//if(node.id == 2) //pour les test sans implementation
-					//	node.worker = 2;
-					
+
+                    //TODO 1: Envoyer les permissions dans node, comme ce qui suit
+                    /*node.permissions = {
+                     "p_read" : true,
+                     "p_write" : true,
+                     "p_delete" : true,
+                     "p_unlock" : true,
+                     "p_assign" : true
+                     };
+                     */
+
+                    ////TODO 4: Envoyer le worker actuel (vérouillage) dans node, comme ce qui suit
+                    //if(node.id == 2) //pour les test sans implementation
+                    //	node.worker = 2;
+
                     mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
 
                     if (mindmap.rootNode == undefined && nodes[i].parentNode == undefined && nodes[i] != undefined) {
-						
+
                         mindmap.rootNode = mindmap.nodes[node.id];
-					}
+                    }
 
 
                     if (node.id in mindmap.workers && mindmap.workers[node.id].worker != null)
                         mindmap.workers[mindmap.workers[node.id].worker] = node.id;
                 }
 
-				
+
                 mindmap.rootNode.orderizeDescendance();
 
                 mindmap.drawMap();
@@ -3100,6 +3573,8 @@ MindmapFrame = function (c) {
                 // // console.log(node);
                 mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
                 node = mindmap.nodes[node.id];
+
+                mindmap.revBoxManager.pushHistory("node-add", null, {node:node, parentNode:node.parentNode});
 
 
                 if (node.parentNode) {
@@ -3175,6 +3650,31 @@ MindmapFrame = function (c) {
             //When a collaborator edit a node
             this.editNode = function (workerId, node, isMe) {
 
+                if(node.id in mindmap.nodes && isMe) {
+
+                    var currentNode = mindmap.nodes[node.id];
+
+                    // console.log(currentNode.label, node.label);
+
+                    if(node.label != currentNode.label)
+                        mindmap.revBoxManager.pushHistory("node-edit-label", currentNode.label, {node:currentNode, parentNode:currentNode.parentNode});
+
+                    if(node.style.dx != currentNode.style.dx)
+                        mindmap.revBoxManager.pushHistory("node-edit-dx", currentNode.style.dx, {node:currentNode, parentNode:currentNode.parentNode});
+
+                    if(node.style.font.family != currentNode.style.font.family)
+                        mindmap.revBoxManager.pushHistory("node-edit-family", currentNode.style.font.family, {node:currentNode, parentNode:currentNode.parentNode});
+
+                    if(node.style.font.color != currentNode.style.font.color)
+                        mindmap.revBoxManager.pushHistory("node-edit-color", currentNode.style.font.color, {node:currentNode, parentNode:currentNode.parentNode});
+
+                    if(node.style.font.weight != currentNode.style.font.weight || node.style.font.style != currentNode.style.font.style || node.style.font.decoration != currentNode.style.font.decoration)
+                        mindmap.revBoxManager.pushHistory("node-edit-format", {weight : currentNode.style.font.weight, style : currentNode.style.font.style, decoration : currentNode.style.font.decoration}, {node:currentNode, parentNode:currentNode.parentNode});
+
+
+
+                }
+
                 mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
 
                 // // console.log("When a collaborator edit a node", node.label, node.style.order)
@@ -3203,6 +3703,8 @@ MindmapFrame = function (c) {
 
                 traverseDelete(mindmap.nodes[nodeId]);
 
+
+
                 mindmap.drawMap();
 
                 //// console.log("In : Node deleted");
@@ -3227,7 +3729,8 @@ MindmapFrame = function (c) {
                                 break;
                             case 'Update_nodes':
                                 _.forEach(message.data.msg, function (n) {
-                                    mindmap.ioManager.in.editNode(0, n, false);
+                                    if(n.style != null)
+                                        mindmap.ioManager.in.editNode(0, n, false);
                                 });
                                 break;
                             case 'Delete_nodes':

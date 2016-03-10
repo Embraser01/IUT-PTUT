@@ -18,9 +18,13 @@ blah blah <a>do sth</a>
 		<div class="boxTitle">
 			<div class="boxSelecter">&#x25BE;<i class="material-icons">history</i> </div>
 			Historique des révisions
+			<i class="boxCloser material-icons">close</i>
 		</div>
 		<div id="revBoxStack">
-			<ul>
+			<div id="revBoxViewPicker">
+				<button id="revBoxViewPickerAll" class="selected">Tout les noeuds</button><button id="revBoxViewPickerNode">Noeud courrant</button>
+			</div>
+			<ul id="revBoxStackElement">
 
 				<li>
 					<span><a>Noeud #023</a> - Édition - Label<button><i class="material-icons">history</i></button></span>
@@ -68,7 +72,8 @@ blah blah <a>do sth</a>
 
 		<div class="boxTitle">
 			<div class="boxSelecter">&#x25BE;<i class="material-icons">verified_user</i> </div>
-			Permissions d'un noeud
+			<span id="permBoxTitle">Permissions d'un noeud</span>
+			<i class="boxCloser material-icons">close</i>
 		</div>
 		
 		<div id="permBoxSearch">
@@ -86,6 +91,7 @@ blah blah <a>do sth</a>
 		<div class="boxTitle">
 			<div class="boxSelecter">&#x25BE;<i class="material-icons">create</i> </div>
 			Édition d'un noeud
+			<i class="boxCloser material-icons">close</i>
 		</div>
 
 		<form id="editBoxForm">
@@ -135,7 +141,7 @@ blah blah <a>do sth</a>
 							<option name="Roboto" style="font-family:Roboto;">Roboto</option>
 							<option name="Verdana" style="font-family:Verdana;">Verdana</option>
 
-							<option style="font-family: sans-serif;" onclick="var p = this.parentNode.children.item(0);var f = prompt('Entrer le nom d\'une police');p.innerHTML = f;p.style.fontFamily = f;p.setAttribute('name',f);p.style.display='';p.selected=true;p.parentNode.onchange();" >Autre</option>
+							<option id="chooseOtherFont" style="font-family: sans-serif;" >Autre</option>
 						</select>				
 
 					</td>
@@ -147,8 +153,7 @@ blah blah <a>do sth</a>
 
 					<td>
 					
-						<input onchange="var c = document.getElementById('editBox_color');var f= c.selectedOptions[0].getAttribute('name');if(f == null)return; c.value = this.value; var p = c.children.item(0);p.innerHTML = '&#x1F532; ' + this.value;p.style.color = this.value;p.setAttribute('name',this.value);p.style.display='';p.selected=true;c.onchange();"
-							id="colorpicker" style="display:none;" type="color" />
+						<input id="colorpicker" style="display:none;" type="color" />
 									   
 						<select id="editBox_color" class="browser-default" name="editBox_color">
 							<option style="display:none;"></option>
@@ -157,7 +162,7 @@ blah blah <a>do sth</a>
 							<option name="#8bc34a" style="color:#8bc34a;">&#x1F532; Vert</option>
 							<option name="#2196f3" style="color:#2196f3;">&#x1F532; Bleu</option>
 
-							<option style="color:black;" onclick="document.getElementById('colorpicker').click();"> Autre</option>
+							<option style="color:black;"> Autre</option>
 
 						</select>	
 
