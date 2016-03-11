@@ -1,5 +1,7 @@
 module.exports = {
 
+    //tableName: 'Folder',
+
     attributes: {
 
 
@@ -19,8 +21,8 @@ module.exports = {
         },
 
         child_folders: {
-            collection: 'parent_folder',
-            via: 'folder'
+            collection: 'folder',
+            via: 'parent_folder'
         },
 
         parent_folder: {
@@ -28,8 +30,8 @@ module.exports = {
         },
 
         mindmaps: {
-            collection: 'folder',
-            via: 'mindmap'
+            collection: 'mindmap',
+            via: 'folder'
         }
     }
 }
