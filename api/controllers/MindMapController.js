@@ -43,7 +43,25 @@ module.exports = {
                         console.log(err);
                         return res.serverError();
                     }
-                    return res.redirect('/mm/' + mindmap.id);
+
+                    Permission.create({
+                        node: node.id,
+                        owner: req.user.id,
+                        user: req.user.id,
+                        p_read: true,
+                        p_write: true,
+                        p_delete: true,
+                        p_unlock: true,
+                        p_assign: true
+                    }, function (err, perm) {
+
+                        if (err) {
+                            console.log(err);
+                            return res.serverError();
+                        }
+
+                        return res.redirect('/mm/' + mindmap.id);
+                    });
                 });
             });
         });
@@ -65,7 +83,7 @@ module.exports = {
             });
         }
         // We just add the socket in the list
-        req.mindmapSocket.push(sails.sockets.id(req.socket));
+        req.mindmapSocket.push(sails.sockets.getId(req.socket));
 
 
         var users = [];
@@ -79,30 +97,22 @@ module.exports = {
             }
         });
 
-        // TODO : Remove nodes that are not allowed
         // TODO Stream data to go faster #BarryAllen
+        //var time_start = Date.now();
+        PermissionService.getAll(req, mindmap.id, function (nodes) {
 
-        Node.find({where: {mindmap: mindmap.id}})
-            .sort({height: 'asc'})
-            .populate('styles')
-            .exec(function (err, nodes) {
-
-
-                if (err) return res.serverError();
-
-                nodes = SerializeService.styleLoad(nodes, req.session.user.id);
-
-                return res.json({
-                    nodes: nodes,
-                    user: req.user.id,
-                    users: users
-                });
+            //console.log("Time to getAll node : " + (Date.now() - time_start) + "ms");
+            //console.log(nodes);
+            return res.json({
+                nodes: nodes,
+                user: req.user.id,
+                users: users
             });
+        });
     },
 
     perm: function (req, res) {
         var perms = req.param('perm');
-
 
         Node.findOne({where: {mindmap: req.mindmap.id, parent_node: null}}).exec(function (err, node) {
 

@@ -40,10 +40,14 @@ function sendNodesUpdate(req, res, ids) {
     Node.find({where: {id: ids}}).populate('styles').exec(function (err, nodes) {
         if (err) return console.log(err);
 
-        MindMapMsgService.send('Update_nodes', req, nodes); // Notify users before load style
-
         nodes = SerializeService.styleLoad(nodes, req.session.user.id);
-        return res.json(nodes);
+        res.json(nodes);
+
+        /* _.forEach(nodes, function(n){
+         n.style = null;
+         });*/
+
+        return MindMapMsgService.send('Update_nodes', req, nodes);
     });
 }
 
@@ -51,8 +55,7 @@ function sendNodesUpdate(req, res, ids) {
 module.exports = {
 
     new: function (req, res) {
-        var nodes = req.param('nodes');
-        if (!nodes) return res.badRequest();
+        if (!req.nodes) return res.badRequest();
 
         // TODO Create more than one node at once
         //var formatted_nodes = [];
@@ -65,7 +68,7 @@ module.exports = {
         //    });
         //});
 
-        Node.find(nodes[0].parent_node).sort({height: 'asc'}).exec(function (err, pnodes) {
+        Node.find(req.nodes[0].parent_node).sort({height: 'asc'}).exec(function (err, pnodes) {
             if (err) return console.log(err);
 
             // On est sure que le parent existe puisque on ne créer jamais la racine
@@ -75,8 +78,8 @@ module.exports = {
 
             var formatted_nodes = [];
             formatted_nodes.push({
-                parent_node: nodes[0].parent_node,
-                label: nodes[0].label,
+                parent_node: req.nodes[0].parent_node,
+                label: req.nodes[0].label,
                 mindmap: req.mindmap.id,
                 owner: req.user.id,
                 height: pnodes[0].height + 1
@@ -86,7 +89,7 @@ module.exports = {
                 if (err) console.log(err);
 
                 var formatted_styles = [];
-                _.forEach(nodes, function (n, key) {
+                _.forEach(req.nodes, function (n, key) {
                     formatted_styles.push({
                         style: n.style,
                         node: new_nodes[key].id,
@@ -105,14 +108,37 @@ module.exports = {
                                 style: new_styles[key].style,
                                 node: new_styles[key].node,
                                 owner: new_styles[key].owner
-                            }
+                            };
+                            n.permission = {
+                                p_read: true,
+                                p_write: true,
+                                p_delete: true,
+                                p_unlock: true,
+                                p_assign: true
+                            };
                         });
 
                         SerializeService.styleLoad(new_nodes, req.user.id);
 
                         MindMapMsgService.send('New_nodes', req, new_nodes); // Notify users
+
+                        res.json(new_nodes);
+
+                        var data = [];
+                        _.forEach(new_nodes, function (n) {
+                            data.push({
+                                node: n.id,
+                                owner: req.user.id,
+                                user: req.user.id,
+                                p_read: true,
+                                p_write: true,
+                                p_delete: true,
+                                p_unlock: true,
+                                p_assign: true
+                            });
+                        });
+                        return Permission.create(data);
                     }
-                    return res.json(new_nodes);
                 });
             });
         });
@@ -120,16 +146,15 @@ module.exports = {
     },
 
     update: function (req, res) {
-        var nodes = req.param('nodes');
         var updateStyle = req.param('style');
 
 
         var ids = [];
-        _.forEach(nodes, function (n) {
+        _.forEach(req.nodes, function (n) {
             ids.push(n.id);
         });
 
-        Node.query(queryNodesUpdate(nodes), function (err) {
+        Node.query(queryNodesUpdate(req.nodes), function (err) {
             if (err) return console.log(err);
 
             if (updateStyle === 'yes') {
@@ -143,7 +168,7 @@ module.exports = {
                     var toUpdate = []; // List of style that need to be update (function take a array of node)
                     var toInsert = []; // List of style that need to be insert (function take a array of style)
 
-                    _.forEach(nodes, function (node) {
+                    _.forEach(req.nodes, function (node) {
                         var tmp = _.find(styles, function (style) {
                             return style.node === node.id;
                         });
@@ -195,7 +220,9 @@ module.exports = {
     },
 
     select: function (req, res) {
-        // TODO Select broadcast
+        var user = req.mindmapUser;
+        var node = req.param("node") || -1;
+
     },
 
     unselect: function (req, res) {
@@ -203,35 +230,70 @@ module.exports = {
     },
 
     delete: function (req, res) {
-        var nodes = req.param('nodes');
-        var ids = [];
-        _.forEach(nodes, function (n) {
-            ids.push(n.id);
-        });
 
-        Node.destroy({id: ids}).exec(function (err) {
+        Node.destroy({id: req.nodes}).exec(function (err) {
             if (err) return console.log(err);
 
-            Style.destroy({node: ids}).exec(function (err) {
+            Style.destroy({node: req.nodes}).exec(function (err) {
                 if (err) return console.log(err);
 
-                MindMapMsgService.send('Delete_nodes', req, nodes); // Notify users
-                return res.json(ids);
+                MindMapMsgService.send('Delete_nodes', req, req.nodes); // Notify users
+                return res.json(req.nodes);
             });
-        });
-    },
-
-    getAll: function (req, res) {
-
-        Node.find({where: {mindmap: req.mindmap.id}}).populate('style', {owner: req.user.id}).exec(function (err, nodes) {
-            if (err) return res.serverError();
-
-            console.log(nodes);
-            res.jsonx(nodes);
         });
     },
 
     perm: function (req, res) {
 
+        var node = req.param("nodes")[0];
+        var permKey = req.param("permKey");
+        var permValue = req.param("permValue");
+        var isUser = req.param("isUser");
+        var id = req.param("id_user") || -1;
+
+        var request = {where: {node: node}};
+
+        if (isUser) request.where.user = id;
+        else request.where.group = id;
+
+        Permission.find(request).exec(function (err, perms) {
+            if (err) return console.log(err);
+
+
+            if (perms.length > 1) console.log("Plusieurs permissions pour un noeud/user/group");
+
+            if (perms.length == 0) {
+
+                Node.find(node).exec(function (err, nodes) {
+                    if (!nodes) return res.badRequest();
+
+                    var data = {
+                        node: node,
+                        owner: req.user.id
+                    };
+
+                    if (isUser) data.user = id;
+                    else data.group = id;
+
+                    data[permKey] = permValue;
+
+                    Permission.create(data, function (err, perm) {
+                        if (err) return res.serverError();
+
+                        return res.json(perm);
+                    });
+                });
+
+            } else {
+                var data = {};
+                data[permKey] = permValue;
+
+                Permission.update(perms[0].id, data, function (err, perm) {
+                    if (err) return res.serverError();
+
+                    return res.json(perm);
+                });
+            }
+        });
     }
-}
+};

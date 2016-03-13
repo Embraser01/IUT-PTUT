@@ -33,18 +33,23 @@ function normalize(perms) {
     return final_perm;
 }
 
-
 function mindMapIsAllowed(req, id, cb) {
 
     getGroups(req.user.id, function (groups) {
-        Node.findOne({where: {mindmap: id, parent_node: null}}).populate('permissions', {
+        Node.find({where: {mindmap: id}}).populate('permissions', {
             or: [{user: req.user.id},
                 {group: groups}]
-        }).exec(function (err, node) {
+        }).exec(function (err, nodes) {
 
-            if (!node) return cb(normalize(null));
+            if (!nodes) return cb(normalize(null));
 
-            return cb(normalize(node.permissions));
+            var perms = [];
+
+            _.forEach(nodes, function (n) {
+                perms.push(normalize(n.permissions));
+            });
+
+            return cb(normalize(perms));
         });
     });
 }
@@ -114,31 +119,36 @@ module.exports = {
 
                     // Remove nodes forbidden
                     _.forEach(nodes, function (n) {
-                        n.permissions = normalize(n.permissions);
+
+                        n.permission = normalize(n.permissions);
 
                         var isAllowed = false;
 
-                        if (_.find(allowedNodes, function (node_id) { // On regarde si son parent est autorisé
-                                return node_id === n.parent_node;
-                            })) {
+                        if (!n.parent_node) {
                             isAllowed = true;
-                        } else if (p.p_read) {
-                            isAllowed = true;
-                            if (n.parent_node) n.rootLink = true;
+                        } else {
+                            var parent = _.find(allowedNodes, function (n_bis) { // On regarde si son parent est autorisé
+                                if (!n_bis.parent_node && !n_bis.permission.p_read) return false;
+                                return n_bis.id === n.parent_node;
+                            });
+
+                            if (parent) {
+                                isAllowed = true;
+                                n.permission = parent.permission;
+                            } else if (n.permission.p_read) {
+                                isAllowed = true;
+                                n.rootLink = true;
+                            }
                         }
 
-                        if (isAllowed) allowedNodes.push(n.id);
-                        else if (n.parent_node) n = null;
+                        if (isAllowed) allowedNodes.push(n);
                     });
 
-                    nodes = SerializeService.styleLoad(nodes, req.session.user.id);
+                    allowedNodes = SerializeService.styleLoad(allowedNodes, req.session.user.id);
 
 
-                    return res.json({
-                        nodes: nodes,
-                        user: req.user.id,
-                        users: users
-                    });
+                    //console.log(nodes);
+                    return cb(allowedNodes);
                 });
         });
 

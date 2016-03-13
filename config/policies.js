@@ -57,5 +57,9 @@ module.exports.policies = {
 
         'index': ['isAuthenticated', 'isAllowedFirst'],
         'join': ['isAuthenticated', 'isSocket', 'isAllowed']
+    },
+
+    SearchController: {
+        '*': ['isAuthenticated', 'isSocket']
     }
 };

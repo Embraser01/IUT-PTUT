@@ -89,10 +89,10 @@ module.exports.routes = {
     'post /mm/:id/node/new': 'NodeController.new',
     'post /mm/:id/node/update/:style': 'NodeController.update',
     'post /mm/:id/node/delete': 'NodeController.delete',
-    'post /mm/:id/node/getAll': 'NodeController.getAll',
     'post /mm/:id/node/select': 'NodeController.select',
     'post /mm/:id/node/unselect': 'NodeController.unselect',
     'post /mm/:id/node/move': 'NodeController.move',
+    'post /mm/:id/node/perm': 'NodeController.perm',
 
 
     /*===== Explorer Controller =====*/
@@ -104,6 +104,9 @@ module.exports.routes = {
         }
     },
 
+    /*===== Search Controller =====*/
+
+    'post /mm/:id/search/search': 'SearchController.search'
 
     /*===== Test Controller =====*/
 
