@@ -109,7 +109,7 @@ var verifyHandler = function (mail, password, done) {
                 message: 'Unknown mail ' + mail
             });
         }
-
+        // Changer le "N'importeQuoi..." ici et dans /api/models/User.js dans la fonction signup par une autre chaine de caractère
         if (user.password === crypto.createHash('sha256').update("N'importeQuoi..." + crypto.createHash('sha256').update(password).digest('hex')).digest('hex')) {
 
             return done(null, user, {
