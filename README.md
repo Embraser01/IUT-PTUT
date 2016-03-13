@@ -110,7 +110,7 @@ var verifyHandler = function (mail, password, done) {
             });
         }
 
-        if (user.password === crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(password).digest('hex')).digest('hex')) {
+        if (user.password === crypto.createHash('sha256').update("N'importeQuoi..." + crypto.createHash('sha256').update(password).digest('hex')).digest('hex')) {
 
             return done(null, user, {
                 message: 'Logged In Successfully'
