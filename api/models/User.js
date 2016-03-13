@@ -88,7 +88,7 @@ module.exports = {
         User.create({
                 display_name: inputs.firstname.trim() + ' ' + inputs.lastname.trim(),
                 mail: inputs.mail.trim(),
-                password: crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256')
+                password: crypto.createHash('sha256').update("N'importeQuoi..." + crypto.createHash('sha256')
                         .update(inputs.password).digest('hex')).digest('hex')
             })
             .exec(cb);
