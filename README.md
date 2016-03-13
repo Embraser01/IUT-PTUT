@@ -168,7 +168,7 @@ passport.use(new TwitterStrategy({
 ```
 
 
-* Forcer la construction de la base de données (changer la première fois et remettre par défaut)
+* Forcer la construction de la base de données (changer la première fois et remettre par défaut ('safe') )
 
   * /config/model.js
 
