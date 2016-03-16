@@ -1,8 +1,6 @@
 module.exports = {
 
-    tableName: 'MindMap',
-    autoUpdatedAt: false,
-
+    //tableName: 'Folder',
 
     attributes: {
 
@@ -22,19 +20,18 @@ module.exports = {
             model: 'user'
         },
 
-        messages: {
-            collection: 'message',
-            via: 'mindmap'
+        child_folders: {
+            collection: 'folder',
+            via: 'parent_folder'
         },
 
-        nodes: {
-            collection: 'node',
-            via: 'mindmap'
-        },
-
-        folder: {
+        parent_folder: {
             model: 'folder'
+        },
+
+        mindmaps: {
+            collection: 'mindmap',
+            via: 'folder'
         }
     }
-
 }

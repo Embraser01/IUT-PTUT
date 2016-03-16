@@ -56,7 +56,8 @@ MindmapFrame = function (c) {
      * @param permissions ?? permissions of the user for this node
      * @param style {Object} Style of the node
      * @param label {String} Label of the node
-     * @constructor
+     * @param owner
+ * @constructor
      */
     MindmapNode = function (id, parentNode, worker, permissions, style, label, owner) {
 
@@ -671,15 +672,12 @@ MindmapFrame = function (c) {
                     this.style.dx = style.dx;
 
 
-
                     //TODO: Risque de bug, peut être que ce test ne s'applique qu'à la première génération
                     if (this.style.dx < 0)
                         this.orientation = 'left';
                     else
                         this.orientation = 'right';
                 }
-
-
 
 
                 if ("order" in style)
@@ -706,7 +704,6 @@ MindmapFrame = function (c) {
                 if ("font" in style) {
 
                     _.forEach(style.font, function (n, key) {
-
 
 
                         this.style.font[key] = n;
@@ -1454,8 +1451,7 @@ MindmapFrame = function (c) {
             }
 
 
-
-            if(keyboardManager.ctrl) {
+            if (keyboardManager.ctrl) {
 
                 switch (e.keyCode) {
                     case 67: //C
@@ -2235,16 +2231,15 @@ MindmapFrame = function (c) {
                     var permKey = this.getAttribute("name");
                     var permValue = this.checked;
 
-                    console.log("Debug time !");
                     if(!mindmap.getSelectedNode()) return;
 
                     //TODO 2: Fixer une permission en fonction de id, isUser, permKey et permValue
                     io.socket.post(basePath + "node/perm", {
-                        node: mindmap.getSelectedNode().id,
+                        nodes: [mindmap.getSelectedNode().id],
                         isUser: isUser,
                         permKey: permKey,
                         permValue: permValue,
-                        id: id
+                        id_user: id
 
                     }, function (data) {
 
@@ -2274,10 +2269,9 @@ MindmapFrame = function (c) {
             if(!mindmap.getSelectedNode()) return;
 
             io.socket.post(basePath + "search/search", {
-                node: mindmap.getSelectedNode().id,
+                nodes: [mindmap.getSelectedNode().id],
                 search: search
             }, function (data) {
-                console.log("Search" ,data);
                 permBoxManager.updateView(data); // On oublie pas de mettre à jour le modèle ensuite
             });
 
@@ -2293,9 +2287,9 @@ MindmapFrame = function (c) {
         };
 
         this.permBoxManagerContainer.onload = function () {
-			
+
 			document.getElementById("permBoxTitle").textContent = (mindmap.getSelectedNode() == mindmap.rootNode) ? "Permissions de la carte " : "Permissions d'un noeud ";
-				
+
 
             document.getElementById("permBoxSearchElement").value = "";
 
@@ -2347,7 +2341,6 @@ MindmapFrame = function (c) {
                 editBoxManager.label = this.value;
 
 
-
                 if (this.syncDelay != undefined)
                     clearTimeout(this.syncDelay);
 
@@ -2358,28 +2351,28 @@ MindmapFrame = function (c) {
         document.getElementById("colorpicker").onchange = function () {
 			alert("colorpicker onchnage");
             var c = document.getElementById('editBox_color');
-			
+
 			var currIndex = editBoxManager.editBox.elements["editBox_family"].selectedIndex;
-			
+
 			var f = c.children[currIndex].getAttribute('name');
-			
+
 			if(f == null)
 				return;
-			
+
 			c.value = this.value;
-			
+
 			var p = c.children.item(0);
-			
+
 			p.innerHTML = '&#x1F532; ' + this.value;
-			
+
 			p.style.color = this.value;
-			
+
 			p.setAttribute('name',this.value);
-			
+
 			p.style.display='';
-			
+
 			p.selected=true;
-			
+
 			c.onchange();
         };
 
@@ -2396,45 +2389,45 @@ MindmapFrame = function (c) {
                     editBoxManager.sync();
 
                 }
-				else {					
+				else {
 					var p = this.children.item(0);
-					
+
 					var f = prompt('Entrer le nom d\'une police');
-					
+
 					var currIndex = -1;
-						
+
 					for(var i=0;i<editBoxManager.editBox.elements["editBox_family"].children.length;i++) {
 						if(editBoxManager.editBox.elements["editBox_family"].children[i].getAttribute("name") == f) {
 							currIndex = i;
 							break;
 						}
-						
+
 					}
-					
+
 					if(currIndex != -1) {
 						this.children[currIndex].selected = true;
 					}
 					else {
-						
+
 						p.innerHTML = f;
-						
+
 						p.style.fontFamily = f;
-						
+
 						p.setAttribute('name',f);
-						
+
 						p.style.display = '';
-						
+
 						p.selected = true;
 
 					}
-					this.onchange();					
+					this.onchange();
 
 				}
             }
         };
-
+		
         this.editBox.elements["editBox_color"].onchange = function () {
-						
+
             if (editBoxManager.styleLoad()) {
 				
 				var currIndex = editBoxManager.editBox.elements["editBox_color"].selectedIndex;
@@ -2448,44 +2441,44 @@ MindmapFrame = function (c) {
                 }
 				else {
 					if(window.chrome) {
-						
+
 						document.getElementById('colorpicker').value = prompt("Entrer un code hexadecimal");
 						var color = document.getElementById('colorpicker').value;
-						
+
 						var currIndex = -1;
-						
+
 						for(var i=1;i<editBoxManager.editBox.elements["editBox_color"].children.length;i++) {
-							
+
 							if(editBoxManager.editBox.elements["editBox_color"].children[i].getAttribute("name") == color) {
 								currIndex = i;
 								break;
 							}
 						}
-						
+
 						if(currIndex != -1) {
-							
+
 							editBoxManager.editBox.elements["editBox_color"].selectedIndex = currIndex;
-							
+
 						}
 						else {
-							
+
 							var p = this.children[0];
-							
+
 							p.innerHTML = '&#x1F532; ' + color;
-							
+
 							p.style.color = color;
-							
+
 							p.setAttribute('name',color);
-							
+
 							p.style.display='';
-							
+
 							//p.selected=true;
-							
+
 							editBoxManager.editBox.elements["editBox_color"].selectedIndex = 0;
-							
-							
+
+
 						}
-						
+
 						this.onchange();
 
 					}
@@ -2585,16 +2578,16 @@ MindmapFrame = function (c) {
                 editBoxManager.editBox.elements["editBox_label"].value = this.label;
 
 			var currIndex = -1;
-			
+
 			for(var i=0;i<editBoxManager.editBox.elements["editBox_family"].children.length;i++) {
 				if(editBoxManager.editBox.elements["editBox_family"].children[i].getAttribute("name") == this.style.font.family) {
 					currIndex = i;
 					break;
 				}
-				
+
 			}
-			
-			
+
+
 			// alert();
 
 
@@ -2606,11 +2599,11 @@ MindmapFrame = function (c) {
                 p.style.fontFamily = this.style.font.family;
                 p.setAttribute('name', this.style.font.family);
                 p.selected = true;
-				
+
 				currIndex = 0;
 
             }
-			
+
 			editBoxManager.editBox.elements["editBox_family"].selectedIndex = currIndex;
 
             editBoxManager.editBox.elements["editBox_family"].style.fontFamily = this.style.font.family;
@@ -2720,8 +2713,8 @@ MindmapFrame = function (c) {
 
 
         };
-		
-		
+
+
 
         this.reloadBoxs = function () {
             //dbg
@@ -2761,10 +2754,10 @@ MindmapFrame = function (c) {
             }
 
         };
-		
+
         var boxClosers = document.getElementsByClassName("boxCloser");
 
-        
+
         for(var i = 0;i < boxClosers.length; i++) {
 
             boxClosers.item(i).onclick = function () {
@@ -3210,21 +3203,21 @@ MindmapFrame = function (c) {
 
             }
         };
-    
+
 		var menu = document.getElementById("dropdown-user");
-		
+
 		var li_right = document.createElement("li");
-		
+
 		li_right.innerHTML = '<a id="pickGlobalRight">Droits globaux</a>';
-		
+
 		menu.insertBefore(li_right, menu.childNodes[0]);
-		
+
 		document.getElementById("pickGlobalRight").onclick = function () {
-			
+
 			mindmap.rootNode.viewNode();
 			mindmap.selectNode(mindmap.rootNode);
 			mindmap.selecterBoxManager.changeBox("permBox");
-			
+
 		};
 	};
 
@@ -3269,7 +3262,6 @@ MindmapFrame = function (c) {
                 io.socket.post(basePath + "join", function (data, jwr) {
                     // Subscribe to mindmap event and receive all the mindmap once
 
-                    console.log("Parsing data ...");
                     // console.log(jwr);
 
                     if(data == null) {
@@ -3492,22 +3484,33 @@ MindmapFrame = function (c) {
                 }
                 //Données utiles : id
 
-                var data = {nodes: []};
+                /*var data = {nodes: []};
+
+                 _.forEach(ids, function (n) {
+                 data.nodes.push(n);
+                 });
+
+
+
+                 io.socket.post(basePath + "node/delete", data, function (ids) {
+
+                 _.forEach(ids, function (n) {
+                 mindmap.ioManager.in.deleteNode(n.id);
+                 });
+
+                 });*/
+
+                var length = 0;
 
                 _.forEach(ids, function (n) {
-                    data.nodes.push({
-                        id: n
+                    io.socket.post(basePath + "node/delete", {nodes: [n]}, function (ids_d) {
+
+                        _.forEach(ids_d, function () {
+                            length++;
+                            if (length == ids.length) mindmap.ioManager.in.deleteNode(ids);
+                        });
+
                     });
-                });
-
-
-
-                io.socket.post(basePath + "node/delete", data, function (ids) {
-
-                    _.forEach(ids, function (n) {
-                        mindmap.ioManager.in.deleteNode(n.id);
-                    });
-
                 });
             }
 
@@ -3535,7 +3538,7 @@ MindmapFrame = function (c) {
                     //if(node.id == 2) //pour les test sans implementation
                     //	node.worker = 2;
 
-                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
+                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label, node.owner);
 
                     if (mindmap.rootNode == undefined && nodes[i].parentNode == undefined && nodes[i] != undefined) {
 
@@ -3570,8 +3573,7 @@ MindmapFrame = function (c) {
                 // // console.log(node);
                 // node.style.order = node.style.order_bis;
 
-                // // console.log(node);
-                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner);
+                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label, node.owner);
                 node = mindmap.nodes[node.id];
 
                 mindmap.revBoxManager.pushHistory("node-add", null, {node:node, parentNode:node.parentNode});

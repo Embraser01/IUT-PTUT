@@ -122,7 +122,7 @@ module.exports.sockets = {
      ***************************************************************************/
     afterDisconnect: function (session, socket, cb) {
 
-        var socketId = sails.sockets.id(socket);
+        var socketId = sails.sockets.getId(socket);
 
         // Prevent delete if not necessary (between to page)
 

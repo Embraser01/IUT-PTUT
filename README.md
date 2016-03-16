@@ -1,11 +1,45 @@
 # MindMap Collaboratif
 
-### Installation
+## Presentation
 
-* Cloner le repo
-* Faire un npm install
-* Créer trois fichiers dans /config:
-  * connections.js
+  C'est une plate-forme d'édition collaborative de carte mentale avec une gestion avancée des droits.
+  Le projet s'est déroulé de novembre 2015 à mars 2016.
+  C'est le projet de fin d'étude fait par 3 étudiants de l'IUT Informatique Lyon 1 - Site Bourg-en-Bresse :
+*    ALLIAUME Hugo
+*    CHAZELLE Benjamin
+*    FERNANDES Marc-Antoine
+
+## Mise en ligne
+
+### Dépendance
+
+-  [Node JS](https://nodejs.org) V4.4.0 LTS
+-  [MySQL](http://dev.mysql.com/downloads/)
+-  Navigateur récent
+  -  Chrome
+  -  Mozilla
+  -  Edge
+  
+
+### Téléchargement et installation des dépendances
+
+Cloner le repo avec Git :
+```bash
+git clone https://github.com/Embraser01/IUT-PTUT.git
+```
+
+Installer les dépendances
+
+```bash
+cd IUT-PTUT/
+npm install
+```
+
+###  Configuration
+
+Créer les trois fichiers suivant dans /config:
+
+-  connections.js (gère la connexion à la base de données)
 ```javascript
 
 module.exports.connections = {
@@ -21,12 +55,12 @@ module.exports.connections = {
 
 ```
 
-  * local.js
+-  local.js (gère le mode du serveur et le port, en production, les fichiers sont minifiés)
 
 ```javascript
 
 module.exports = {
-    port: process.env.PORT || 8000,
+    port: process.env.PORT || 8000, // Changer le port de connexion ici
     
     //environment: 'production'
     environment: 'development'
@@ -34,8 +68,7 @@ module.exports = {
 };
 ```
 
-
-   * passport.js
+-  passport.js (Gère la connexion depuis l'intérieur et l'extérieur)
 
 ```javascript
 
@@ -109,8 +142,8 @@ var verifyHandler = function (mail, password, done) {
                 message: 'Unknown mail ' + mail
             });
         }
-
-        if (user.password === crypto.createHash('sha256').update("42IAmASalt42" + crypto.createHash('sha256').update(password).digest('hex')).digest('hex')) {
+        // Changer le "N'importeQuoi..." ici et dans /api/models/User.js dans la fonction signup par une autre chaine de caractère
+        if (user.password === crypto.createHash('sha256').update("N'importeQuoi..." + crypto.createHash('sha256').update(password).digest('hex')).digest('hex')) {
 
             return done(null, user, {
                 message: 'Logged In Successfully'
@@ -147,6 +180,7 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
 }, verifyHandler));
 
+// Remplacer les 'XXXXX' par vos clés et 'yourhost.com' par votre nom de domaine
 passport.use(new FacebookStrategy({
     clientID: "XXXXXX",
     clientSecret: "XXXXXX",
@@ -168,12 +202,22 @@ passport.use(new TwitterStrategy({
 ```
 
 
-* Forcer la construction de la base de données (changer la première et remettre par défaut)
+Forcer la construction de la base de données (changer la première fois et remettre par défaut ('safe') )
 
-  * /config/model.js
+-  /config/model.js
 
 ```javascript
 
 migrate: 'drop'
 
 ```
+
+### Lancer le serveur
+```bash
+sails lift
+```
+
+
+## Licence
+
+[The MIT License (MIT) Copyright (c) 2016](https://github.com/Embraser01/IUT-PTUT/blob/master/LICENSE)
