@@ -1,0 +1,5 @@
+(($) ->
+
+    groupsGestion = new GroupsGestion();
+
+)(jQuery)

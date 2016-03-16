@@ -1,0 +1,53 @@
+.groups-gestion {
+  .collection-header {
+    position: relative;
+
+    > .btn-floating {
+      position: absolute;
+      top: calc(50% - 55.5px / 2); // height du bouton
+      right: 20px; // width
+    }
+  }
+
+  .collection .collection-item.active {
+    @extend .blue;
+  }
+
+  .collection-group {
+    display: block;
+  }
+
+  .collection-user {
+    display: flex;
+    align-items: center;
+
+    .avatar {
+      height: 32px;
+      width: 32px;
+      border-radius: 50%;
+    }
+
+    .name {
+      flex: 1;
+      padding: 0 8px;
+    }
+
+    .actions {
+      [class^="btn"] {
+        @extend .grey-text;
+        -webkit-transition: color .1s;
+        -moz-transition: color .1s;
+        -ms-transition: color .1s;
+        -o-transition: color .1s;
+        transition: color .1s;
+      }
+
+      .btn-delete:hover {
+        @extend .red-text;
+      }
+      .btn-toggle-perm-manage:hover {
+        @extend .blue-text;
+      }
+    }
+  }
+}
