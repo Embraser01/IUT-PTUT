@@ -9,7 +9,7 @@
 .explorer-navigation {
   @extend .white;
 
-  .breadcrumb:nth-child(1)::before {
+  .nav-wrapper :nth-child(2)::before {
     display: none
   }
 
