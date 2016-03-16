@@ -111,11 +111,11 @@ module.exports.routes = {
         locals: {
             layout: 'layouts/explorer'
         }
-    }
+    },
 
     /*===== Search Controller =====*/
 
-    'post /mm/:id/search/search': 'SearchController.search'
+    'post /mm/:id/search/search': 'SearchController.search',
 
     /*===== Test Controller =====*/
 
