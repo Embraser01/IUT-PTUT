@@ -1,45 +1,3 @@
-/*
- * Format de reception de noeud depuis le serveur (exemple)
- *
- * nodes: [{
- *          id: id_du_noeud,
- *          parentNode: id_du_noeud_parent,
- *          label: label_du_noeud,
- *          style: {
- *              order: ordre_parmi_ses_freres,
- *              dx: decalage_horizontal,
- *              folded: vrai_si_fermé,
- *              container: {
- *                  kind: "rectangle",
- *                  borderThickness: "0",
- *                  borderColor: "#263238",
- *                  background: "white",
- *                  radius: "7"
- *              },
- *              font: {
- *                   family: "sans-serif",
- *                   size: "24",
- *                   color: "#006064",
- *                   weight: "bold ",
- *                   style: "italic ",
- *                   decoration: "none",
- *                   align: "right"
- *               },
- *               parentBranch: {
- *                   color: "#42a5f5"
- *               },
- *               unifiedChildren: {
- *                   dx: false,
- *                   container: false,
- *                   font: false,
- *                   parentBranch: false
- *               }
- *          },
- *          permissions: {
- *              TODO Permissions
- *          }
- *      }]
- */
 basePath = window.location.pathname + "/";
 
 MindmapFrame = function (c) {
@@ -728,9 +686,6 @@ MindmapFrame = function (c) {
             else
                 mindmap.drawMap(this);
 
-
-            // TODO Bouger la fonction à la vraie edition et appeler cette fonction après la réponse serveur
-            //if (isMe) mindmap.ioManager.out.editNode(this, true);
         };
 
         /**
@@ -1039,8 +994,6 @@ MindmapFrame = function (c) {
         if (this.getSelectedNode() == null || this.getSelectedNode() == this.rootNode)
             return;
 
-        // TODO Passer avec lodash, et voir pour supprimer plus d'un
-
         var traverse = function (node) {
 
             for (var i in node.childNodes) {
@@ -1241,7 +1194,7 @@ MindmapFrame = function (c) {
     };
 
     /**
-     * TODO A supprimer ?
+     * TODO Javadoc
      * Return all of the descendants of a node
      * @param node
      * @returns {Array}
@@ -2233,7 +2186,6 @@ MindmapFrame = function (c) {
 
                     if(!mindmap.getSelectedNode()) return;
 
-                    //TODO 2: Fixer une permission en fonction de id, isUser, permKey et permValue
                     io.socket.post(basePath + "node/perm", {
                         nodes: [mindmap.getSelectedNode().id],
                         isUser: isUser,
@@ -2243,7 +2195,7 @@ MindmapFrame = function (c) {
 
                     }, function (data) {
 
-
+                        // TODO Handle response !!
                     });
 
 
@@ -2811,14 +2763,6 @@ MindmapFrame = function (c) {
 
                         case 'mouseup':
                             eventManager.eventType = null;
-
-
-                            //Ce case c'est là où l'utilisateur ajoute lui même un noeud
-                            //TODO: Requête de création de noeud - Émission
-                            //Faut demander l'id du noeud au serveur
-                            //Puis Notification de modification du noeud
-                            //Puis Notification de l'ordre de la fratrie du noeud
-
 
                             var style = {
                                 "folded": false,
@@ -3524,16 +3468,6 @@ MindmapFrame = function (c) {
 
                     var node = nodes[i];
 
-                    //TODO 1: Envoyer les permissions dans node, comme ce qui suit
-                    /*node.permissions = {
-                     "p_read" : true,
-                     "p_write" : true,
-                     "p_delete" : true,
-                     "p_unlock" : true,
-                     "p_assign" : true
-                     };
-                     */
-
                     ////TODO 4: Envoyer le worker actuel (vérouillage) dans node, comme ce qui suit
                     //if(node.id == 2) //pour les test sans implementation
                     //	node.worker = 2;
@@ -3748,6 +3682,9 @@ MindmapFrame = function (c) {
                                 mindmap.workersListManager.removeWorker(message.data.msg);
                                 break;
 
+                            case 'Update_perms':
+                                // TODO Handle perms update !
+                                break;
                         }
                         // TODO Ajouter toutes les possibilités (select/ edit/ delete)
                         break;

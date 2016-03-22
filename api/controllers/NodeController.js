@@ -269,6 +269,8 @@ module.exports = {
         var isUser = req.param("isUser");
         var id = req.param("id_user") || -1;
 
+        if(id === -1) return res.badRequest();
+
         var request = {where: {node: node}};
 
         if (isUser) request.where.user = id;
@@ -280,7 +282,7 @@ module.exports = {
 
             if (perms.length > 1) console.log("Plusieurs permissions pour un noeud/user/group");
 
-            if (perms.length == 0) {
+            if (!perms) {
 
                 Node.find(node).exec(function (err, nodes) {
                     if (!nodes) return res.badRequest();
@@ -298,18 +300,27 @@ module.exports = {
                     Permission.create(data, function (err, perm) {
                         if (err) return res.serverError();
 
+                        _.forEach(req.mindmap.users, function(u){
+                            if(u.id === perm.user) MindMapMsgService.send('Update_perms', req, perm); // TODO search thought group
+                        });
+
                         return res.json(perm);
                     });
                 });
 
             } else {
                 var data = {};
+
                 data[permKey] = permValue;
 
-                Permission.update(perms[0].id, data, function (err, perm) {
+                Permission.update(perms[0].id, data).exec(function (err, perms) {
                     if (err) return res.serverError();
 
-                    return res.json(perm);
+                    _.forEach(req.mindmap.users, function(u){
+                        if(u.id === perm.user) MindMapMsgService.send('Update_perms', req, perms[0]); // TODO search thought group
+                    });
+
+                    return res.json(perms[0]);
                 });
             }
         });
