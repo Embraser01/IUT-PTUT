@@ -41,14 +41,32 @@ function sendNodesUpdate(req, res, ids) {
         if (err) return console.log(err);
 
         nodes = SerializeService.styleLoad(nodes, req.session.user.id);
-        res.json(nodes);
 
-        /* _.forEach(nodes, function(n){
-         n.style = null;
-         });*/
 
-        return MindMapMsgService.send('Update_nodes', req, nodes);
+        var dict = {};
+
+        _.forEach(nodes, function(n){
+            dict[key(n)] = n.style;
+            n.style = null;
+        });
+
+        MindMapMsgService.send('Update_nodes', req, nodes);
+
+        // TODO Stringify ?
+
+        _.forEach(nodes, function (n){
+            n.style = dict[key(n)];
+        });
+
+        return res.json(nodes);
     });
+}
+
+
+
+function key(obj){
+
+    return obj.id;
 }
 
 
