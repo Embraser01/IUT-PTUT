@@ -272,7 +272,7 @@ class Explorer
             $item.append $('<div>',
                 class: 'card-image waves-effect waves-block waves-light'
             ).append $ '<img>',
-                src: 'http://lorempicsum.com/futurama/200/125/1'
+                src: 'http://lorempicsum.com/up/255/200/2'
 
             $item.append $('<div>',
                 class: 'card-content',
