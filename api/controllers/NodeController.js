@@ -282,7 +282,7 @@ module.exports = {
 
             if (perms.length > 1) console.log("Plusieurs permissions pour un noeud/user/group");
 
-            if (!perms) {
+            if (perms.length == 0) {
 
                 Node.find(node).exec(function (err, nodes) {
                     if (!nodes) return res.badRequest();
@@ -317,7 +317,7 @@ module.exports = {
                     if (err) return res.serverError();
 
                     _.forEach(req.mindmap.users, function(u){
-                        if(u.id === perm.user) MindMapMsgService.send('Update_perms', req, perms[0]); // TODO search thought group
+                        if(u.id === perms[0].user) MindMapMsgService.send('Update_perms', req, perms[0]); // TODO search thought group
                     });
 
                     return res.json(perms[0]);

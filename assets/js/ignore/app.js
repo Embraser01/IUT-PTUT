@@ -3664,9 +3664,7 @@ MindmapFrame = function (c) {
                                 });
                                 break;
                             case 'Update_nodes':
-                                console.log(message.data);
                                 _.forEach(message.data.msg, function (n) {
-                                    if(n.style != null)
                                         mindmap.ioManager.in.editNode(0, n, false);
                                 });
                                 break;
