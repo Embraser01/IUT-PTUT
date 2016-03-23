@@ -59,7 +59,7 @@ MindmapFrame = function (c) {
      * @param owner
  * @constructor
      */
-    MindmapNode = function (id, parentNode, worker, permissions, style, label, owner) {
+    MindmapNode = function (id, parentNode, worker, permissions, style, label, owner, rootLinked) {
 
 
         /*====== VARIABLES =====*/
@@ -116,7 +116,15 @@ MindmapFrame = function (c) {
          * @type {Integer}
          */
         this.worker = worker;
-
+		
+        this.rootLinked = rootLinked;
+		
+		if(rootLinked) {
+			this.parentNode = mindmap.rootNode; 
+			
+			
+			console.log("mn", label)
+		}
         /**
          * Position of the node
          * @type {{x: number, y: number}}
@@ -371,6 +379,8 @@ MindmapFrame = function (c) {
             };
 
             var tmpStyle = JSON.parse(JSON.stringify(this.style));
+			
+			tmpStyle.font.size = '20';
 
             this.textElement.childNodes[0].nodeValue = this.label;
 
@@ -388,6 +398,8 @@ MindmapFrame = function (c) {
             if (this == mindmap.rootNode) {
 
                 this.style.container.kind = "rectangle";
+				
+				tmpStyle.font.size = '24';
 
                 this.style.container.borderThickness = 0;
                 this.style.container.background = 'white';
@@ -409,6 +421,7 @@ MindmapFrame = function (c) {
                 tmpStyle.font.style = 'normal';
                 tmpStyle.font.decoration = 'none';
                 tmpStyle.font.family = 'Roboto';
+                
 
 
                 this.nodeElement.setAttribute("title", "Double-cliquer pour déplier");
@@ -439,7 +452,7 @@ MindmapFrame = function (c) {
             this.textNode.label = this.label;
 
             this.textElement.setAttribute('font-family', tmpStyle.font.family);
-            this.textElement.setAttribute('font-size', parseFloat(this.style.font.size));
+            this.textElement.setAttribute('font-size', parseFloat(tmpStyle.font.size));
             this.textElement.setAttribute('fill', tmpStyle.font.color);
 
             if (tmpStyle.font.weight == 'bold')
@@ -585,7 +598,8 @@ MindmapFrame = function (c) {
             if (this.worker == mindmap.worker)
                 this.lockElement.setAttribute("fill", "#4caf50");
             else
-                this.lockElement.setAttribute("fill", "#f44336");
+                this.lockElement.setAttribute("fill", "transparent"); //dbg
+                // <thi></thi>s.lockElement.setAttribute("fill", "#f44336");
 
             if (this == mindmap.rootNode) {
                 this.leftConnecterElement.style.display = "";
@@ -758,8 +772,8 @@ MindmapFrame = function (c) {
 
         /*===== INITIALISATION =====*/
 
-        if (parentNode != null)
-            parentNode.childNodes.push(this);
+        if (parentNode != null || this.rootLinked)
+            this.parentNode.childNodes.push(this);
         // else
         //	mindmap.rootNode = this;
 
@@ -1219,6 +1233,8 @@ MindmapFrame = function (c) {
             node.style.dx = -Math.abs(node.style.dx);
         else if (node.orientation == 'right')
             node.style.dx = Math.abs(node.style.dx);
+		
+		// node.style.dx /= <1 class="5"></1>;
 
         if (node == this.rootNode)
             node.position.x = node.position.y = 0;
@@ -1858,6 +1874,10 @@ MindmapFrame = function (c) {
         this.revBoxManagerContainer = document.getElementById("revBox");
 
         this.pushHistory = function (kind, styleCtx, nodeCtx) {
+			
+			if(kind == "node-add" && nodeCtx.owner != mindmap.worker)
+				return;
+			
             mindmap.revBoxManager.historyStack.push({kind : kind, styleCtx : styleCtx, nodeCtx : nodeCtx});
 
             revBoxManager.updateView();
@@ -1970,6 +1990,7 @@ MindmapFrame = function (c) {
                             continue;
 
                         title = "<a href=\"#node:"+this.historyStack[i].nodeCtx.node.id+"\">Noeud #"+this.historyStack[i].nodeCtx.node.id+"</a> - Édition - Déplacement";
+						subtitle = "&nbsp;";
                         break;
 
                     case "node-add" :
@@ -2233,7 +2254,7 @@ MindmapFrame = function (c) {
 
                     if(!mindmap.getSelectedNode()) return;
 
-                    //TODO 2: Fixer une permission en fonction de id, isUser, permKey et permValue
+                    //TODO 2: Fixer une permissions en fonction de id, isUser, permKey et permValue
                     io.socket.post(basePath + "node/perm", {
                         nodes: [mindmap.getSelectedNode().id],
                         isUser: isUser,
@@ -3272,7 +3293,7 @@ MindmapFrame = function (c) {
                         });
                         return;
                     }
-
+					
                     mindmap.ioManager.in.open(data.nodes);
                     mindmap.setWorker(data.user);
                     _.forEach(data.users, function (u) {
@@ -3537,8 +3558,8 @@ MindmapFrame = function (c) {
                     ////TODO 4: Envoyer le worker actuel (vérouillage) dans node, comme ce qui suit
                     //if(node.id == 2) //pour les test sans implementation
                     //	node.worker = 2;
-
-                    mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label, node.owner);
+console.log("$open", node, mindmap.nodes[node.parent_node])
+                    mindmap.nodes[node.id] = new MindmapNode(node.id,  mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner, ("rootLink" in node));
 
                     if (mindmap.rootNode == undefined && nodes[i].parentNode == undefined && nodes[i] != undefined) {
 
@@ -3573,7 +3594,9 @@ MindmapFrame = function (c) {
                 // // console.log(node);
                 // node.style.order = node.style.order_bis;
 
-                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permission, node.style, node.label, node.owner);
+				console.log("$createdNode", node);
+				
+                mindmap.nodes[node.id] = new MindmapNode(node.id, mindmap.nodes[node.parent_node], node.worker, node.permissions, node.style, node.label, node.owner, false);
                 node = mindmap.nodes[node.id];
 
                 mindmap.revBoxManager.pushHistory("node-add", null, {node:node, parentNode:node.parentNode});
@@ -3651,7 +3674,7 @@ MindmapFrame = function (c) {
 
             //When a collaborator edit a node
             this.editNode = function (workerId, node, isMe) {
-
+console.log(node);
                 if(node.id in mindmap.nodes && isMe) {
 
                     var currentNode = mindmap.nodes[node.id];
@@ -3677,8 +3700,15 @@ MindmapFrame = function (c) {
 
                 }
 
-                mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
-
+				console.log(node.id, mindmap.nodes[node.id]);
+				
+				if(node.id in mindmap.nodes)
+					mindmap.nodes[node.id].editNode(workerId, node.label, node.style, isMe);
+				else {
+					node.worker = workerId;
+					this.createdNode(node);
+				}
+					
                 // // console.log("When a collaborator edit a node", node.label, node.style.order)
 
                 // console.log("In : Node edited");
