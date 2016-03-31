@@ -1,6 +1,3 @@
-/**
- * Created by kocal on 28/01/16.
- */
 module.exports.autoreload = {
     active: false,
     usePolling: false,
