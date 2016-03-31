@@ -220,4 +220,4 @@ sails lift
 
 ## Licence
 
-[The MIT License (MIT) Copyright (c) 2016](https://github.com/Embraser01/IUT-PTUT/blob/master/LICENSE)
+[Copyright (C) 2016  Hugo ALLIAUME Benjamin CHAZELLE Marc-Antoine FERNANDES](https://github.com/Embraser01/IUT-PTUT/blob/master/LICENSE)
